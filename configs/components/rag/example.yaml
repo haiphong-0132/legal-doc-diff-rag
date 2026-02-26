@@ -1,0 +1,10 @@
+type: simple
+
+retrieval:
+  top_k: 5
+  distance_metric: cosine
+  score_threshold: 0.3
+
+matching:
+  similarity_skip: 0.9 # Bỏ qua cặp giống nhau
+  similarity_major: 0.7 # Dưới 0.7 là khác nhau

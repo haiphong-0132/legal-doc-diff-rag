@@ -1,0 +1,6 @@
+type: fixed_size
+
+params:
+  chunk_size: 500 # theo tokens
+  chunk_overlap: 50
+  separator: "\n\n"

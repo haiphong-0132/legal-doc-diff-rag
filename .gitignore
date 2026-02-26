@@ -1,0 +1,29 @@
+# Environment
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# uv
+.python-version
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Models
+models/*
+!models/.gitkeep
+
+# Results
+results/*
+!results/.gitkeep
+
+data/pairs/*
+!data/pairs/samples/
+
+.ipynb_checkpoints/
+
+structure_tree.txt
+ttcs1.md

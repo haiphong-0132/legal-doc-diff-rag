@@ -1,0 +1,20 @@
+name: exp_001
+description: "Experiment with hierarchical chunking + naiveRAG + qwen3-8b quantized 2bits"
+
+components:
+  chunking:  hierarchical # trỏ vào configs/components/chunking/hierarchical.yaml
+  rag: naive # trỏ vào configs/components/rag/naive.yaml
+  llm: qwen3_8b_quantized_2bits # trỏ vào configs/components/llm/qwen3_8b_quantized_2bits.yaml
+
+embedding:
+  model: aiteamvn/vietnamese_embedding_v2
+  device: cpu
+  batch_size: 16
+
+data:
+  file_a: data/pair1/van_ban_1.docx
+  file_b: data/pair1/van_ban_2.docx
+
+output:
+  dir: results/exp_001
+  formats: [json, markdown]

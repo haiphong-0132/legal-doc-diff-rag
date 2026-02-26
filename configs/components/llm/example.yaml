@@ -1,0 +1,14 @@
+type: llamacpp
+
+model:
+  path: /models/qwen3-8b-q2_k.gguf
+
+params:
+  temperature: 0.1
+  max_new_tokens: 512
+  # ...
+
+output:
+  format: json
+  retries: 3
+  # ...
