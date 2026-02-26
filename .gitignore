@@ -2,10 +2,23 @@
 .env
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Build
+build/
+dist/
+*.egg-info/
 
 # uv
 .python-version
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Logs
+*.log
 
 # OS / IDE
 .DS_Store
@@ -20,10 +33,12 @@ models/*
 results/*
 !results/.gitkeep
 
+# Data
 data/pairs/*
-!data/pairs/samples/
 
+# Jupyter
 .ipynb_checkpoints/
 
+# Misc
 structure_tree.txt
 ttcs1.md
