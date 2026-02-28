@@ -38,6 +38,7 @@ data/pairs/*
 
 # Jupyter
 .ipynb_checkpoints/
+notebooks/*.ipynb
 
 # Misc
 structure_tree.txt
