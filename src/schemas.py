@@ -55,7 +55,6 @@ class LegalDocument(BaseModel):
     chu_thich: List[ChuThich] = []
     khac: List[Khac] = Field(default=[], alias="Khac")
 
-
 class ChunkMetadata(BaseModel):
     """Metadata cho 1 chunk.
 

@@ -1,14 +1,14 @@
 from typing import List, Callable
 from pydantic import BaseModel
 from src.schemas import ChunkDocument, EmbeddingResult, ChromaUpsertRequest
-
+from src.core.vector_store.chroma_store import ChromaStore
 
 class VectorStorePipeline(BaseModel):
     """Pipeline để lưu trữ vector vào ChromaDB"""
     chunks: List[ChunkDocument]
     embeddings: List[EmbeddingResult]
 
-    def to_upsert_requests(self) -> List[ChromaUpsertRequest]:
+    def _to_upsert_requests(self) -> List[ChromaUpsertRequest]:
         """Kết nối giữa ChunkDocument và EmbeddingResult để tạo dữ liệu upsert cho ChromaDB"""
 
         embedding_map = {}
@@ -38,7 +38,9 @@ class VectorStorePipeline(BaseModel):
         if missing_chunk_ids:
             raise ValueError(f"Missing embeddings for chunk IDs: {missing_chunk_ids}")
 
-        return requests 
-
-# Định nghĩa kiểu cho hàm lưu trữ vector vào ChromaDB
-VectorStoreFunction = Callable[[VectorStorePipeline], None]
+        return requests
+    
+    def run(self, store: ChromaStore) -> None:
+        """Upsert toàn bộ chunks vào ChromaStore"""
+        requests = self._to_upsert_requests()
+        store.upsert(requests)
