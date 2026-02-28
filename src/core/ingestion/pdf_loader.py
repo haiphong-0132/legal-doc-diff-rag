@@ -11,7 +11,7 @@ else:
     _import_error = None
 
 
-def extract_pdf_text(path: str, password: Optional[str] = None) -> str:
+def extract_pdf_text(path: str) -> str:
     """
     Trích xuất toàn bộ văn bản từ file PDF thành một chuỗi.
 
@@ -24,8 +24,6 @@ def extract_pdf_text(path: str, password: Optional[str] = None) -> str:
         ) from _import_error
 
     reader = PdfReader(path)
-    if password:
-        reader.decrypt(password)  # type: ignore[call-arg]
 
     texts = []
     for page in reader.pages:
