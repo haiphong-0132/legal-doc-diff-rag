@@ -25,7 +25,10 @@ class OnnxEmbeddingModel:
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
 
-        self.providers = ["CUDAExecutionProvider"] if torch.cuda.is_available() else ["CPUExecutionProvider"]
+        available_providers = set(ort.get_available_providers())
+        use_cuda = torch.cuda.is_available() and "CUDAExecutionProvider" in available_providers
+
+        self.providers = ["CUDAExecutionProvider"] if use_cuda else ["CPUExecutionProvider"]
 
         # Load và tối ưu graph ONNX và tạo runtime session
         self.session = ort.InferenceSession(self.onnx_path, providers=self.providers)
