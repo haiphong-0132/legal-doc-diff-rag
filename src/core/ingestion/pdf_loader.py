@@ -14,8 +14,6 @@ else:
 def extract_pdf_text(path: str) -> str:
     """
     Trích xuất toàn bộ văn bản từ file PDF thành một chuỗi.
-
-    Mặc định sử dụng `PyPDF2`. Hỗ trợ PDF có mật khẩu (nếu cung cấp).
     """
     if PdfReader is None:
         raise ImportError(

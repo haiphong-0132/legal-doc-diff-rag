@@ -6,7 +6,6 @@ def clean_text(text: str) -> str:
     Làm sạch nhẹ nhàng văn bản trước khi chuẩn hoá:
     - Chuẩn hoá xuống dòng
     - Loại bỏ khoảng trắng dư ở đầu/cuối dòng
-    - Chuẩn hoá một số bullet (•, –, —) về dấu '-'
     - Giảm số dòng trống liên tiếp
     """
     if not text:
@@ -14,12 +13,6 @@ def clean_text(text: str) -> str:
 
     # Chuẩn hoá newline
     text = text.replace("\r\n", "\n").replace("\r", "\n")
-
-    # Chuẩn hoá bullet dạng ký hiệu sang '- '
-    bullet_chars = ["•", "‣", "∙", "◦", "–", "—"]
-    for ch in bullet_chars:
-        text = text.replace(f"{ch} ", "- ").replace(ch, "- ")
-
     lines = text.split("\n")
     cleaned_lines = []
     empty_count = 0
