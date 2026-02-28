@@ -1,8 +1,8 @@
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Literal
 from pydantic import BaseModel, Field
 
 # Chunking
-
 class ThongTinKyKet(BaseModel):
     vai_tro: Optional[str] = None
     ghi_chu: Optional[str] = None
@@ -48,7 +48,6 @@ class LegalDocument(BaseModel):
     chu_thich: List[ChuThich] = []
     khac: List[Khac] = Field(default=[], alias="Khac")
 
-
 class ChunkMetadata(BaseModel):
     # Bắt buộc phải có section_id theo format: doc_id_cấp1_cấp2_..._cấp_hiện_tại
     section_id: str 
@@ -76,7 +75,8 @@ class EmbeddingResult(BaseModel):
 
 class ChromaConfig(BaseModel):
     collection_name: str
-    persist_directory: str      # Nơi lưu trữ
+    persist: bool = False       # Có lưu trữ lâu dài hay không
+    persist_directory: str = "data/chroma"       # Nơi lưu trữ
     distance_metric: Literal["cosine", "l2", "ip"] = "cosine"  # Khoảng cách sử dụng trong ChromaDB
 
 class ChromaUpsertRequest(BaseModel):

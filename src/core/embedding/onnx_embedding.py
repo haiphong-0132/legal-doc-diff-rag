@@ -96,7 +96,8 @@ class OnnxEmbeddingModel:
                 results.append(
                     EmbeddingResult(
                         chunk_id=requests[i + j].chunk_id,
-                        vector=vec,model_name=f'{self.model_dir}-onnx',
+                        vector=vec,
+                        model_name=f'{self.model_dir}-onnx',
                         token_count=token_count
                     )
                 )
