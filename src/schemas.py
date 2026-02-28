@@ -1,5 +1,4 @@
-from typing import Any, List, Literal, Optional
-
+from typing import Dict, List, Optional, Any, Literal
 from pydantic import BaseModel, Field
 
 
@@ -94,3 +93,41 @@ class ChunkDocument(BaseModel):
 
     text: str
     metadata: Optional[ChunkMetadata] = None
+class EmbeddingRequest(BaseModel):
+    """Một đơn vị chunk cần embedding"""
+    chunk_id: str   # Duy nhất, lấy từ ChunkMetadata.section_id
+    text: str
+
+class EmbeddingResult(BaseModel):
+    """Kết quả embed 1 chunk"""
+    chunk_id: str
+    vector: List[float]     # Vector embedding
+    model_name: str         
+    token_count: Optional[int] = None   # Số token của chunk để kiểm tra có vượt giới hạn mô hình hay không
+
+# Store in vector database
+
+class ChromaConfig(BaseModel):
+    collection_name: str
+    persist_directory: str      # Nơi lưu trữ
+    distance_metric: Literal["cosine", "l2", "ip"] = "cosine"  # Khoảng cách sử dụng trong ChromaDB
+
+class ChromaUpsertRequest(BaseModel):
+    """Dữ liệu cần upsert vào ChromaDB"""
+    chunk_id: str
+    vector: List[float]         # Lấy từ EmbeddingResult.vector
+    text: str                   # Lấy từ ChunkDocument.text
+    metadata: Dict[str, Any]    # Lấy từ ChunkMetadata tương ứng và có thể thêm thông tin khác nếu cần
+
+class ChromaQueryRequest(BaseModel):
+    """Yêu cầu truy vấn từ ChromaDB"""
+    query_vector: List[float]                   # Embeding của câu truy vấn
+    top_k: int = Field(5, gt=0)
+    filter: Optional[Dict[str, Any]] = None     # Bộ lọc theo metadata nếu cần
+
+class ChromaQueryResult(BaseModel):
+    """Kết quả trả về từ ChromaDB sau khi truy vấn"""
+    chunk_id: str
+    text: str
+    metadata: Dict[str, Any]
+    distance: float
