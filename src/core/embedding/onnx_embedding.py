@@ -17,10 +17,11 @@ class OnnxEmbeddingModel:
 
     def __init__(self, model_dir: str, onnx_path: str = None):
         self.model_dir = model_dir
-        self.onnx_path = onnx_path if onnx_path else glob(f"{model_dir}/onnx/*.onnx")[0]
-
-        if not self.onnx_path:
-            raise ValueError(f"No ONNX model found in {model_dir}/onnx/")
+        
+        try:
+            self.onnx_path = onnx_path if onnx_path else glob(f"{model_dir}/onnx/*.onnx")[0]
+        except IndexError:
+            raise ValueError(f"Không tìm thấy file ONNX trong {model_dir}/onnx/")
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
 
