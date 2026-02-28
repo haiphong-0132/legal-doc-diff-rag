@@ -6,14 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 
 dependencies = [
-    # --- Document ingestion ---
     "pdfplumber",
     "pymupdf",
     "pypdf",
     "python-docx",
     "docling",
-
-    # --- ML / RAG ---
+    "langchain-text-splitters>=0.3.9",
     "onnxruntime>=1.14.0",
     "onnxruntime-gpu>=1.24.2",
     "transformers>=4.40.0",
@@ -21,8 +19,6 @@ dependencies = [
     "safetensors",
     "numpy",
     "torch>=2.10.0",
-
-    # --- Data / Vector DB ---
     "pydantic>=2.10.0",
     "chromadb>=1.5.2",
 ]

@@ -1,12 +1,12 @@
-from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Literal
 from pydantic import BaseModel, Field
 
-# Chunking
+
 class ThongTinKyKet(BaseModel):
     vai_tro: Optional[str] = None
     ghi_chu: Optional[str] = None
     noi_dung: Optional[str] = None
+
 
 class DocMetadata(BaseModel):
     quoc_hieu: Optional[str] = None
@@ -16,30 +16,37 @@ class DocMetadata(BaseModel):
     ngay_ky: Optional[str] = None
     thong_tin_ky_ket: List[ThongTinKyKet] = []
 
+
 class DinhNghia(BaseModel):
     tu_khoa: str
     y_nghia: str
+
 
 class Section(BaseModel):
     id: str
     loai: Literal["phan", "chuong", "muc", "tieu_muc", "dieu", "khoan", "diem"]
     tieu_de: Optional[str] = None
     noi_dung: Optional[str] = None
-    con: List['Section'] = [] # Đệ quy tự trỏ vào chính nó
+    con: List["Section"] = []
+
 
 class PhuLuc(BaseModel):
     tieu_de: Optional[str] = None
     noi_dung: Optional[str] = None
 
+
 class ChuThich(BaseModel):
     chi_so: Optional[str] = None
     noi_dung: Optional[str] = None
 
+
 class Khac(BaseModel):
     noi_dung: Optional[str] = None
 
+
 class LegalDocument(BaseModel):
-    """Đại diện cho toàn bộ Input JSON"""
+    """Dai dien cho toan bo input JSON."""
+
     metadata: DocMetadata
     can_cu: List[Any] = []
     dinh_nghia: List[DinhNghia] = []
@@ -49,16 +56,42 @@ class LegalDocument(BaseModel):
     khac: List[Khac] = Field(default=[], alias="Khac")
 
 class ChunkMetadata(BaseModel):
-    # Bắt buộc phải có section_id theo format: doc_id_cấp1_cấp2_..._cấp_hiện_tại
-    section_id: str 
+    """Metadata cho 1 chunk.
+
+    section_id dung de truy vet vi tri chunk trong cau truc van ban.
+    Hien tai voi hierarchical chunker, format thuc te la: "HD_<section.id>"
+    vi du: "HD_dieu_6.diem_2".
+    """
+
+    section_id: str
+
 
 class ChunkDocument(BaseModel):
-    """Đại diện cho Output sau khi chunking"""
+    """Dinh dang output chuan cho moi phuong phap chunking.
+
+    Chunker luon tra ve List[ChunkDocument].
+
+    Fields:
+    - text: noi dung chunk (string).
+    - metadata:
+      - hierarchical: co metadata.section_id.
+      - fixed_size: thuong la None.
+
+    Vi du (hierarchical):
+    {
+      "text": "Viec thanh toan tien...",
+      "metadata": {"section_id": "HD_dieu_6.diem_2"}
+    }
+
+    Vi du (fixed_size):
+    {
+      "text": "...",
+      "metadata": null
+    }
+    """
+
     text: str
-    metadata: ChunkMetadata
-
-# Embedding
-
+    metadata: Optional[ChunkMetadata] = None
 class EmbeddingRequest(BaseModel):
     """Một đơn vị chunk cần embedding"""
     chunk_id: str   # Duy nhất, lấy từ ChunkMetadata.section_id
@@ -75,8 +108,7 @@ class EmbeddingResult(BaseModel):
 
 class ChromaConfig(BaseModel):
     collection_name: str
-    persist: bool = False       # Có lưu trữ lâu dài hay không
-    persist_directory: str = "data/chroma"       # Nơi lưu trữ
+    persist_directory: str      # Nơi lưu trữ
     distance_metric: Literal["cosine", "l2", "ip"] = "cosine"  # Khoảng cách sử dụng trong ChromaDB
 
 class ChromaUpsertRequest(BaseModel):

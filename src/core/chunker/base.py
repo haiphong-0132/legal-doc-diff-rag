@@ -1,8 +1,18 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
 from typing import Callable, List
-from src.schemas import LegalDocument, ChunkDocument
 
-# INTERFACE CHO HÀM CHUNKING
+from src.schemas import ChunkDocument, LegalDocument
 
-# Mọi hàm chunking (fixed_size, hierarchical, v.v.) đều phải tuân thủ chuẩn này:
-# Nhận vào 1 đối tượng LegalDocument (Input) -> Trả về danh sách ChunkDocument (Output)
+
+class ChunkingStrategy(ABC):
+    """Common interface for all chunking strategies."""
+
+    @abstractmethod
+    def chunk(self, document: LegalDocument) -> List[ChunkDocument]:
+        """Split a parsed legal document into chunks."""
+
+
+# Backward-compatible function signature alias.
 ChunkingFunction = Callable[[LegalDocument], List[ChunkDocument]]
