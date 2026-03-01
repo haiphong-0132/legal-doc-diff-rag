@@ -19,7 +19,7 @@ class OnnxEmbeddingModel:
         model_dir: str,
         pooling: Literal["auto", "cls", "mean", "none"] = "auto",
         max_length: int = 2048,       # Mỗi model có max_length khác nhau, truyền vào khi khởi tạo
-        normalize: bool = True,      # Một số model đã normalize sẵn, set False để tránh normalize 2 lần
+        normalize: bool = False,      # Một số model đã normalize sẵn, set False để tránh normalize 2 lần
         onnx_path: str = None
     ):
 
