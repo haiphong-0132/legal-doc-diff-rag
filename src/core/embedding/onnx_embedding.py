@@ -18,10 +18,15 @@ class OnnxEmbeddingModel:
         self,
         model_dir: str,
         pooling: Literal["auto", "cls", "mean", "none"] = "auto",
-        max_length: int = 8000,       # Mỗi model có max_length khác nhau, truyền vào khi khởi tạo
+        max_length: int = 2048,       # Mỗi model có max_length khác nhau, truyền vào khi khởi tạo
         normalize: bool = True,      # Một số model đã normalize sẵn, set False để tránh normalize 2 lần
         onnx_path: str = None
     ):
+
+        # Check pooling strategy
+        if pooling not in ["auto", "cls", "mean", "none"]:
+            raise ValueError(f"Pooling strategy '{pooling}' không hợp lệ. Chọn trong ['auto', 'cls', 'mean', 'none'].")
+
         self.model_dir = model_dir
         self.pooling = pooling
         self.max_length = max_length
