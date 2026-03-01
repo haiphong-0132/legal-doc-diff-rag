@@ -21,6 +21,7 @@ dependencies = [
     "torch>=2.10.0",
     "pydantic>=2.10.0",
     "chromadb>=1.5.2",
+    "sentence-transformers>=5.2.3",
 ]
 
 [tool.setuptools.packages.find]
