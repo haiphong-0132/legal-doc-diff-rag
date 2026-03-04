@@ -12,7 +12,6 @@ import argparse
 from pathlib import Path
 
 from docx_loader import extract_docx_text
-from interface import PathLike
 from pdf_loader import extract_pdf_text
 from text_cleaner import clean_text
 
