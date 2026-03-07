@@ -6,16 +6,9 @@ Luồng dữ liệu:
     - Nếu là .pdf  -> `extract_pdf_text` 
     - Nếu là .docx -> `extract_docx_text`
 """
-from __future__ import annotations
-
 from pathlib import Path
-from typing import Any, Union
 
-
-PathLike = Union[str, "PathLike"]  # giữ tương thích type-hint os.PathLike
-
-
-def extract_file(path: PathLike):
+def extract_file(path: str):
     file_path = Path(path)
 
     if not file_path.exists():
@@ -34,8 +27,8 @@ def extract_file(path: PathLike):
             f"Định dạng file không được hỗ trợ: {ext} (chỉ hỗ trợ .pdf, .docx)"
         )
     
-def main() -> int:
-    INPUT_PATH = Path(r"D:\Downloads\hop-dong-kinh-te.pdf")
+def main():
+    INPUT_PATH = Path(r"D:\Downloads\sample-report.pdf")
     extract_file(INPUT_PATH)
     return 0
 
