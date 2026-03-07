@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import re
 
-
-def clean_markdown_text(text: str) -> str:
+def clean_text(text: str) -> str:
     """
     Làm sạch Markdown/text thuần để `output.txt` gọn gàng hơn:
     - Chuẩn hóa xuống dòng: \r\n, \r -> \n
@@ -12,7 +11,7 @@ def clean_markdown_text(text: str) -> str:
     - Loại bỏ TẤT CẢ dòng trống
     - Loại bỏ khoảng trắng thừa ở đầu/cuối toàn bộ văn bản
     """
-    # Bỏ các comment HTML dạng <!-- ... -->
+    # Bỏ các comment dạng <!-- ... -->
     text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
 
     # Chuẩn hóa newline
