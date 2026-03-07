@@ -15,7 +15,7 @@ from typing import Any, Union
 PathLike = Union[str, "PathLike"]  # giữ tương thích type-hint os.PathLike
 
 
-def extract_file(path: PathLike) -> Any:
+def extract_file(path: PathLike):
     file_path = Path(path)
 
     if not file_path.exists():
@@ -25,7 +25,7 @@ def extract_file(path: PathLike) -> Any:
 
     if ext == ".pdf":
         from pdf_extractor import extract_pdf_text
-        text = extract_pdf_text(str(file_path))
+        extract_pdf_text(str(file_path))
     elif ext == ".docx":
         from docx_extractor import extract_docx_text
         extract_docx_text(str(file_path))
@@ -35,8 +35,8 @@ def extract_file(path: PathLike) -> Any:
         )
     
 def main() -> int:
-    INPUT_PATH = Path(r"D:\Downloads\hop-dong-kinh-te.docx")
-    text = extract_file(INPUT_PATH)
+    INPUT_PATH = Path(r"D:\Downloads\hop-dong-kinh-te.pdf")
+    extract_file(INPUT_PATH)
     return 0
 
 if __name__ == "__main__":
