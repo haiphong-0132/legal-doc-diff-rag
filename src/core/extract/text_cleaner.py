@@ -1,16 +1,8 @@
-from __future__ import annotations
-
 import re
 
 def clean_text(text: str) -> str:
     """
-    Làm sạch Markdown/text thuần để `output.txt` gọn gàng hơn:
-    - Bỏ YAML frontmatter (--- title: ... ---) do any2md/pandoc tạo
-    - Chuẩn hóa xuống dòng: \r\n, \r -> \n
-    - Xóa khoảng trắng dư ở đầu/cuối mỗi dòng
-    - Loại bỏ các comment HTML kiểu `<!-- image -->`
-    - Loại bỏ TẤT CẢ dòng trống
-    - Loại bỏ khoảng trắng thừa ở đầu/cuối toàn bộ văn bản
+    Làm sạch Markdown/text thuần để `output.md` gọn gàng hơn
     """
     # Bỏ YAML frontmatter (--- ... ---) ở đầu file
     text = re.sub(r"^---\s*\n.*?^---\s*\n?", "", text, count=1, flags=re.DOTALL | re.MULTILINE)

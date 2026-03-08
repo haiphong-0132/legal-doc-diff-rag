@@ -1,20 +1,23 @@
 import subprocess
 import tempfile
+import sys
+import pypandoc
 from pathlib import Path
 
-import pypandoc
 
-from text_cleaner import clean_text
+_root = Path(__file__).resolve().parents[3]
+if str(_root) not in sys.path:
+    sys.path.insert(0, str(_root))
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "extract" / "output.md"
-
+from src.core.extract.text_cleaner import clean_text
 
 def extract_pdf_text(file_path):
     """
     PDF -> any2md -> pandoc normalize -> clean_text -> output.md
     """
-
+    
+    PROJECT_ROOT = Path(__file__).resolve().parents[3]
+    OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "extract" / "output.md"
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
 

@@ -6,9 +6,14 @@ Luồng dữ liệu:
     - Nếu là .pdf  -> `extract_pdf_text` 
     - Nếu là .docx -> `extract_docx_text`
 """
+import sys
 from pathlib import Path
 
-def extract_file(path: str):
+_project_root = Path(__file__).resolve().parents[3]
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+def extract_file(path):
     file_path = Path(path)
 
     if not file_path.exists():
@@ -17,14 +22,14 @@ def extract_file(path: str):
     ext = file_path.suffix.lower()
 
     if ext == ".pdf":
-        from pdf_extractor import extract_pdf_text
+        from src.core.extract.pdf_extractor import extract_pdf_text
         extract_pdf_text(str(file_path))
     elif ext == ".docx":
-        from docx_extractor import extract_docx_text
+        from src.core.extract.docx_extractor import extract_docx_text
         extract_docx_text(str(file_path))
     else:
         raise ValueError(
-            f"Định dạng file không được hỗ trợ: {ext} (chỉ hỗ trợ .pdf, .docx)"
+            f"Định dạng file không được hỗ trợ (chỉ hỗ trợ .pdf, .docx)"
         )
     
 def main():
