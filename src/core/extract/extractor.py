@@ -23,17 +23,17 @@ def extract_file(path):
 
     if ext == ".pdf":
         from src.core.extract.pdf_extractor import extract_pdf_text
-        extract_pdf_text(str(file_path))
+        return extract_pdf_text(str(file_path))
     elif ext == ".docx":
         from src.core.extract.docx_extractor import extract_docx_text
-        extract_docx_text(str(file_path))
+        return extract_docx_text(str(file_path))
     else:
         raise ValueError(
             f"Định dạng file không được hỗ trợ (chỉ hỗ trợ .pdf, .docx)"
         )
     
 def main():
-    INPUT_PATH = Path(r"D:\Downloads\sample-report.pdf")
+    INPUT_PATH = Path(r"D:\Downloads\hop-dong-kinh-te.docx")
     extract_file(INPUT_PATH)
     return 0
 

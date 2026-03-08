@@ -38,3 +38,4 @@ def extract_pdf_text(file_path):
 
     cleaned_text = clean_text(formatted_text)
     OUTPUT_FILE.write_text(cleaned_text, encoding="utf-8")
+    return cleaned_text

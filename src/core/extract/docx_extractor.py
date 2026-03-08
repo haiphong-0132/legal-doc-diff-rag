@@ -10,9 +10,10 @@ def extract_docx_text(input_file):
 
     # convert: dùng gfm để ép pipe table (| a | b |), tránh grid table (+---+)
     # vì grid table không render đúng trên GitHub/VS Code
-    pypandoc.convert_file(
+    text = pypandoc.convert_file(
         str(input_path),
         "gfm",
-        outputfile=str(OUTPUT_FILE),
         extra_args=["--wrap=none"],
     )
+    OUTPUT_FILE.write_text(text, encoding="utf-8")
+    return text
