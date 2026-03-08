@@ -16,8 +16,8 @@ def extract_pdf_text(file_path):
     PDF -> any2md -> pandoc normalize -> clean_text -> output.md
     """
     
-    PROJECT_ROOT = Path(__file__).resolve().parents[3]
-    OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "extract" / "output.md"
+    # PROJECT_ROOT = Path(__file__).resolve().parents[3]
+    # OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "extract" / "output.md"
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
 
@@ -37,5 +37,5 @@ def extract_pdf_text(file_path):
         )
 
     cleaned_text = clean_text(formatted_text)
-    OUTPUT_FILE.write_text(cleaned_text, encoding="utf-8")
+    # OUTPUT_FILE.write_text(cleaned_text, encoding="utf-8")
     return cleaned_text
