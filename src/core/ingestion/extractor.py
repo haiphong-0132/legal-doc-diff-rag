@@ -22,10 +22,10 @@ def extract_file(path):
     ext = file_path.suffix.lower()
 
     if ext == ".pdf":
-        from src.core.extract.pdf_extractor import extract_pdf_text
+        from src.core.ingestion.pdf_extractor import extract_pdf_text
         return extract_pdf_text(str(file_path))
     elif ext == ".docx":
-        from src.core.extract.docx_extractor import extract_docx_text
+        from src.core.ingestion.docx_extractor import extract_docx_text
         return extract_docx_text(str(file_path))
     else:
         raise ValueError(
@@ -33,7 +33,7 @@ def extract_file(path):
         )
     
 def main():
-    INPUT_PATH = Path(r"D:\Downloads\hop-dong-kinh-te.docx")
+    INPUT_PATH = Path(r"D:\PTIT\BTL\TTCS\.temp\tongquan.pdf")
     extract_file(INPUT_PATH)
     return 0
 

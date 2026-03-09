@@ -9,7 +9,7 @@ _root = Path(__file__).resolve().parents[3]
 if str(_root) not in sys.path:
     sys.path.insert(0, str(_root))
 
-from src.core.extract.text_cleaner import clean_text
+from src.core.ingestion.text_cleaner import clean_text
 
 def extract_pdf_text(file_path):
     """
@@ -17,7 +17,7 @@ def extract_pdf_text(file_path):
     """
     
     # PROJECT_ROOT = Path(__file__).resolve().parents[3]
-    # OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "extract" / "output.md"
+    # OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "ingestion" / "output.md"
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
 
