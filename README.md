@@ -5,6 +5,9 @@ BT nhóm - Thực tập cơ sở - Nghiên cứu trợ lý so sánh văn bản p
 - Python 3.13+
 - uv
 
+## Pipeline hệ thống
+<img src="docs/images/PipelineTTCS.png" alt="Pipeline hệ thống so sánh văn bản pháp lý chạy cục bộ dùng RAG và Local LLM" width="800"/>
+
 ## Directory tree
 Cấu trúc dự án dự kiến:
 ```
