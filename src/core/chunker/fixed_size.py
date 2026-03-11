@@ -4,11 +4,10 @@ from typing import List
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from src.core.chunker.base import ChunkingInput, ChunkingStrategy
-from src.schemas import ChunkDocument, FixedSizeChunkInput
+from src.schemas import ChunkDocument
 
 
-class FixedSizeChunker(ChunkingStrategy):
+class FixedSizeChunker:
     """Chunk by fixed text length with overlap using LangChain splitter."""
 
     def __init__(
@@ -30,13 +29,13 @@ class FixedSizeChunker(ChunkingStrategy):
             separators=separators or ["\n\n", "\n", ". ", "; ", ", ", " ", ""],
         )
 
-    def chunk(self, data: ChunkingInput | FixedSizeChunkInput) -> List[ChunkDocument]:
-        if isinstance(data, FixedSizeChunkInput):
-            raw_text = data.text
-        elif isinstance(data, str):
-            raw_text = data
-        else:
-            raise TypeError("FixedSizeChunker.chunk expects text input (str)")
+    def _validate_text_input(self, data: str) -> str:
+        if not isinstance(data, str):
+            raise TypeError("FixedSizeChunker.chunk expects str input")
+        return data
+
+    def chunk(self, data: str) -> List[ChunkDocument]:
+        raw_text = self._validate_text_input(data)
 
         pieces = self.splitter.split_text(raw_text)
         return [ChunkDocument(text=piece) for piece in pieces if piece.strip()]

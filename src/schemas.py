@@ -44,8 +44,8 @@ class Khac(BaseModel):
     noi_dung: Optional[str] = None
 
 
-class LegalDocument(BaseModel):
-    """Dai dien cho toan bo input JSON."""
+class HierarchicalChunkInput(BaseModel):
+    """Schema input cho hierarchical chunker."""
 
     metadata: DocMetadata
     can_cu: List[Any] = []
@@ -54,6 +54,7 @@ class LegalDocument(BaseModel):
     phu_luc: List[PhuLuc] = []
     chu_thich: List[ChuThich] = []
     khac: List[Khac] = Field(default=[], alias="Khac")
+
 
 class ChunkMetadata(BaseModel):
     """Metadata cho 1 chunk.
