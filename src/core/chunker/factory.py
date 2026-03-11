@@ -1,9 +1,8 @@
-from src.core.chunker.base import ChunkingStrategy
 from src.core.chunker.fixed_size import FixedSizeChunker
 from src.core.chunker.hierarchical import HierarchicalChunker
 
 
-def create_chunker(strategy: str, **kwargs) -> ChunkingStrategy:
+def create_chunker(strategy: str, **kwargs) -> FixedSizeChunker | HierarchicalChunker:
     key = strategy.strip().lower()
 
     if key == "fixed_size":

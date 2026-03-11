@@ -44,8 +44,8 @@ class Khac(BaseModel):
     noi_dung: Optional[str] = None
 
 
-class LegalDocument(BaseModel):
-    """Dai dien cho toan bo input JSON."""
+class HierarchicalChunkInput(BaseModel):
+    """Schema input cho hierarchical chunker."""
 
     metadata: DocMetadata
     can_cu: List[Any] = []
@@ -54,6 +54,7 @@ class LegalDocument(BaseModel):
     phu_luc: List[PhuLuc] = []
     chu_thich: List[ChuThich] = []
     khac: List[Khac] = Field(default=[], alias="Khac")
+
 
 class ChunkMetadata(BaseModel):
     """Metadata cho 1 chunk.
@@ -92,6 +93,14 @@ class ChunkDocument(BaseModel):
 
     text: str
     metadata: Optional[ChunkMetadata] = None
+
+
+class FixedSizeChunkInput(BaseModel):
+    """Schema input cho fixed-size chunker."""
+
+    text: str = Field(min_length=1)
+
+
 class EmbeddingRequest(BaseModel):
     """Một đơn vị chunk cần embedding"""
     chunk_id: str   # Duy nhất, lấy từ ChunkMetadata.section_id

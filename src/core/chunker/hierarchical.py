@@ -2,17 +2,21 @@ from __future__ import annotations
 
 from typing import List
 
-from src.core.chunker.base import ChunkingStrategy
-from src.schemas import ChunkDocument, ChunkMetadata, LegalDocument, Section
+from src.schemas import ChunkDocument, ChunkMetadata, HierarchicalChunkInput, Section
 
 
-class HierarchicalChunker(ChunkingStrategy):
+class HierarchicalChunker:
     """Chunk following document hierarchy in the legal JSON schema."""
 
     def __init__(self) -> None:
         pass
 
-    def chunk(self, document: LegalDocument) -> List[ChunkDocument]:
+    def chunk(self, data: HierarchicalChunkInput) -> List[ChunkDocument]:
+        if not isinstance(data, HierarchicalChunkInput):
+            raise TypeError(
+                "HierarchicalChunker.chunk expects HierarchicalChunkInput input"
+            )
+        document = data
         chunks: List[ChunkDocument] = []
         doc_id = self._derive_doc_id(document)
 
@@ -66,7 +70,7 @@ class HierarchicalChunker(ChunkingStrategy):
 
         return chunks
 
-    def _build_metadata_text(self, document: LegalDocument) -> str:
+    def _build_metadata_text(self, document: HierarchicalChunkInput) -> str:
         lines: List[str] = []
         meta = document.metadata
 
@@ -97,5 +101,5 @@ class HierarchicalChunker(ChunkingStrategy):
             return []
         return [ChunkDocument(text=text, metadata=ChunkMetadata(section_id=section_id))]
 
-    def _derive_doc_id(self, document: LegalDocument) -> str:
+    def _derive_doc_id(self, document: HierarchicalChunkInput) -> str:
         return "HD"

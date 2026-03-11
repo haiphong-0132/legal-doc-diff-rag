@@ -92,7 +92,6 @@ TTCS
 │   │   │                           # Xuất: Markdown / JSON
 │   │   │
 │   │   ├── chunker/
-│   │   │   ├── base.py             # Abstract class ChunkingStrategy: chunk(text) → list[ChunkDocument]
 │   │   │   ├── fixed_size.py       # Implement: chia token cố định + overlap
 │   │   │   ├── hierarchical.py     # Implement: nhận diện Chương/Điều/Khoản bằng
 │   │   │   │                       #   heading style (DOCX) hoặc regex (PDF)
