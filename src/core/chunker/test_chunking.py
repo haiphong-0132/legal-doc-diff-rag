@@ -50,6 +50,7 @@ def main() -> None:
     if not input_path.exists():
         raise FileNotFoundError(f"Khong tim thay file: {input_path}")
 
+    input_text = input_path.read_text(encoding="utf-8-sig")
     document = _load_legal_document(input_path)
 
     hierarchical_chunker = create_chunker("hierarchical")
@@ -60,7 +61,7 @@ def main() -> None:
     )
 
     hierarchical_chunks = hierarchical_chunker.chunk(document)
-    fixed_chunks = fixed_size_chunker.chunk(document)
+    fixed_chunks = fixed_size_chunker.chunk(input_text)
 
     _print_all_hierarchical_chunks(hierarchical_chunks)
     _preview_chunks("Fixed-size chunking", fixed_chunks)

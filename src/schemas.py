@@ -92,6 +92,14 @@ class ChunkDocument(BaseModel):
 
     text: str
     metadata: Optional[ChunkMetadata] = None
+
+
+class FixedSizeChunkInput(BaseModel):
+    """Schema input cho fixed-size chunker."""
+
+    text: str = Field(min_length=1)
+
+
 class EmbeddingRequest(BaseModel):
     """Một đơn vị chunk cần embedding"""
     chunk_id: str   # Duy nhất, lấy từ ChunkMetadata.section_id

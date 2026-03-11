@@ -4,8 +4,8 @@ from typing import List
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from src.core.chunker.base import ChunkingStrategy
-from src.schemas import ChunkDocument, LegalDocument
+from src.core.chunker.base import ChunkingInput, ChunkingStrategy
+from src.schemas import ChunkDocument, FixedSizeChunkInput
 
 
 class FixedSizeChunker(ChunkingStrategy):
@@ -17,6 +17,10 @@ class FixedSizeChunker(ChunkingStrategy):
         chunk_overlap: int = 200,
         separators: List[str] | None = None,
     ) -> None:
+        if chunk_size <= 0:
+            raise ValueError("chunk_size must be greater than 0")
+        if chunk_overlap < 0:
+            raise ValueError("chunk_overlap must be non-negative")
         if chunk_overlap >= chunk_size:
             raise ValueError("chunk_overlap must be smaller than chunk_size")
 
@@ -26,19 +30,13 @@ class FixedSizeChunker(ChunkingStrategy):
             separators=separators or ["\n\n", "\n", ". ", "; ", ", ", " ", ""],
         )
 
-    def chunk(self, document: LegalDocument) -> List[ChunkDocument]:
-        if hasattr(document, "model_dump_json"):
-            raw_text = document.model_dump_json(
-                exclude_none=True,
-                by_alias=True,
-                indent=2,
-            )
+    def chunk(self, data: ChunkingInput | FixedSizeChunkInput) -> List[ChunkDocument]:
+        if isinstance(data, FixedSizeChunkInput):
+            raw_text = data.text
+        elif isinstance(data, str):
+            raw_text = data
         else:
-            raw_text = document.json(
-                ensure_ascii=False,
-                exclude_none=True,
-                by_alias=True,
-                indent=2,
-            )
+            raise TypeError("FixedSizeChunker.chunk expects text input (str)")
+
         pieces = self.splitter.split_text(raw_text)
         return [ChunkDocument(text=piece) for piece in pieces if piece.strip()]

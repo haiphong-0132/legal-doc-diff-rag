@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from src.core.chunker.base import ChunkingStrategy
+from src.core.chunker.base import ChunkingInput, ChunkingStrategy
 from src.schemas import ChunkDocument, ChunkMetadata, LegalDocument, Section
 
 
@@ -12,7 +12,10 @@ class HierarchicalChunker(ChunkingStrategy):
     def __init__(self) -> None:
         pass
 
-    def chunk(self, document: LegalDocument) -> List[ChunkDocument]:
+    def chunk(self, data: ChunkingInput) -> List[ChunkDocument]:
+        if not isinstance(data, LegalDocument):
+            raise TypeError("HierarchicalChunker.chunk expects LegalDocument input")
+        document = data
         chunks: List[ChunkDocument] = []
         doc_id = self._derive_doc_id(document)
 
