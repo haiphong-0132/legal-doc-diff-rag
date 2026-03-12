@@ -117,8 +117,9 @@ class EmbeddingResult(BaseModel):
 
 class ChromaConfig(BaseModel):
     collection_name: str
-    persist_directory: str      # Nơi lưu trữ
+    persist_directory: Optional[str] = None      # Nơi lưu trữ
     distance_metric: Literal["cosine", "l2", "ip"] = "cosine"  # Khoảng cách sử dụng trong ChromaDB
+    is_persist: bool = False
 
 class ChromaUpsertRequest(BaseModel):
     """Dữ liệu cần upsert vào ChromaDB"""
