@@ -24,6 +24,7 @@ dependencies = [
     "sentence-transformers>=5.2.3",
     "any2md>=0.6.0",
     "pypandoc>=1.16.2",
+    "tqdm>=4.67.3",
 ]
 
 [tool.setuptools.packages.find]
