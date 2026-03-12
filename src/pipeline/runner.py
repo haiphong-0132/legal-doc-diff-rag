@@ -97,7 +97,6 @@ def process_document(
         tqdm.write(f'Generated {len(embeddings)} embeddings')
 
         # 4. Vector Store
-        vector_store_params = kwargs.get('vector_store_params', {}).copy()
         chroma_store = ChromaStore(
             ChromaConfig(**kwargs.get('store_params', {}))
         )
@@ -108,12 +107,13 @@ def process_document(
         vector_store_pipeline.run(chroma_store)
         tqdm.write(f'Upserted chunks into vector store: {chroma_store.config.collection_name}')
 
-        # Test showing all documents in collection
-        results = chroma_store.collection.get(include=['documents', 'metadatas'])
-        with open('debug_chroma_collection.json', 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=4)
+        ## Test showing all documents in collection
+        ## Uncomment block này để test nội dung collection sau khi upsert
+        # results = chroma_store.collection.get(include=['documents', 'metadatas'])
+        # with open('debug_chroma_collection.json', 'w', encoding='utf-8') as f:
+        #     json.dump(results, f, ensure_ascii=False, indent=4)
+        # tqdm.write('Chroma collection content saved to debug_chroma_collection.json')
         
-        tqdm.write('Chroma collection content saved to debug_chroma_collection.json')
         tqdm.write('Finish processing document (input -> ... -> store)')
 
 
