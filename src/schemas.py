@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Any, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class ThongTinKyKet(BaseModel):
@@ -117,8 +117,15 @@ class EmbeddingResult(BaseModel):
 
 class ChromaConfig(BaseModel):
     collection_name: str
-    persist_directory: str      # Nơi lưu trữ
+    persist_directory: Optional[str] = None      # Nơi lưu trữ
     distance_metric: Literal["cosine", "l2", "ip"] = "cosine"  # Khoảng cách sử dụng trong ChromaDB
+    is_persist: bool = False
+
+    @model_validator(mode='after')
+    def validate_persistence(self):
+        if self.is_persist and not self.persist_directory:
+            raise ValueError('persist_directory is required when is_persist=True')
+        return self
 
 class ChromaUpsertRequest(BaseModel):
     """Dữ liệu cần upsert vào ChromaDB"""

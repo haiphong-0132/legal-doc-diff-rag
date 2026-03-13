@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import List
-
+from tqdm import tqdm
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from src.schemas import ChunkDocument
+from src.schemas import ChunkDocument, ChunkMetadata
 
 
 class FixedSizeChunker:
@@ -36,6 +36,12 @@ class FixedSizeChunker:
 
     def chunk(self, data: str) -> List[ChunkDocument]:
         raw_text = self._validate_text_input(data)
-
         pieces = self.splitter.split_text(raw_text)
-        return [ChunkDocument(text=piece) for piece in pieces if piece.strip()]
+        result = []
+        for idx, piece in enumerate(tqdm(pieces, desc="Splitting text", total=len(pieces))):
+            if piece.strip():
+                result.append(ChunkDocument(
+                    text=piece,
+                    metadata=ChunkMetadata(section_id=f'chunk_{idx}')
+                ))
+        return result

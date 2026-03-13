@@ -1,11 +1,18 @@
-import torch
+import os
+import shutil
 from glob import glob
 from typing import Dict, List, Literal
 import numpy as np
-from transformers import AutoTokenizer
 import onnxruntime as ort
+from tqdm import tqdm
 from src.schemas import EmbeddingRequest, EmbeddingResult
 
+os.environ["OMP_NUM_THREADS"] = str(os.cpu_count())
+os.environ["MKL_NUM_THREADS"] = str(os.cpu_count())
+os.environ["TOKENIZERS_PARALLELISM"] = "true"
+
+_TOKENIZER_CACHE: Dict[str, object] = {}
+_ONNX_SESSION_CACHE: Dict[str, object] = {}
 
 class OnnxEmbeddingModel:
     """
@@ -37,13 +44,34 @@ class OnnxEmbeddingModel:
         except IndexError:
             raise ValueError(f"Không tìm thấy file ONNX trong {model_dir}/onnx/")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
+        if model_dir not in _TOKENIZER_CACHE:
+            from transformers import AutoTokenizer
+            _TOKENIZER_CACHE[model_dir] = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
+        
+        self.tokenizer = _TOKENIZER_CACHE[model_dir]
 
-        available_providers = set(ort.get_available_providers())
-        use_cuda = torch.cuda.is_available() and "CUDAExecutionProvider" in available_providers
-        self.providers = ["CUDAExecutionProvider"] if use_cuda else ["CPUExecutionProvider"]
+        session_key = f'{model_dir}_{max_length}'
+        if session_key not in _ONNX_SESSION_CACHE:
+            available_providers = set(ort.get_available_providers())
+            use_cuda = shutil.which('nvidia-smi') and "CUDAExecutionProvider" in available_providers
+            self.providers = ["CUDAExecutionProvider"] if use_cuda else ["CPUExecutionProvider"]
 
-        self.session = ort.InferenceSession(self.onnx_path, providers=self.providers)
+            options = ort.SessionOptions()
+            options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            options.intra_op_num_threads = os.cpu_count() // 2
+            options.inter_op_num_threads = 1
+            options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+
+            # CUDA provider options example (tweak per GPU)
+            cuda_opts = {"device_id": 0, "arena_extend_strategy": "kNextPowerOfTwo"}
+
+            session = ort.InferenceSession(self.onnx_path, sess_options=options,
+                                                providers=self.providers,
+                                                provider_options=[cuda_opts] if "CUDAExecutionProvider" in self.providers else None)
+            _ONNX_SESSION_CACHE[session_key] = session
+        
+        self.session = _ONNX_SESSION_CACHE[session_key]
+
         self.input_names = [inp.name for inp in self.session.get_inputs()]
         self.output_names = [out.name for out in self.session.get_outputs()]
 
@@ -104,28 +132,34 @@ class OnnxEmbeddingModel:
     def embed(self, requests: List[EmbeddingRequest], batch_size: int = 32) -> List[EmbeddingResult]:
         texts = [r.text for r in requests]
         results: List[EmbeddingResult] = []
+        num_batches = (len(texts) + batch_size - 1) // batch_size
 
-        for i in range(0, len(texts), batch_size):
-            batch_texts = texts[i: i + batch_size]
-            ort_inputs, tokenized = self._prepare_inputs(batch_texts)
+        with tqdm(total=num_batches, desc="Embedding batches", unit="batch", miniters=1, mininterval=0) as pbar:
+            for i in range(0, len(texts), batch_size):
+                batch_texts = texts[i: i + batch_size]
+                ort_inputs, tokenized = self._prepare_inputs(batch_texts)
 
-            outputs = self.session.run(self.output_names, ort_inputs)
-            output_dict = dict(zip(self.output_names, outputs))
+                outputs = self.session.run(self.output_names, ort_inputs)
+                output_dict = dict(zip(self.output_names, outputs))
 
-            emb = self._pool_embeddings(output_dict, tokenized['attention_mask'])
+                emb = self._pool_embeddings(output_dict, tokenized['attention_mask'])
 
-            if self.normalize:
-                norms = np.linalg.norm(emb, axis=1, keepdims=True).clip(min=1e-9)
-                emb = emb / norms
+                if self.normalize:
+                    norms = np.linalg.norm(emb, axis=1, keepdims=True).clip(min=1e-9)
+                    emb = emb / norms
+                
+                emb = emb.astype(np.float32)
 
-            for j in range(emb.shape[0]):
-                results.append(
-                    EmbeddingResult(
-                        chunk_id=requests[i + j].chunk_id,
-                        vector=emb[j].astype(float).tolist(),
-                        model_name=f'{self.model_dir}-onnx',
-                        token_count=int(tokenized['attention_mask'][j].sum())
+                for j in range(emb.shape[0]):
+                    results.append(
+                        EmbeddingResult(
+                            chunk_id=requests[i + j].chunk_id,
+                            vector=emb[j].astype(float).tolist(),
+                            model_name=f'{self.model_dir}-onnx',
+                            token_count=int(tokenized['attention_mask'][j].sum())
+                        )
                     )
-                )
+                
+                pbar.update(1)
 
         return results
