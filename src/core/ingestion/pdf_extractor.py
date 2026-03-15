@@ -32,7 +32,7 @@ def extract_pdf_text(file_path):
         formatted_text = pypandoc.convert_text(
             raw_text,
             to="gfm",
-            format="md",
+            format="markdown-fancy_lists",
             extra_args=["--wrap=none", "--strip-comments"],
         )
 
