@@ -1,105 +1,133 @@
 from __future__ import annotations
 
-from typing import List
+import json
+from typing import Any, Dict, List
+from pathlib import Path
 
-from src.schemas import ChunkDocument, ChunkMetadata, HierarchicalChunkInput, Section
-
+from src.schemas import (
+    ChunkDocumentForHierarchical,
+    ChunkMetadata,
+    HierarchicalChunkInput,
+)
+from src.core.chunker.legal_parser import build_json_tree
+from src.core.ingestion.extractor import extract_file
 
 class HierarchicalChunker:
-    """Chunk following document hierarchy in the legal JSON schema."""
+    """Chunk raw hierarchical JSON while keeping title, content, refs, and section id."""
 
-    def __init__(self) -> None:
-        pass
+    def chunk(
+        self,
+        data: HierarchicalChunkInput | Dict[str, Any] | List[Dict[str, Any]],
+    ) -> List[ChunkDocumentForHierarchical]:
+        document = self._validate_input(data)
+        chunks: List[ChunkDocumentForHierarchical] = []
 
-    def chunk(self, data: HierarchicalChunkInput) -> List[ChunkDocument]:
-        if not isinstance(data, HierarchicalChunkInput):
-            raise TypeError(
-                "HierarchicalChunker.chunk expects HierarchicalChunkInput input"
-            )
-        document = data
-        chunks: List[ChunkDocument] = []
-        doc_id = self._derive_doc_id(document)
-
-        metadata_text = self._build_metadata_text(document)
-        if metadata_text:
-            chunks.extend(self._emit_text_chunks(metadata_text, f"{doc_id}_metadata"))
-
-        for idx, item in enumerate(document.dinh_nghia, start=1):
-            text = f"DINH_NGHIA: {item.tu_khoa} = {item.y_nghia}"
-            section_id = f"{doc_id}_dinh_nghia_{idx}"
-            chunks.extend(self._emit_text_chunks(text, section_id))
-
-        for section in document.noi_dung_chinh:
-            chunks.extend(self._walk_section(section=section, doc_id=doc_id))
-
-        for idx, appendix in enumerate(document.phu_luc, start=1):
-            parts = [f"PHU_LUC {idx}"]
-            if appendix.tieu_de:
-                parts.append(appendix.tieu_de)
-            if appendix.noi_dung:
-                parts.append(appendix.noi_dung)
-            text = "\n".join(parts).strip()
-            if text:
-                chunks.extend(self._emit_text_chunks(text, f"{doc_id}_phu_luc_{idx}"))
-
-        for idx, item in enumerate(document.khac, start=1):
-            if item.noi_dung:
-                chunks.extend(
-                    self._emit_text_chunks(item.noi_dung, f"{doc_id}_khac_{idx}")
-                )
+        for node in self._get_root_nodes(document):
+            chunks.extend(self._walk_node(node=node))
 
         return chunks
 
-    def _walk_section(self, section: Section, doc_id: str) -> List[ChunkDocument]:
-        chunks: List[ChunkDocument] = []
-        title = section.tieu_de or ""
-        body = section.noi_dung or ""
+    def _validate_input(
+        self,
+        data: HierarchicalChunkInput | Dict[str, Any] | List[Dict[str, Any]],
+    ) -> HierarchicalChunkInput:
+        if isinstance(data, HierarchicalChunkInput):
+            return data
 
-        parts: List[str] = []
-        if title:
-            parts.append(f"Tieu_de: {title}")
-        if body:
-            parts.append(body)
+        if isinstance(data, list):
+            return HierarchicalChunkInput(payload=data)
 
-        section_text = "\n".join(parts).strip()
-        if section_text:
-            chunks.extend(self._emit_text_chunks(section_text, f"{doc_id}_{section.id}"))
+        if isinstance(data, dict) and ("json" in data or "payload" in data):
+            return HierarchicalChunkInput.model_validate(data)
 
-        for child in section.con:
-            chunks.extend(self._walk_section(section=child, doc_id=doc_id))
+        if isinstance(data, dict):
+            return HierarchicalChunkInput(payload=data)
+
+        raise TypeError("HierarchicalChunker.chunk expects HierarchicalChunkInput, dict, or list[dict]")
+
+    def _get_root_nodes(self, document: HierarchicalChunkInput) -> List[Dict[str, Any]]:
+        if isinstance(document.payload, list):
+            return document.payload
+        return [document.payload]
+
+    def _walk_node(
+        self,
+        *,
+        node: Dict[str, Any],
+    ) -> List[ChunkDocumentForHierarchical]:
+        chunks: List[ChunkDocumentForHierarchical] = []
+
+        chunk = self._build_chunk(node=node)
+        if chunk is not None:
+            chunks.append(chunk)
+
+        for child in self._get_children(node):
+            chunks.extend(self._walk_node(node=child))
 
         return chunks
 
-    def _build_metadata_text(self, document: HierarchicalChunkInput) -> str:
-        lines: List[str] = []
-        meta = document.metadata
+    def _build_chunk(
+        self,
+        *,
+        node: Dict[str, Any],
+    ) -> ChunkDocumentForHierarchical | None:
+        node_id = str(node.get("id") or "").strip()
+        title = self._as_clean_str(node.get("tieu_de"))
+        content = self._as_clean_str(node.get("noi_dung"))
+        refs = self._get_refs(node)
 
-        for label, value in (
-            ("Quoc_hieu", meta.quoc_hieu),
-            ("Tieu_ngu", meta.tieu_ngu),
-            ("Ten_van_ban", meta.ten_van_ban),
-            ("So_hieu", meta.so_hieu),
-            ("Ngay_ky", meta.ngay_ky),
-        ):
-            if value:
-                lines.append(f"{label}: {value}")
+        if not any([title, content, refs]):
+            return None
+        if not node_id:
+            raise ValueError("Each hierarchical node must contain a non-empty 'id'")
 
-        for idx, signer in enumerate(meta.thong_tin_ky_ket, start=1):
-            signer_lines = [f"Thong_tin_ky_ket_{idx}"]
-            if signer.vai_tro:
-                signer_lines.append(f"Vai_tro: {signer.vai_tro}")
-            if signer.ghi_chu:
-                signer_lines.append(f"Ghi_chu: {signer.ghi_chu}")
-            if signer.noi_dung:
-                signer_lines.append(signer.noi_dung)
-            lines.append("\n".join(signer_lines))
+        metadata = ChunkMetadata(section_id=node_id)
 
-        return "\n".join(lines).strip()
+        return ChunkDocumentForHierarchical(
+            metadata=metadata,
+            tieu_de=title,
+            noi_dung=content,
+            ref=refs,
+        )
 
-    def _emit_text_chunks(self, text: str, section_id: str) -> List[ChunkDocument]:
-        if not text.strip():
+    def _get_children(self, node: Dict[str, Any]) -> List[Dict[str, Any]]:
+        children = node.get("con", [])
+        if not isinstance(children, list):
             return []
-        return [ChunkDocument(text=text, metadata=ChunkMetadata(section_id=section_id))]
+        return [child for child in children if isinstance(child, dict)]
 
-    def _derive_doc_id(self, document: HierarchicalChunkInput) -> str:
-        return "HD"
+    def _get_refs(self, node: Dict[str, Any]) -> List[str]:
+        refs = node.get("ref", [])
+        if not isinstance(refs, list):
+            return []
+        return [str(ref).strip() for ref in refs if str(ref).strip()]
+
+    def _as_clean_str(self, value: Any) -> str | None:
+        if value is None:
+            return None
+        text = str(value).strip()
+        return text or None
+
+
+def main() -> int:
+    input_path = Path(r"C:\Users\ADMIN\Desktop\luu-ban-nhap-tu-dong-9.pdf")
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+
+    raw_text = extract_file(str(input_path))
+    print(raw_text)
+    payload = build_json_tree(raw_text)
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+
+    chunks = HierarchicalChunker().chunk({"payload": payload})
+    output_path = input_path.with_name(f"{input_path.stem}_chunks.json")
+    output_path.write_text(
+        json.dumps([c.model_dump() for c in chunks], ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"Saved {len(chunks)} chunks to: {output_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
