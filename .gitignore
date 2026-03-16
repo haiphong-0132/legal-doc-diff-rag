@@ -38,7 +38,8 @@ data/pairs/*
 
 # Jupyter
 .ipynb_checkpoints/
-notebooks/*.ipynb
+notebooks/*
+!notebooks/.gitkeep
 
 # Misc
 structure_tree.txt
