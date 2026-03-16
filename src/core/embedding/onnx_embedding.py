@@ -40,9 +40,18 @@ class OnnxEmbeddingModel:
         self.normalize = normalize
 
         try:
-            self.onnx_path = onnx_path if onnx_path else glob(f"{model_dir}/onnx/*.onnx")[0]
+            if onnx_path:
+                self.onnx_path = onnx_path
+            else:
+                opt_files = glob(f'{model_dir}/onnx/*opt.onnx')
+                if opt_files:
+                    self.onnx_path = opt_files[0]
+                else:
+                    self.onnx_path = glob(f'{model_dir}/onnx/*.onnx')[0]
         except IndexError:
             raise ValueError(f"Không tìm thấy file ONNX trong {model_dir}/onnx/")
+        
+        print(f"Using ONNX model: {self.onnx_path} with pooling={self.pooling}, max_length={self.max_length}, normalize={self.normalize}")
 
         if model_dir not in _TOKENIZER_CACHE:
             from transformers import AutoTokenizer
@@ -154,8 +163,8 @@ class OnnxEmbeddingModel:
                     results.append(
                         EmbeddingResult(
                             chunk_id=requests[i + j].chunk_id,
+                            text=requests[i + j].text,
                             vector=emb[j].astype(float).tolist(),
-                            model_name=f'{self.model_dir}-onnx',
                             token_count=int(tokenized['attention_mask'][j].sum())
                         )
                     )
