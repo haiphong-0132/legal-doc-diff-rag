@@ -52,8 +52,9 @@ class EmbeddingPipeline(BaseModel):
                         text='\n'.join(texts)
                     )
                 )           
-
             return requests
+        else:
+            raise ValueError(f"chunk_documents phải là List[ChunkDocument] hoặc List[ChunkDocumentForHierarchical], nhưng nhận {type(self.chunk_documents[0])}")
 
     def _enrich_text(self, chunk: ChunkDocument) -> str:
         return chunk.text
