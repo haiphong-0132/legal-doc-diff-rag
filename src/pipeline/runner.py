@@ -99,12 +99,9 @@ def process_document(
             **kwargs.get('embedding_params', {})
         )
 
-        embedding_pipeline = EmbeddingPipeline(chunk_documents=chunks, fully_payload=text)
+        embedding_pipeline = EmbeddingPipeline(chunk_documents=chunks)
         embeddings = embedding_pipeline.run(embedding_model.embed)
-        # Kiểm tra data ngay sau embedding, trước khi upsert
-        # Thêm debug vào runner.py:
-        for emb in embeddings[:3]:
-            print(f"Embedding text: {emb.text[:100]}")
+        
         tqdm.write(f'Generated {len(embeddings)} embeddings')
 
         # 4. Vector Store
