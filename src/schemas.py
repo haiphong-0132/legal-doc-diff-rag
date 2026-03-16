@@ -37,15 +37,15 @@ class ChunkDocumentForHierarchical(BaseModel):
 
 
 class EmbeddingRequest(BaseModel):
-    """Một đơn vị chunk cần embedding"""
-    chunk_id: str   # Duy nhất, lấy từ ChunkMetadata.section_id
+    """Một đơn vị chunk cần embedding, hoặc truy vấn của người dùng"""
+    chunk_id: str | None = None  # Duy nhất, lấy từ ChunkMetadata.section_id hoặc tự tạo khi khởi tạo
     text: str
 
 class EmbeddingResult(BaseModel):
     """Kết quả embed 1 chunk"""
-    chunk_id: str
+    chunk_id: str | None = None
+    text: str
     vector: List[float]     # Vector embedding
-    model_name: str         
     token_count: Optional[int] = None   # Số token của chunk để kiểm tra có vượt giới hạn mô hình hay không
 
 # Store in vector database

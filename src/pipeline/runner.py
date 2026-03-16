@@ -3,15 +3,7 @@ import os
 import subprocess
 from pathlib import Path
 import json
-from src.core.ingestion.extractor import extract_file
-from src.core.chunker.factory import create_chunker
-from src.core.embedding.embedding import EmbeddingPipeline
-from src.core.embedding.onnx_embedding import OnnxEmbeddingModel
-from src.core.vector_store.chroma_store import ChromaStore
-from src.core.vector_store.vectorstore import VectorStorePipeline
-from src.schemas import ChromaConfig
 from tqdm import tqdm
-
 from tkinter import Tk, filedialog
 
 def select_file():
@@ -30,7 +22,7 @@ def select_file():
         ]
     )
     root.destroy()
-    return file_path
+    return file_path if file_path else None
 
 def process_document(
     file_path: str,
@@ -65,12 +57,25 @@ def process_document(
             'collection': collection_name (nếu success)
         }
     """
+    from src.core.ingestion.extractor import extract_file
+    from src.core.chunker.factory import create_chunker
+    from src.core.chunker.hierarchical import build_json_tree
+    from src.core.embedding.embedding import EmbeddingPipeline
+    from src.core.embedding.onnx_embedding import OnnxEmbeddingModel
+    from src.core.vector_store.chroma_store import ChromaStore
+    from src.core.vector_store.vectorstore import VectorStorePipeline
+    from src.schemas import ChromaConfig
+    
     try:
-        tqdm.write(f'Start process document: {file_path}')
-        
         # 1. Ingestion
+        tqdm.write(f'Start process document: {file_path}')
         tqdm.write('Extracting text from document')
-        text = extract_file(file_path)
+        if not file_path:
+            raise ValueError("No file selected. Please select a file to process.")
+        if os.path.exists(file_path):
+            text = extract_file(file_path)
+        else:            
+            raise FileNotFoundError(f"File not found: {file_path}")
 
         # 2. Chunking
         chunker_params = kwargs.get('chunker_params', {}).copy()
@@ -81,6 +86,9 @@ def process_document(
             strategy=chunking_strategy,
             **chunker_params
         )
+
+        if chunking_strategy == 'hierarchical':
+            text = build_json_tree(text)  # Chuyển raw text thành cấu trúc JSON nếu dùng hierarchical chunker
 
         chunks = chunker.chunk(text)
         tqdm.write(f'Generated {len(chunks)} chunks')
@@ -107,17 +115,16 @@ def process_document(
         vector_store_pipeline.run(chroma_store)
         tqdm.write(f'Upserted chunks into vector store: {chroma_store.config.collection_name}')
 
-        ## Test showing all documents in collection
-        ## Uncomment block này để test nội dung collection sau khi upsert
-        # results = chroma_store.collection.get(include=['documents', 'metadatas'])
-        # with open('debug_chroma_collection.json', 'w', encoding='utf-8') as f:
-        #     json.dump(results, f, ensure_ascii=False, indent=4)
-        # tqdm.write('Chroma collection content saved to debug_chroma_collection.json')
+        # Test showing all documents in collection
+        # Uncomment block này để test nội dung collection sau khi upsert
+        results = chroma_store.collection.get(include=['documents', 'metadatas'])
+        with open('debug_chroma_collection.json', 'w', encoding='utf-8') as f:
+            json.dump(results, f, ensure_ascii=False, indent=4)
+        tqdm.write('Chroma collection content saved to debug_chroma_collection.json')
         
         tqdm.write('Finish processing document (input -> ... -> store)')
 
 
-    
     except Exception as e:
         tqdm.write(f"Error processing document: {e}")
 
@@ -125,16 +132,15 @@ if __name__ == "__main__":
     process_document(
         file_path=select_file(),
         chunker_params={
-            'strategy': 'fixed_size',
-            'chunk_size': 1205,
-            'chunk_overlap': 300
+            'strategy': 'hierarchical',
         },
         embedding_params={
             'model_dir': './models/Vietnamese_Embedding_v2',
         },
         store_params={
             'collection_name': 'test_collection',
-            'is_persist': False,
+            'is_persist': True,
+            'persist_directory': './chroma_db',
             'distance_metric': 'ip'
         }
 
