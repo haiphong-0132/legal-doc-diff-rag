@@ -59,7 +59,7 @@ class OnnxEmbeddingModel:
         
         self.tokenizer = _TOKENIZER_CACHE[model_dir]
 
-        session_key = f'{model_dir}_{max_length}'
+        session_key = f'{self.onnx_path}_{max_length}'
         if session_key not in _ONNX_SESSION_CACHE:
             available_providers = set(ort.get_available_providers())
             use_cuda = shutil.which('nvidia-smi') and "CUDAExecutionProvider" in available_providers
