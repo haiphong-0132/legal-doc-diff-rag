@@ -10,14 +10,19 @@ class VectorStorePipeline(BaseModel):
 
     def _to_upsert_requests(self) -> List[ChromaUpsertRequest]:
         """Kết nối với EmbeddingResult để tạo dữ liệu upsert cho ChromaDB"""
-        return [
-            ChromaUpsertRequest(
-                chunk_id=embedding.chunk_id,
-                text=embedding.text,
-                vector=embedding.vector,
-                metadata={"section_id": embedding.chunk_id} # Có thể thêm thông tin khác nếu cần
-            ) for embedding in self.embeddings
-        ]
+        requests: List[ChromaUpsertRequest] = []
+        for embedding in self.embeddings:
+            if not embedding.chunk_id:
+                raise ValueError(f"EmbeddingResult thiếu chunk_id: {embedding}")
+            requests.append(
+                ChromaUpsertRequest(
+                    chunk_id=embedding.chunk_id,
+                    text=embedding.text,
+                    vector=embedding.vector,
+                    metadata={"section_id": embedding.chunk_id} # Có thể thêm thông tin khác nếu cần
+                )
+            )
+        return requests
     
     def run(self, store: ChromaStore, batch_size: int = None) -> None:
         """Upsert toàn bộ chunks vào ChromaStore"""
