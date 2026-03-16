@@ -12,11 +12,12 @@ class EmbeddingPipeline(BaseModel):
     # full_payload: Optional[Dict[str, Any]] = None
 
     def _to_embedding_requests(self) -> List[EmbeddingRequest]:
-        print(len(self.chunk_documents))
+        if not self.chunk_documents:
+            return []
         if isinstance(self.chunk_documents[0], ChunkDocument):
             return [
                 EmbeddingRequest(
-                    id=chunk.metadata.section_id,
+                    chunk_id=chunk.metadata.section_id,
                     text=f'Nội dung: {self._enrich_text(chunk)}'
                 ) for chunk in self.chunk_documents
             ]
