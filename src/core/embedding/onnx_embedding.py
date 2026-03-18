@@ -47,7 +47,7 @@ class OnnxEmbeddingModel:
                 if opt_files:
                     self.onnx_path = opt_files[0]
                 else:
-                    self. onnx_path = glob(f'{model_dir}/onnx/*.onnx')[0]
+                    self.onnx_path = glob(f'{model_dir}/onnx/*.onnx')[0]
         except IndexError as e:
             raise ValueError(f"Không tìm thấy file ONNX trong {model_dir}/onnx/") from e
 

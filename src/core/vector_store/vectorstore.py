@@ -5,7 +5,6 @@ from src.core.vector_store.chroma_store import ChromaStore
 
 class VectorStorePipeline(BaseModel):
     """Pipeline để lưu trữ vector vào ChromaDB"""
-    # chunks: List[ChunkDocument]
     embeddings: List[EmbeddingResult]
 
     def _to_upsert_requests(self) -> List[ChromaUpsertRequest]:

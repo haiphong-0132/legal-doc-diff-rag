@@ -23,10 +23,9 @@ class ChunkMetadata(BaseModel):
 
 class ChunkDocument(BaseModel):
     text: str
-    metadata: Optional[ChunkMetadata] = None
+    metadata: ChunkMetadata
 
 
-#
 class ChunkDocumentForHierarchical(BaseModel):
     """Chunk output cho hierarchical gom metadata + tieu de + noi dung + ref."""
 

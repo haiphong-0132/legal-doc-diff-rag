@@ -6,6 +6,12 @@ import json
 from tqdm import tqdm
 from tkinter import Tk, filedialog
 
+# level2
+ROOT_DIR = Path(__file__).resolve().parents[2]
+MODEL_EMBEDDING_DIR = ROOT_DIR / 'models' / 'Vietnamese_Embedding_v2'
+CHROMA_DB_DIR = ROOT_DIR / 'chroma_db'
+COLLECTION_NAME = 'test_collection' 
+
 def select_file():
     root = Tk()
     root.withdraw()
@@ -109,7 +115,6 @@ def process_document(
             ChromaConfig(**kwargs.get('store_params', {}))
         )
         vector_store_pipeline = VectorStorePipeline(
-            chunks=chunks,
             embeddings=embeddings
         )
         vector_store_pipeline.run(chroma_store)
@@ -127,6 +132,15 @@ def process_document(
 
     except Exception as e:
         tqdm.write(f"Error processing document: {e}")
+        return {
+            'success': False,
+            'message': str(e)
+        }
+    return {
+        'success': True,
+        'message': 'Document processed and stored successfully',
+        'collection': chroma_store.config.collection_name
+    }
 
 if __name__ == "__main__":
     process_document(
@@ -135,12 +149,12 @@ if __name__ == "__main__":
             'strategy': 'hierarchical',
         },
         embedding_params={
-            'model_dir': './models/Vietnamese_Embedding_v2',
+            'model_dir': MODEL_EMBEDDING_DIR,
         },
         store_params={
-            'collection_name': 'test_collection',
+            'collection_name': COLLECTION_NAME,
             'is_persist': True,
-            'persist_directory': './chroma_db',
+            'persist_directory': CHROMA_DB_DIR,
             'distance_metric': 'ip'
         }
 
