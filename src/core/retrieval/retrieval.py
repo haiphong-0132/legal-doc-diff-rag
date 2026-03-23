@@ -9,7 +9,8 @@ from src.schemas import ChromaConfig, ChromaQueryRequest, ChromaQueryResult, Emb
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 MODELS_DIR = PROJECT_ROOT / "models"
 EMBEDDING_MODEL_DIR = MODELS_DIR / "Vietnamese_Embedding_v2"
-RERANKER_DIR = MODELS_DIR / "bge-reranker-v2-m3"
+RERANKER_MODEL_ID = "AITeamVN/Vietnamese_Reranker"
+RERANKER_DIR = MODELS_DIR / "Vietnamese_Reranker"
 
 
 def create_embedding_model():
@@ -29,7 +30,37 @@ def create_vector_store():
 
 def create_reranker():
     from FlagEmbedding import FlagReranker
-    return FlagReranker(str(RERANKER_DIR), use_fp16=True)
+    # FlagReranker cần path model local.
+    # Nếu đã có snapshot trong `models/Vietnamese_Reranker` thì dùng ngay (không cần `huggingface_hub`).
+    if (RERANKER_DIR / "config.json").exists():
+        return FlagReranker(str(RERANKER_DIR), use_fp16=True)
+
+    # Nếu chưa có snapshot thì tải từ Hugging Face.
+    try:
+        from huggingface_hub import snapshot_download
+    except ImportError as e:
+        raise RuntimeError(
+            "Missing dependency `huggingface_hub`. Install it (pip install huggingface_hub) "
+            "or download the reranker model manually into `models/Vietnamese_Reranker`."
+        ) from e
+
+    RERANKER_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        model_path = snapshot_download(
+            repo_id=RERANKER_MODEL_ID,
+            local_dir=str(RERANKER_DIR),
+            local_dir_use_symlinks=False,
+            local_files_only=True,
+        )
+    except Exception:
+        model_path = snapshot_download(
+            repo_id=RERANKER_MODEL_ID,
+            local_dir=str(RERANKER_DIR),
+            local_dir_use_symlinks=False,
+            local_files_only=False,
+        )
+
+    return FlagReranker(model_path, use_fp16=True)
 
 class RetrievalService:
     def __init__(self, embedding_model, vector_store, reranker):
