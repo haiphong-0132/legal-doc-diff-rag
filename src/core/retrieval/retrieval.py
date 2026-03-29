@@ -22,7 +22,7 @@ def create_vector_store():
         ChromaConfig(
             collection_name="test_collection",
             is_persist=True,
-            persist_directory="./chroma_db",
+            persist_directory=str(PROJECT_ROOT / "chroma_db"),
             distance_metric="ip",
         )
     )
