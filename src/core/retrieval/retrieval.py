@@ -78,20 +78,25 @@ class RetrievalService:
             )
         )
 
-    def rerank(
+    def rerank_with_scores(
         self,
         query_text: str,
-        results: List[ChromaQueryResult]
-    ) -> List[ChromaQueryResult]:
-
+        results: List[ChromaQueryResult],
+    ) -> List[Tuple[ChromaQueryResult, float]]:
         if not results:
-            return results
+            return []
 
         pairs = [[query_text, r.text] for r in results]
         scores = self.reranker.compute_score(pairs, normalize=True)
-
         scored = sorted(zip(results, scores), key=lambda x: x[1], reverse=True)
-        return [r for r, _ in scored]
+        return [(r, float(s)) for r, s in scored]
+
+    def rerank(
+        self,
+        query_text: str,
+        results: List[ChromaQueryResult],
+    ) -> List[ChromaQueryResult]:
+        return [r for r, _ in self.rerank_with_scores(query_text, results)]
 
     def retrieve_and_rerank(
         self,
