@@ -1,148 +1,216 @@
-import sys
-import os
-import subprocess
+import argparse
+import time
+from datetime import datetime
 from pathlib import Path
-import json
-from tqdm import tqdm
-from tkinter import Tk, filedialog
+from typing import Any, List
 
-def select_file():
-    root = Tk()
-    root.withdraw()
-    root.attributes('-topmost', True)
-    root.update()
+from src.config import EMBEDDING_MODEL_DIR, RERANKER_MODEL_DIR, VB1_PATH, VB2_PATH, logger
+from src.core.chunker.hierarchical import HierarchicalChunker
+from src.core.chunker.legal_parser import build_json_tree
+from src.core.embedding.embedding import EmbeddingPipeline
+from src.core.embedding.onnx_embedding import OnnxEmbeddingModel
+from src.core.ingestion.extractor import extract_file
+from src.core.matching.chunk_formatter import format_chunk
+from src.core.matching.llm_review import llm_review_pair, llm_review_single
+from src.core.matching.matcher import build_global_matches
+from src.core.matching.reporting import render_change_report
+from src.core.retrieval.retrieval import RetrievalService, create_reranker
+from src.core.vector_store.chroma_store import ChromaStore
+from src.core.vector_store.vectorstore import VectorStorePipeline
+from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, ChunkRecord, EmbeddingResult, MatchResult
 
-    file_path = filedialog.askopenfilename(
-        title='Chọn file',
-        filetypes=[
-            ('Documents', '*.pdf *.docx'),
-            ('PDF', '*.pdf'),
-            ('Word', '*.docx'),
-            ('All files', '*.*')
-        ]
-    )
-    root.destroy()
-    return file_path if file_path else None
 
-def process_document(
-    file_path: str,
-    **kwargs
-):
-    """
-    Pipeline chính để xử lý tài liệu từ file -> text -> chunk -> embedding.
-
-    Args:
-        file_path: Đường dẫn file pdf/docx
-        **kwargs: Tham số riêng của chunking strategy, embedding model và vector database
-               
-                 chunker_params: {
-                    strategy: 'fixed_size'
-                    ... các tham số tùy strategy
-                }
-                embedding_params: {
-                    model_dir: str (đường dẫn đến thư mục chứa model ONNX và tokenizer)
-                    ... các tham số tùy mô hình
-                }
-                store_params: {
-                    collection_name: str,
-                    is_persist: bool,
-                    distance_metric: str
-                    ...
-                }
-    
-    Returns:
-        dict: {
-            'success': True/False, 
-            'message': '...',
-            'collection': collection_name (nếu success)
-        }
-    """
-    from src.core.ingestion.extractor import extract_file
-    from src.core.chunker.factory import create_chunker
-    from src.core.chunker.hierarchical import build_json_tree
-    from src.core.embedding.embedding import EmbeddingPipeline
-    from src.core.embedding.onnx_embedding import OnnxEmbeddingModel
-    from src.core.vector_store.chroma_store import ChromaStore
-    from src.core.vector_store.vectorstore import VectorStorePipeline
-    from src.schemas import ChromaConfig
-    
+def _init_reranker() -> Any:
+    model_dir = Path(RERANKER_MODEL_DIR)
     try:
-        # 1. Ingestion
-        tqdm.write(f'Start process document: {file_path}')
-        tqdm.write('Extracting text from document')
-        if not file_path:
-            raise ValueError("No file selected. Please select a file to process.")
-        if os.path.exists(file_path):
-            text = extract_file(file_path)
-        else:            
-            raise FileNotFoundError(f"File not found: {file_path}")
+        from FlagEmbedding import FlagReranker
+    except ImportError as exc:
+        raise RuntimeError(
+            "Missing dependency `FlagEmbedding`. Please install it in the environment used to run the pipeline."
+        ) from exc
 
-        # 2. Chunking
-        chunker_params = kwargs.get('chunker_params', {}).copy()
-        chunking_strategy = chunker_params.pop('strategy', 'fixed_size')
+    if (model_dir / "config.json").exists():
+        return FlagReranker(str(model_dir), use_fp16=False, devices="cpu")
 
-        tqdm.write(f'Chunking with strategy: {chunking_strategy}')
-        chunker = create_chunker(
-            strategy=chunking_strategy,
-            **chunker_params
+    # Fall back to shared retrieval utility (can download/cache model if available).
+    return create_reranker()
+
+
+def _load_chunks(file_path: str) -> List[ChunkDocumentForHierarchical]:
+    logger.info("Ingestion started for %s", file_path)
+    payload = build_json_tree(extract_file(file_path))
+    logger.info("Built JSON tree for %s", file_path)
+    chunks = HierarchicalChunker().chunk({"payload": payload})
+    logger.info("Loaded %d chunks from %s", len(chunks), file_path)
+    return chunks
+
+
+def _embed_chunks(chunks: List[ChunkDocumentForHierarchical], model: OnnxEmbeddingModel) -> List[ChunkRecord]:
+    logger.info("Embedding %d chunks", len(chunks))
+    pipeline = EmbeddingPipeline(chunk_documents=chunks)
+    requests = pipeline._to_embedding_requests()
+    embeddings = model.embed(requests)
+
+    req_map = {r.chunk_id: r.text for r in requests if r.chunk_id}
+    vec_map = {e.chunk_id: e.vector for e in embeddings if e.chunk_id}
+
+    records = [
+        ChunkRecord(chunk=c, query_text=req_map.get(c.metadata.section_id, ""), vector=vec_map.get(c.metadata.section_id))
+        for c in chunks
+    ]
+    logger.info("Embedding finished: %d/%d chunks have vectors", sum(1 for record in records if record.vector), len(records))
+    return records
+
+
+def _build_embedding_results(records: List[ChunkRecord]) -> List[EmbeddingResult]:
+    results: List[EmbeddingResult] = []
+    for record in records:
+        if not record.vector:
+            continue
+        results.append(EmbeddingResult(chunk_id=record.chunk.metadata.section_id, text=record.query_text, vector=record.vector))
+    logger.info("Prepared %d embedding results for vector store", len(results))
+    return results
+
+
+def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH) -> Path:
+    start_time = time.time()
+    logger.info("Pipeline started")
+
+    vb1_chunks = _load_chunks(vb1_path)
+    vb2_chunks = _load_chunks(vb2_path)
+    vb1_map = {c.metadata.section_id: c for c in vb1_chunks}
+    logger.info("Chunk loading finished: VB1=%d, VB2=%d", len(vb1_chunks), len(vb2_chunks))
+
+    results: List[MatchResult] = []
+    matched_vb1, matched_vb2 = set(), set()
+
+    # Phase 0: Exact match
+    logger.info("Phase 0 started: exact match")
+    vb1_raw_map = {format_chunk(c): c for c in vb1_chunks}
+    for vb2 in vb2_chunks:
+        vb2_id = vb2.metadata.section_id
+        match = vb1_raw_map.get(format_chunk(vb2))
+        if match and match.metadata.section_id not in matched_vb1:
+            matched_vb1.add(match.metadata.section_id)
+            matched_vb2.add(vb2_id)
+            results.append(MatchResult(vb2_chunk_id=vb2_id, vb1_chunk_id=match.metadata.section_id, method="raw_exact"))
+    logger.info(
+        "Phase 0 finished: raw_exact=%d, remaining VB1=%d, remaining VB2=%d",
+        len([r for r in results if r.method == "raw_exact"]),
+        len(vb1_chunks) - len(matched_vb1),
+        len(vb2_chunks) - len(matched_vb2),
+    )
+
+    # Phase 1: Embeddings & Hybrid Hungarian matching
+    rem_vb1 = [c for c in vb1_chunks if c.metadata.section_id not in matched_vb1]
+    rem_vb2 = [c for c in vb2_chunks if c.metadata.section_id not in matched_vb2]
+    vb1_records: List[ChunkRecord] = []
+    vb2_records: List[ChunkRecord] = []
+
+    if rem_vb1 and rem_vb2:
+        logger.info(
+            "Phase 1 started: embedding/global matching for remaining chunks VB1=%d, VB2=%d",
+            len(rem_vb1),
+            len(rem_vb2),
         )
+        model = OnnxEmbeddingModel(model_dir=EMBEDDING_MODEL_DIR)
+        vb1_records = _embed_chunks(rem_vb1, model)
+        vb2_records = _embed_chunks(rem_vb2, model)
+        vb1_embeddings = _build_embedding_results(vb1_records)
 
-        if chunking_strategy == 'hierarchical':
-            text = build_json_tree(text)  # Chuyển raw text thành cấu trúc JSON nếu dùng hierarchical chunker
-
-        chunks = chunker.chunk(text)
-        tqdm.write(f'Generated {len(chunks)} chunks')
-
-        # 3. Embedding
-        tqdm.write('Generating embeddings')
-        embedding_model = OnnxEmbeddingModel(
-            **kwargs.get('embedding_params', {})
+        vector_store = ChromaStore(
+            ChromaConfig(collection_name=f"vb1_idx_{int(time.time())}", is_persist=False, distance_metric="ip")
         )
+        logger.info("Vector store created: collection=%s", vector_store.config.collection_name)
+        VectorStorePipeline(embeddings=vb1_embeddings).run(vector_store, batch_size=32)
+        logger.info("Vector store upsert finished: %d embeddings", len(vb1_embeddings))
 
-        embedding_pipeline = EmbeddingPipeline(chunk_documents=chunks)
-        embeddings = embedding_pipeline.run(embedding_model.embed)
-        
-        tqdm.write(f'Generated {len(embeddings)} embeddings')
-
-        # 4. Vector Store
-        chroma_store = ChromaStore(
-            ChromaConfig(**kwargs.get('store_params', {}))
+        retrieval_service = RetrievalService(
+            embedding_model=None,
+            vector_store=vector_store,
+            reranker=_init_reranker(),
         )
-        vector_store_pipeline = VectorStorePipeline(
-            chunks=chunks,
-            embeddings=embeddings
+        logger.info("Reranker initialized")
+
+        global_matches = build_global_matches(vb1_records, vb2_records, vector_store, retrieval_service)
+        results.extend(global_matches)
+        for match in global_matches:
+            matched_vb1.add(match.vb1_chunk_id)
+            matched_vb2.add(match.vb2_chunk_id)
+
+        logger.info(
+            "Phase 1 finished: global_matches=%d, remaining VB1=%d, remaining VB2=%d",
+            len(global_matches),
+            len([record for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]),
+            len([record for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]),
         )
-        vector_store_pipeline.run(chroma_store)
-        tqdm.write(f'Upserted chunks into vector store: {chroma_store.config.collection_name}')
+    else:
+        logger.info("Phase 1 skipped: remaining VB1=%d, remaining VB2=%d", len(rem_vb1), len(rem_vb2))
 
-        # Test showing all documents in collection
-        # Uncomment block này để test nội dung collection sau khi upsert
-        results = chroma_store.collection.get(include=['documents', 'metadatas'])
-        with open('debug_chroma_collection.json', 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=4)
-        tqdm.write('Chroma collection content saved to debug_chroma_collection.json')
-        
-        tqdm.write('Finish processing document (input -> ... -> store)')
+    # Phase 2: LLM per matched pair / addition / deletion
+    logger.info("Phase 2 started")
+    vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
+    change_items: List[ChangeItem] = []
+
+    for match in results:
+        if match.method != "hungarian_hybrid":
+            continue
+        if not match.vb1_chunk_id:
+            continue
+        logger.info("Phase 2 pair review: VB2=%s -> VB1=%s (%s)", match.vb2_chunk_id, match.vb1_chunk_id, match.method)
+        change_items.append(llm_review_pair(vb1_map[match.vb1_chunk_id], vb2_map[match.vb2_chunk_id], match.method))
+
+    unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
+    unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]
+
+    for chunk in unmatched_vb2:
+        logger.info("Phase 2 addition review: VB2=%s", chunk.metadata.section_id)
+        change_items.append(llm_review_single(chunk, "them_moi"))
+
+    for chunk in unmatched_vb1:
+        logger.info("Phase 2 deletion review: VB1=%s", chunk.metadata.section_id)
+        change_items.append(llm_review_single(chunk, "xoa_bo"))
+
+    llm_output = render_change_report(change_items)
+    logger.info("Phase 2 finished")
+
+    # Phase 3: Reporting
+    logger.info("Phase 3 started: writing report")
+    out_path = Path("results") / "pair_match" / f"pair_match_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    report = f"""# Báo cáo luồng so khớp pháp lý (Pair Matching Pipeline)
+- **VB1 (Cũ):** `{vb1_path}`
+- **VB2 (Mới):** `{vb2_path}`
+
+## Thống kê tổng quan:
+- **Giống hệt nhau (Raw Exact matches):** {len([r for r in results if r.method == 'raw_exact'])} cặp
+- **Giống nhau tin cậy cao (Greedy Vector matches):** {len([r for r in results if r.method == 'high_confidence_greedy'])} cặp
+- **Sửa đổi cần phân tích (Hungarian Hybrid matches):** {len([r for r in results if r.method == 'hungarian_hybrid'])} cặp
+- **Số lượng yêu cầu đẩy lên LLM:** {len(change_items)} (Gồm các cặp sửa đổi + Các đoạn thêm mới/xóa bỏ)
+
+---
+{llm_output}
+"""
+    out_path.write_text(report, encoding="utf-8")
+    logger.info(
+        "Phase 3 finished: report written raw_exact=%d greedy=%d hungarian_hybrid=%d llm_items=%d",
+        len([r for r in results if r.method == "raw_exact"]),
+        len([r for r in results if r.method == "high_confidence_greedy"]),
+        len([r for r in results if r.method == "hungarian_hybrid"]),
+        len(change_items),
+    )
+    logger.info("Pipeline Finished in %.2fs. Report: %s", time.time() - start_time, out_path)
+    return out_path
 
 
-    except Exception as e:
-        tqdm.write(f"Error processing document: {e}")
+def _build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Run pair-matching legal diff pipeline.")
+    parser.add_argument("--vb1", default=VB1_PATH, help="Path to old legal document.")
+    parser.add_argument("--vb2", default=VB2_PATH, help="Path to new legal document.")
+    return parser
+
 
 if __name__ == "__main__":
-    process_document(
-        file_path=select_file(),
-        chunker_params={
-            'strategy': 'hierarchical',
-        },
-        embedding_params={
-            'model_dir': './models/Vietnamese_Embedding_v2',
-        },
-        store_params={
-            'collection_name': 'test_collection',
-            'is_persist': True,
-            'persist_directory': './chroma_db',
-            'distance_metric': 'ip'
-        }
-
-    )
-    
+    args = _build_arg_parser().parse_args()
+    run_pipeline(vb1_path=args.vb1, vb2_path=args.vb2)

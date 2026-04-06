@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Literal
 from pydantic import BaseModel, Field, model_validator, ConfigDict
 
@@ -81,3 +82,34 @@ class ChromaQueryResult(BaseModel):
     text: str
     metadata: Dict[str, Any]
     distance: float
+
+
+@dataclass
+class MatchResult:
+    vb2_chunk_id: str
+    vb1_chunk_id: Optional[str]
+    method: str
+    distance: Optional[float] = None
+    rerank_score: Optional[float] = None
+    hybrid_score: Optional[float] = None
+
+
+@dataclass
+class ChunkRecord:
+    chunk: ChunkDocumentForHierarchical
+    query_text: str = ""
+    vector: Optional[List[float]] = None
+
+
+@dataclass
+class ChangeItem:
+    kind: str
+    vb1_chunk_id: Optional[str] = None
+    vb2_chunk_id: Optional[str] = None
+    vb1_excerpt: str = ""
+    vb2_excerpt: str = ""
+    summary: str = ""
+    impact: str = ""
+    reason: str = ""
+    method: str = ""
+    important_points: List[str] = field(default_factory=list)
