@@ -172,7 +172,8 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         vb1_c = vb1_map[match.vb1_chunk_id]
         vb2_c = vb2_map[match.vb2_chunk_id]
         item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
-        change_items.append(item)
+        if item is not None:
+            change_items.append(item)
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]
