@@ -17,7 +17,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://contributing-villa-protect-animals.trycloudflare.com",
+        "https://outputs-closes-sen-creates.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
