@@ -5,9 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ['contributing-villa-protect-animals.trycloudflare.com'],
+    allowedHosts: ['outputs-closes-sen-creates.trycloudflare.com'],
     proxy: {
-      '/api': 'http://127.0.0.1:8000',
+      '/api': {
+        target: 'https://damaged-features-differently-personally.trycloudflare.com',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 })
