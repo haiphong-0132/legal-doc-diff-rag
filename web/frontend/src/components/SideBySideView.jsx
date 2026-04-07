@@ -140,18 +140,7 @@ export default function SideBySideView({ jobId, changes, stats }) {
             <span className="font-semibold">Tóm tắt:</span> {selectedItem.summary}
           </p>
         )}
-        {selectedItem.vb1_excerpt && (
-          <div className="mb-2">
-            <p className="text-xs font-semibold text-gray-500 mb-1">VB1 (Cũ):</p>
-            <p className="text-xs text-gray-600 bg-gray-100 rounded p-2 leading-relaxed">{selectedItem.vb1_excerpt}</p>
-          </div>
-        )}
-        {selectedItem.vb2_excerpt && (
-          <div className="mb-2">
-            <p className="text-xs font-semibold text-gray-500 mb-1">VB2 (Mới):</p>
-            <p className="text-xs text-gray-600 bg-gray-100 rounded p-2 leading-relaxed">{selectedItem.vb2_excerpt}</p>
-          </div>
-        )}
+
         {selectedItem.changes?.length > 0 && (
           <div>
             <p className="text-xs font-semibold text-gray-700 mb-1">Chi tiết:</p>
@@ -240,7 +229,7 @@ export default function SideBySideView({ jobId, changes, stats }) {
       {/* ── Desktop layout (≥ md): 3-column resizable drag layout ────── */}
       <div
         ref={containerRef}
-        className="hidden md:flex h-full select-none"
+        className="hidden md:flex h-full"
       >
       {/* Full-screen capture overlay — prevents iframes stealing mousemove during drag */}
       {draggingDiv > 0 && (
