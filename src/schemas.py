@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, List, Optional, Any, Literal
 from pydantic import BaseModel, Field, model_validator, ConfigDict
 
@@ -23,9 +25,10 @@ class ChunkMetadata(BaseModel):
 
 class ChunkDocument(BaseModel):
     text: str
-    metadata: ChunkMetadata
+    metadata: Optional[ChunkMetadata] = None
 
 
+#
 class ChunkDocumentForHierarchical(BaseModel):
     """Chunk output cho hierarchical gom metadata + tieu de + noi dung + ref."""
 
@@ -80,3 +83,44 @@ class ChromaQueryResult(BaseModel):
     text: str
     metadata: Dict[str, Any]
     distance: float
+
+
+@dataclass
+class MatchResult:
+    vb2_chunk_id: str
+    vb1_chunk_id: Optional[str]
+    method: str
+    distance: Optional[float] = None
+    rerank_score: Optional[float] = None
+    hybrid_score: Optional[float] = None
+
+
+@dataclass
+class ChunkRecord:
+    chunk: ChunkDocumentForHierarchical
+    query_text: str = ""
+    vector: Optional[List[float]] = None
+
+
+@dataclass
+class ChangeItem:
+    kind: str
+    vb1_chunk_id: Optional[str] = None
+    vb2_chunk_id: Optional[str] = None
+    vb1_excerpt: str = ""
+    vb2_excerpt: str = ""
+    summary: str = ""
+    impact: str = ""
+    method: str = ""
+    changes: List[str] = field(default_factory=list)
+
+
+@dataclass
+class PipelineResult:
+    report_path: Optional[Path]
+    vb1_chunks: List["ChunkDocumentForHierarchical"]
+    vb2_chunks: List["ChunkDocumentForHierarchical"]
+    match_results: List[MatchResult]
+    change_items: List[ChangeItem]
+    stats: Dict[str, Any] = field(default_factory=dict)
+    report_text: str = ""

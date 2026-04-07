@@ -36,15 +36,12 @@ class EmbeddingPipeline(BaseModel):
                 #     #.............
                 #     pass
 
-                texts.append(f'Mã đoạn: {decode_section_id(section_id)}')
                 if chunk.tieu_de:
                     texts.append(f'Tiêu đề: {chunk.tieu_de}')
                 if chunk.noi_dung:
                     texts.append(f'Nội dung: {chunk.noi_dung}')
                 if chunk.ref:
-                    texts.append(f'Các viện dẫn: {
-                        ','.join(decode_section_id(ref) for ref in chunk.ref)
-                    }')
+                    texts.append('Các viện dẫn: ' + ', '.join(decode_section_id(ref) for ref in chunk.ref))
 
                 requests.append(
                     EmbeddingRequest(

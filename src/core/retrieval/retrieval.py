@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Tuple
 
-from src.core.embedding.onnx_embedding import OnnxEmbeddingModel
+from src.core.embedding.embedding_model import OnnxEmbeddingModel
 from src.core.vector_store.chroma_store import ChromaStore
 from src.schemas import ChromaConfig, ChromaQueryRequest, ChromaQueryResult, EmbeddingRequest
 
@@ -30,10 +30,19 @@ def create_vector_store():
 
 def create_reranker():
     from FlagEmbedding import FlagReranker
+
+    try:
+        import torch
+        use_gpu = torch.cuda.is_available()
+    except ImportError:
+        use_gpu = False
+
+    device = "cuda" if use_gpu else "cpu"
+
     # FlagReranker cần path model local.
     # Nếu đã có snapshot trong `models/Vietnamese_Reranker` thì dùng ngay (không cần `huggingface_hub`).
     if (RERANKER_DIR / "config.json").exists():
-        return FlagReranker(str(RERANKER_DIR), use_fp16=True)
+        return FlagReranker(str(RERANKER_DIR), use_fp16=use_gpu, devices=device)
 
     # Nếu chưa có snapshot thì tải từ Hugging Face.
     try:
@@ -78,20 +87,25 @@ class RetrievalService:
             )
         )
 
-    def rerank(
+    def rerank_with_scores(
         self,
         query_text: str,
-        results: List[ChromaQueryResult]
-    ) -> List[ChromaQueryResult]:
-
+        results: List[ChromaQueryResult],
+    ) -> List[Tuple[ChromaQueryResult, float]]:
         if not results:
-            return results
+            return []
 
         pairs = [[query_text, r.text] for r in results]
         scores = self.reranker.compute_score(pairs, normalize=True)
-
         scored = sorted(zip(results, scores), key=lambda x: x[1], reverse=True)
-        return [r for r, _ in scored]
+        return [(r, float(s)) for r, s in scored]
+
+    def rerank(
+        self,
+        query_text: str,
+        results: List[ChromaQueryResult],
+    ) -> List[ChromaQueryResult]:
+        return [r for r, _ in self.rerank_with_scores(query_text, results)]
 
     def retrieve_and_rerank(
         self,

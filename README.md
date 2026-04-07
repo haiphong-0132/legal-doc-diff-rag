@@ -1,24 +1,29 @@
 # legal-doc-diff-rag
+
 BT nhóm - Thực tập cơ sở - Nghiên cứu trợ lý so sánh văn bản pháp lý chạy cục bộ dùng RAG + Local LLM
 
 ## Prerequisites
+
 - Python 3.13+
 - uv
 
 ## Pipeline hệ thống
+
 <img src="docs/images/PipelineTTCS.png" alt="Pipeline hệ thống so sánh văn bản pháp lý chạy cục bộ dùng RAG và Local LLM" width="800"/>
 
 ## Directory tree
+
 Cấu trúc dự án dự kiến:
+
 ```
 TTCS
 │
-├── .env                           
+├── .env
 ├── .env.example                    # Template .env
 ├── .gitignore
 ├── pyproject.toml                  # uv: khai báo dependencies, python version
-├── README.md                       
-├── structure.md                  
+├── README.md
+├── structure.md
 │
 │
 ├── configs/                        # Toàn bộ cấu hình
@@ -155,6 +160,6 @@ TTCS
     └── app.py                      # Streamlit UI/ MERN stack UI/ Static web
 ```
 
-
 ## Docs
+
 [Setup guide](docs/setup.md)
