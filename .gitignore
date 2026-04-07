@@ -47,3 +47,5 @@ ttcs1.md
 .temp
 
 data/*
+# Virtual environment
+myenv/
