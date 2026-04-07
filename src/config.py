@@ -5,7 +5,7 @@ VB2_PATH = "vb2.docx"
 EMBEDDING_MODEL_DIR = "./models/Vietnamese_Embedding_v2"
 RERANKER_MODEL_DIR = "./models/bge-reranker-v2-m3"
 OLLAMA_MODEL = "qwen2.5:3b"
-OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+OLLAMA_URL = "https://partnerships-agreement-luxury-fashion.trycloudflare.com/api/generate"
 
 TOP_K = 8
 DISTANCE_THRESHOLD = 0.185
