@@ -163,6 +163,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     logger.info("Phase 2 started")
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
     change_items: List[ChangeItem] = []
+    llm_identical_pairs = 0
 
     for match in results:
         if match.method != "hungarian_hybrid":
@@ -174,6 +175,8 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
         if item is not None:
             change_items.append(item)
+        else:
+            llm_identical_pairs += 1
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]
@@ -187,6 +190,10 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         change_items.append(item)
 
     llm_output = render_change_report(change_items)
+    raw_exact_count = len([r for r in results if r.method == "raw_exact"])
+    high_confidence_greedy_count = len([r for r in results if r.method == "high_confidence_greedy"])
+    hungarian_hybrid_count = len([r for r in results if r.method == "hungarian_hybrid"])
+    high_confidence_total = high_confidence_greedy_count + llm_identical_pairs
     logger.info("Phase 2 finished: llm_items=%d", len(change_items))
 
     # Phase 3: Reporting
@@ -197,26 +204,31 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 - **VB2 (Mới):** `{vb2_path}`
 
 ## Thống kê tổng quan:
-- **Giống hệt nhau (Raw Exact matches):** {len([r for r in results if r.method == 'raw_exact'])} cặp
-- **Giống nhau tin cậy cao (Greedy Vector matches):** {len([r for r in results if r.method == 'high_confidence_greedy'])} cặp
-- **Sửa đổi cần phân tích (Hungarian Hybrid matches):** {len([r for r in results if r.method == 'hungarian_hybrid'])} cặp
+- **Giống hệt nhau (Raw Exact matches):** {raw_exact_count} cặp
+- **Giống nhau tin cậy cao :** {high_confidence_total} cặp
+- **Sửa đổi cần phân tích :** {hungarian_hybrid_count} cặp
 - **Số lượng yêu cầu đẩy lên LLM:** {len(change_items)} (Gồm các cặp sửa đổi + Các đoạn thêm mới/xóa bỏ)
 
 ---
 {llm_output}
 """
     logger.info(
-        "Phase 3 finished: raw_exact=%d greedy=%d hungarian_hybrid=%d llm_items=%d",
-        len([r for r in results if r.method == "raw_exact"]),
-        len([r for r in results if r.method == "high_confidence_greedy"]),
-        len([r for r in results if r.method == "hungarian_hybrid"]),
+        "Phase 3 finished: raw_exact=%d high_conf_total=%d (greedy=%d llm_identical=%d) hungarian_hybrid=%d llm_items=%d",
+        raw_exact_count,
+        high_confidence_total,
+        high_confidence_greedy_count,
+        llm_identical_pairs,
+        hungarian_hybrid_count,
         len(change_items),
     )
     logger.info("Pipeline Finished in %.2fs.", time.time() - start_time)
     stats = {
-        "raw_exact": len([r for r in results if r.method == "raw_exact"]),
-        "high_confidence_greedy": len([r for r in results if r.method == "high_confidence_greedy"]),
-        "hungarian_hybrid": len([r for r in results if r.method == "hungarian_hybrid"]),
+        "raw_exact": raw_exact_count,
+        # Keep legacy key for frontend card, but now represent total high-confidence pairs.
+        "high_confidence_greedy": high_confidence_total,
+        "high_confidence_greedy_only": high_confidence_greedy_count,
+        "high_confidence_llm_identical": llm_identical_pairs,
+        "hungarian_hybrid": hungarian_hybrid_count,
         "llm_items": len(change_items),
         "vb1_total": len(vb1_chunks),
         "vb2_total": len(vb2_chunks),

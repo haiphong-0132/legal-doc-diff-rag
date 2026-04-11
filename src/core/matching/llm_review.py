@@ -78,8 +78,8 @@ NGUYÊN TẮC QUAN TRỌNG:
 - CHỈ báo cáo thay đổi về NỘI DUNG THỰC SỰ (quyền, nghĩa vụ, điều kiện, mức phạt, thời hạn, số tiền...).
 - KHÔNG báo cáo thay đổi về: mã đoạn, số điều khoản, số thứ tự (ví dụ: 13.2 → 13.1, Điều 5 → Điều 4), định dạng, dấu câu.
 
-Nếu nội dung giống nhau (chỉ khác mã đoạn/số thứ tự/định dạng), trả về:
-{{"identical": true, "changes": [], "summary": ""}}
+Nếu nội dung giống nhau (chỉ khác mã đoạn/số thứ tự/định dạng) hoặc thay đổi phong cách viết nhưng nội dung vẫn giống nhau thì trả về:
+{{"identical": true}}
 
 Nếu có thay đổi thực sự về nội dung, trả về:
 {{"identical": false, "changes": [{{"old_content": "noi dung cu", "new_content": "noi dung moi"}}], "summary": "tom tat ngan cac diem thay doi quan trong"}}
@@ -149,8 +149,7 @@ def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> LlmRevi
 Hãy phân tích 1 chunk đơn lẻ đã được xác định là `{kind}`.
 Trả về duy nhất JSON hợp lệ theo schema:
 {{
-  "changes": ["mo ta noi dung cu the 1", "mo ta noi dung cu the 2"],
-  "summary": "tom tat ngan ly do them moi hoac xoa bo"
+  "summary": "Tóm tắt lại nội dung"
 }}
 
 Chunk:

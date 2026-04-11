@@ -13,7 +13,7 @@ from src.core.retrieval.retrieval import RetrievalService
 from src.core.vector_store.chroma_store import ChromaStore
 from src.schemas import ChromaQueryRequest
 
-_MATCHER_WORKERS = min(os.cpu_count() or 4, 8)
+_MATCHER_WORKERS = min(os.cpu_count() or 2, 4)
 
 
 def _pass1_worker(
