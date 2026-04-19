@@ -96,9 +96,6 @@ def build_json_tree(text):
     Hàm phân tích văn bản luật thành cấu trúc cây JSON (Điều -> Khoản -> Điểm)
     có bóc tách tham chiếu chéo thông minh (giải quyết được "Điều này").
     """
-    text = re.sub(r'(?i)(?<=\S)\s+(Điều\s+[0-9a-z]+[\.\:\)])', r'\n\1', text)
-
-    text = re.sub(r'(?i)(?<=\S)\s+(Chương\s+[IVXLCDM]+[\.\:\)]?)', r'\n\n\1\n', text)
     lines = text.strip().split('\n')
     tree = []
 

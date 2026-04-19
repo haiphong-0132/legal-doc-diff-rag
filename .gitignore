@@ -47,4 +47,5 @@ ttcs1.md
 .temp
 
 data/*
-chroma_db
+# Virtual environment
+myenv/
