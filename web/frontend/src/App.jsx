@@ -1,12 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UploadPage from './components/UploadPage';
 import ProgressView from './components/ProgressView';
 import ResultsPage from './components/ResultsPage';
 
 export default function App() {
-  const [step, setStep] = useState('upload');
-  const [jobId, setJobId] = useState(null);
-  const [results, setResults] = useState(null);
+  const [step, setStep] = useState(() => {
+    return sessionStorage.getItem('diff_step') || 'upload';
+  });
+  const [jobId, setJobId] = useState(() => {
+    return sessionStorage.getItem('diff_job_id') || null;
+  });
+  const [results, setResults] = useState(() => {
+    const saved = sessionStorage.getItem('diff_results');
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('diff_step', step);
+  }, [step]);
+
+  useEffect(() => {
+    if (jobId) {
+      sessionStorage.setItem('diff_job_id', jobId);
+    } else {
+      sessionStorage.removeItem('diff_job_id');
+    }
+  }, [jobId]);
+
+  useEffect(() => {
+    if (results) {
+      sessionStorage.setItem('diff_results', JSON.stringify(results));
+    } else {
+      sessionStorage.removeItem('diff_results');
+    }
+  }, [results]);
 
   function handleUploadDone(id) {
     setJobId(id);

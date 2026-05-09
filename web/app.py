@@ -6,9 +6,11 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from src.config import logger
 from src.schemas import PipelineResult
 
 app = FastAPI(title="Legal Doc Diff API")
@@ -24,8 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MAX_FILE_SIZE = 20 * 1024 * 1024
-ALLOWED_EXT = {".docx", ".pdf"}
+from src.config import WEB_MAX_FILE_SIZE, WEB_ALLOWED_EXTENSIONS
+MAX_FILE_SIZE = WEB_MAX_FILE_SIZE
+ALLOWED_EXT = WEB_ALLOWED_EXTENSIONS
 
 
 @dataclass
@@ -204,8 +207,6 @@ async def get_results(job_id: str):
 
     grouped_changes: Dict[str, list] = {"sua_doi": [], "them_moi": [], "xoa_bo": [], "giong_nhau_ngu_nghia": semantic_matches}
     for item in r.change_items:
-        if item.kind not in grouped_changes:
-            continue
         d = _change_item_to_dict(item)
         if item.vb1_chunk_id and item.vb1_chunk_id in vb1_map:
             d["vb1"] = _chunk_to_dict(vb1_map[item.vb1_chunk_id])
@@ -227,63 +228,45 @@ async def get_results(job_id: str):
 from fastapi.responses import FileResponse, HTMLResponse, Response
 
 
-def _get_or_create_pdf(job: Job, doc: str) -> Path:
-    """Return path to PDF for vb1/vb2, converting DOCX→PDF if necessary (cached)."""
-    raw_path = job.vb1_path if doc == "vb1" else job.vb2_path
-    p = Path(raw_path)
-    if p.suffix.lower() == ".pdf":
-        return p
-
-    # DOCX: check cache
-    cached = job.vb1_pdf_path if doc == "vb1" else job.vb2_pdf_path
-    if cached and Path(cached).exists():
-        return Path(cached)
-
-    import pypandoc
-    from weasyprint import HTML as WeasyprintHTML
-
-    html = pypandoc.convert_file(
-        str(p), "html5",
-        extra_args=["--standalone", "--metadata", "title=Document"],
-    )
-    css = (
-        "<style>"
-        "body{font-family:serif;max-width:820px;margin:24px auto;"
-        "font-size:14px;line-height:1.7;padding:0 20px;color:#1a1a1a}"
-        "h1,h2,h3,h4{font-weight:700;margin-top:1.4em}"
-        "p{margin:.5em 0}"
-        "table{border-collapse:collapse;width:100%}"
-        "td,th{border:1px solid #ccc;padding:4px 8px}"
-        "</style>"
-    )
-    html = html.replace("</head>", css + "</head>", 1)
-
-    pdf_path = str(p.with_suffix(".pdf"))
-    WeasyprintHTML(string=html).write_pdf(pdf_path)
-
-    if doc == "vb1":
-        job.vb1_pdf_path = pdf_path
-    else:
-        job.vb2_pdf_path = pdf_path
-    return Path(pdf_path)
-
-
 @app.get("/api/jobs/{job_id}/pdf/{doc}")
 async def get_pdf(job_id: str, doc: str):
-    """Return the document as PDF (converting DOCX if needed)."""
+    """Trả về tài liệu gốc dưới dạng PDF hoặc HTML (nếu là DOCX) để hiển thị trong iframe."""
     job = jobs.get(job_id)
     if not job:
         raise HTTPException(404, "Job không tồn tại")
     if doc not in ("vb1", "vb2"):
         raise HTTPException(400, "doc phải là vb1 hoặc vb2")
-    path = job.vb1_path if doc == "vb1" else job.vb2_path
-    if not path or not Path(path).exists():
+    
+    path_str = job.vb1_path if doc == "vb1" else job.vb2_path
+    if not path_str or not Path(path_str).exists():
         raise HTTPException(404, "File không tồn tại")
+        
+    p = Path(path_str)
+    if p.suffix.lower() == ".pdf":
+        return FileResponse(str(p), media_type="application/pdf")
+        
+    # Nếu là DOCX, chuyển đổi trực tiếp sang HTML dùng pypandoc (cực kỳ nhanh, không cần WeasyPrint/GObject)
     try:
-        pdf_path = _get_or_create_pdf(job, doc)
+        import pypandoc
+        html = pypandoc.convert_file(
+            str(p), "html5",
+            extra_args=["--standalone", "--metadata", "title=Document"],
+        )
+        css = (
+            "<style>\n"
+            "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width:820px; margin:24px auto;\n"
+            "       font-size:14px; line-height:1.7; padding:0 20px; color:#1a1a1a; background-color:#fff; }\n"
+            "h1, h2, h3, h4 { font-weight:700; margin-top:1.4em; color:#111827; }\n"
+            "p { margin:.5em 0; }\n"
+            "table { border-collapse:collapse; width:100%; margin:1em 0; }\n"
+            "td, th { border:1px solid #e5e7eb; padding:8px 12px; text-align:left; }\n"
+            "th { background-color:#f9fafb; font-weight:600; }\n"
+            "</style>"
+        )
+        html = html.replace("</head>", css + "</head>", 1)
+        return HTMLResponse(content=html, status_code=200)
     except Exception as exc:
-        raise HTTPException(500, f"Không thể chuyển đổi sang PDF: {exc}")
-    return FileResponse(str(pdf_path), media_type="application/pdf")
+        raise HTTPException(500, f"Không thể chuyển đổi DOCX sang HTML: {exc}")
 
 
 @app.get("/api/jobs/{job_id}/file/{doc}")

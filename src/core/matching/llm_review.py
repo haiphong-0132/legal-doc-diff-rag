@@ -1,7 +1,20 @@
+import os
 import json
 import re
 
-from src.config import logger
+from src.config import (
+    LLM_MODE,
+    LLM_API_KEY,
+    LLM_MODEL_NAME,
+    LLM_API_URL,
+    LLM_TEMPERATURE,
+    LLM_TOP_P,
+    LLM_MAX_TOKENS,
+    LLM_REMOTE_TEMPERATURE,
+    LLM_REMOTE_MAX_LENGTH,
+    LLM_REMOTE_TIMEOUT,
+    logger
+)
 from src.core.api.call_api import call_generate_api
 from src.core.matching.chunk_formatter import format_chunk
 from src.core.matching.llm_prompts import (
@@ -13,19 +26,63 @@ from src.core.matching.llm_prompts import (
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
 
-def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
-    prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
-    logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
 
-    response = call_generate_api(
-        messages=messages,
-        max_length=max_length,
-        temperature=0,
-        timeout=180,
-    )
-    answer = str(response.get("answer", "")).strip()
-    logger.info("Local generate API response received: %d chars", len(answer))
-    return answer
+def call_local_llm(messages: list[dict], max_length: int = 2000) -> str:
+    prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
+    
+    if LLM_MODE == "nvidia":
+        logger.info("Calling NVIDIA API model=%s messages=%d prompt_chars=%d", LLM_MODEL_NAME, len(messages), prompt_chars)
+        try:
+            from openai import OpenAI
+            
+            # Khởi tạo client OpenAI kết nối tới NVIDIA Endpoint
+            client = OpenAI(
+                base_url="https://integrate.api.nvidia.com/v1",
+                api_key=LLM_API_KEY or os.getenv("NVIDIA_API_KEY", "")
+            )
+            
+            # Gọi API
+            completion = client.chat.completions.create(
+                model=LLM_MODEL_NAME,
+                messages=messages,
+                temperature=LLM_TEMPERATURE,
+                top_p=LLM_TOP_P,
+                max_tokens=LLM_MAX_TOKENS,
+                stream=True
+            )
+            
+            # Thu thập stream kết quả
+            answer_parts = []
+            for chunk in completion:
+                if chunk.choices[0].delta.content:
+                    answer_parts.append(chunk.choices[0].delta.content)
+            
+            answer = "".join(answer_parts).strip()
+            logger.info("NVIDIA API response received: %d chars", len(answer))
+            return answer
+            
+        except Exception as exc:
+            logger.error("Failed to call NVIDIA API: %s", exc)
+            raise
+            
+    else:
+        # Mặc định: LLM_MODE == "remote"
+        logger.info("Calling remote generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
+        try:
+            response = call_generate_api(
+                messages=messages,
+                max_length=max_length if max_length != 2000 else LLM_REMOTE_MAX_LENGTH,
+                temperature=LLM_REMOTE_TEMPERATURE,
+                timeout=LLM_REMOTE_TIMEOUT,
+                base_url=LLM_API_URL,
+            )
+            answer = str(response.get("answer", "")).strip()
+            logger.info("Remote generate API response received: %d chars", len(answer))
+            return answer
+        except Exception as exc:
+            logger.error("Failed to call remote generate API: %s", exc)
+            raise
+
 
 
 def parse_json_response(raw_text: str):
@@ -33,10 +90,31 @@ def parse_json_response(raw_text: str):
     try:
         return json.loads(raw_text)
     except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", raw_text, flags=re.DOTALL)
-        if not match:
-            raise
-        return json.loads(match.group(0))
+        # Xử lý nếu model sinh ra markdown code block (VD: ```json ... ```)
+        match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw_text, flags=re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(1))
+            except:
+                pass
+                
+        # Tìm đoạn JSON đầu tiên bằng cách đếm ngoặc {} (Hỗ trợ ngoặc lồng nhau)
+        start = raw_text.find('{')
+        if start != -1:
+            count = 0
+            for i in range(start, len(raw_text)):
+                if raw_text[i] == '{':
+                    count += 1
+                elif raw_text[i] == '}':
+                    count -= 1
+                    
+                if count == 0:
+                    json_str = raw_text[start:i+1]
+                    try:
+                        return json.loads(json_str)
+                    except:
+                        break
+        raise
 
 
 def llm_review_pair(
@@ -67,7 +145,6 @@ def llm_review_pair(
             vb2_chunk.metadata.section_id,
         )
         return None, "SKIPPED: content identical"
-
     messages = [
         {"role": "system", "content": PAIR_REVIEW_SYSTEM_PROMPT},
         {
@@ -81,7 +158,6 @@ def llm_review_pair(
     ]
     vb1_excerpt = vb1_chunk.noi_dung or vb1_chunk.tieu_de or ""
     vb2_excerpt = vb2_chunk.noi_dung or vb2_chunk.tieu_de or ""
-
     try:
         raw_text = call_local_llm(messages)
         data = parse_json_response(raw_text)
@@ -111,8 +187,20 @@ def llm_review_pair(
         )
         return None, raw_text
 
+    # Đọc phân loại từ LLM và map về 3 trạng thái gốc
+    KIND_MAP = {
+        "sua_doi": "sua_doi",
+        "thay_the": "sua_doi",
+        "them_moi": "them_moi",
+        "them_noi_dung": "them_moi",
+        "xoa_bo": "xoa_bo",
+        "xoa_noi_dung": "xoa_bo",
+    }
+    llm_kind = str(data.get("kind", "sua_doi")).strip().lower()
+    llm_kind = KIND_MAP.get(llm_kind, "sua_doi")
+
     return ChangeItem(
-        kind="sua_doi",
+        kind=llm_kind,
         vb1_chunk_id=vb1_chunk.metadata.section_id,
         vb2_chunk_id=vb2_chunk.metadata.section_id,
         vb1_excerpt=vb1_excerpt,
@@ -165,3 +253,5 @@ def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[C
         method=kind,
         changes=[str(c).strip() for c in data.get("changes", []) if str(c).strip()],
     ), raw_text
+
+

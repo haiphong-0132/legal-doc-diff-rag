@@ -9,33 +9,40 @@ _root = Path(__file__).resolve().parents[3]
 if str(_root) not in sys.path:
     sys.path.insert(0, str(_root))
 
-from src.core.ingestion.text_cleaner import clean_text
+from src.core.ingestion.text_cleaner import extract_text_from_html
 
 def extract_pdf_text(file_path):
-    """
-    PDF -> any2md -> pandoc normalize -> clean_text -> output.md
-    """
+    """Convert PDF to plain text for chunking/embedding.
     
-    # PROJECT_ROOT = Path(__file__).resolve().parents[3]
-    # OUTPUT_FILE = PROJECT_ROOT / "src" / "core" / "ingestion" / "output.md"
+    Process: PDF -> any2md -> Markdown -> Pandoc HTML -> extract text -> output
+    
+    Args:
+        file_path: Path to PDF file
+        
+    Returns:
+        Plain text string (HTML tags removed, ready for LLM)
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
 
+        # Convert PDF to Markdown using any2md
         subprocess.run(
             ["any2md", str(file_path), "-o", str(tmpdir_path), "-f"],
             check=True,
         )
 
+        # Get generated markdown file
         md_file = next(tmpdir_path.glob("*.md"))
         raw_text = md_file.read_text(encoding="utf-8")
 
-        formatted_text = pypandoc.convert_text(
+        # Convert Markdown to HTML using Pandoc
+        html = pypandoc.convert_text(
             raw_text,
-            to="gfm",
+            to="html",
             format="markdown-fancy_lists",
             extra_args=["--wrap=none", "--strip-comments"],
         )
 
-    cleaned_text = clean_text(formatted_text)
-    # OUTPUT_FILE.write_text(cleaned_text, encoding="utf-8")
-    return cleaned_text
+    # Extract plain text from HTML for chunking/embedding
+    text = extract_text_from_html(html)
+    return text

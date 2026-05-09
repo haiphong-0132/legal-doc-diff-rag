@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import requests
+from dotenv import load_dotenv
 
+from src.config import EMBED_API_URL, RERANK_API_URL, LLM_API_URL
 
-DEFAULT_BASE_URL = "https://lee-entry-draws-attractive.trycloudflare.com"
+DEFAULT_BASE_URL = LLM_API_URL
 DEFAULT_TIMEOUT = 180
 
 
@@ -35,7 +39,7 @@ def _post_json(
 
 def call_embed_api(
     texts: List[str],
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = EMBED_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """
@@ -64,7 +68,7 @@ def call_generate_api(
     messages: Optional[List[Dict[str, str]]] = None,
     max_length: int = 200,
     temperature: float = 0.7,
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = LLM_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """
@@ -80,6 +84,8 @@ def call_generate_api(
     """
     if prompt is None and messages is None:
         raise ValueError("Either prompt or messages must be provided")
+    if prompt is not None and messages is not None:
+        raise ValueError("Only one of prompt or messages can be provided")
 
     payload: Dict[str, Any] = {
         "max_length": max_length,
@@ -102,7 +108,7 @@ def call_rerank_api(
     query: str,
     documents: List[str],
     top_k: int = 5,
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = RERANK_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """

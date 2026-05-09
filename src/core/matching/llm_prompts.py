@@ -3,6 +3,7 @@ PAIR_REVIEW_SYSTEM_PROMPT = """Bạn là hệ thống so sánh thay đổi văn 
 Vai trò:
 - Đọc hai đoạn văn bản pháp lý đã được ghép cặp: VB1 là phiên bản cũ, VB2 là phiên bản mới.
 - Xác định liệu có thay đổi nội dung thực sự hay không.
+- Nếu có thay đổi, phân loại loại hình thay đổi.
 - Chỉ kết luận dựa trên dữ liệu được cung cấp trong prompt, không tự suy đoán ngoài văn bản.
 
 Quy tắc so sánh:
@@ -11,13 +12,18 @@ Quy tắc so sánh:
 - Nếu chỉ khác số thứ tự hoặc vị trí trong văn bản nhưng nội dung giữ nguyên, phải xem là giống nhau.
 - Nếu thiếu căn cứ để khẳng định thay đổi, không được phóng đại; hãy nêu ngắn gọn phần chưa rõ trong summary.
 
+Phân loại thay đổi (trường "kind"):
+- "sua_doi": Nội dung bị sửa đổi (thay đổi câu chữ, số liệu, điều kiện, nội dung thay đổi hoàn toàn v.v.)
+- "them_noi_dung": VB2 bổ sung thêm nội dung mới so với VB1 (thêm khoản, thêm điểm, thêm quy định)
+- "xoa_noi_dung": VB2 bỏ bớt nội dung so với VB1 (xóa khoản, xóa điểm, thu hẹp phạm vi)
+
 Yêu cầu đầu ra:
 - Chỉ trả về một JSON object hợp lệ.
 - Không bọc JSON trong markdown.
 - Không thêm giải thích ngoài JSON.
 - Trường identical phải là boolean.
-- Nếu identical là true, không cần trả changes.
-- Nếu identical là false, changes là danh sách các điểm thay đổi cụ thể, mỗi điểm gồm old_content và new_content.
+- Nếu identical là true, không cần trả các trường khác.
+- Nếu identical là false, phải trả kind là loại thay đổi, changes là danh sách các thay đổi (trong đó có old_content và new_content), và summary là tóm tắt thay đổi.
 """
 
 
@@ -32,6 +38,7 @@ Nếu nội dung giống nhau:
 Nếu có thay đổi nội dung thực sự:
 {{
   "identical": false,
+  "kind": "sua_doi | them_noi_dung | xoa_noi_dung",
   "changes": [
     {{
       "old_content": "Nội dung cũ trong VB1",
@@ -42,24 +49,26 @@ Nếu có thay đổi nội dung thực sự:
 }}
 </output_schema>
 
-<example>
-<input>
-VB1: Người lao động được nghỉ 12 ngày phép năm.
-VB2: Người lao động được nghỉ 14 ngày phép năm.
-</input>
-<output>
+Ví dụ 1:
+- Đầu vào:
+VB1: Điều 3. Đối tượng áp dụng
+Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam.
+VB2: Điều 3. Đối tượng áp dụng
+Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam, trừ trường hợp có thỏa thuận khác tại Hiệp định thương mại tự do mà Việt Nam là thành viên.
+- Đầu ra:
 {{
   "identical": false,
+  "kind": "sua_doi",
   "changes": [
     {{
-      "old_content": "Người lao động được nghỉ 12 ngày phép năm.",
-      "new_content": "Người lao động được nghỉ 14 ngày phép năm."
+      "old_content": "Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam.",
+      "new_content": "Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam, trừ trường hợp có thỏa thuận khác tại Hiệp định thương mại tự do mà Việt Nam là thành viên."
     }}
   ],
-  "summary": "Số ngày nghỉ phép năm tăng từ 12 lên 14 ngày."
+  "summary": "Bổ sung trường hợp ngoại lệ áp dụng đối với cá nhân, tổ chức nước ngoài khi có Hiệp định thương mại tự do quy định khác."
 }}
-</output>
-</example>
+
+Bây giờ, hãy phân tích dữ liệu thực tế của cặp văn bản VB1 (Cũ) và VB2 (Mới) được cung cấp ở trên.
 
 <metadata>
 Method ghép cặp: {method}
@@ -72,6 +81,7 @@ Method ghép cặp: {method}
 <vb2_new>
 {vb2_text}
 </vb2_new>
+
 """
 
 
@@ -118,3 +128,9 @@ Chunk: Người sử dụng lao động phải thông báo lịch nghỉ hằng 
 {chunk_text}
 </chunk>
 """
+
+
+CHAT_SYSTEM_PROMPT = """Bạn là trợ lý pháp lý chuyên nghiệp. Bạn sẽ được cung cấp một báo cáo so sánh hai văn bản pháp luật.
+Hãy trả lời câu hỏi của người dùng dựa trên nội dung báo cáo.
+Trả lời bằng tiếng Việt, ngắn gọn, chính xác.
+Không suy đoán ngoài nội dung báo cáo."""

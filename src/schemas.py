@@ -100,6 +100,8 @@ class ChunkRecord:
     chunk: ChunkDocumentForHierarchical
     query_text: str = ""
     vector: Optional[List[float]] = None
+    cached_keywords: set = field(default_factory=set)
+
 
 
 @dataclass

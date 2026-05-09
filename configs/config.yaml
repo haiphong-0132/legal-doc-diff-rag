@@ -1,0 +1,45 @@
+paths:
+  # Thư mục chứa trọng số mô hình cục bộ
+  embedding_model_dir: "./models/Vietnamese_Embedding_v2"
+  reranker_model_dir: "./models/bge-reranker-v2-m3"
+  
+  # Đường dẫn file tài liệu mặc định
+  vb1_path: "vb1.docx"
+  vb2_path: "vb2.docx"
+
+pipeline_thresholds:
+  top_k: 8                # Số ứng viên tối đa lấy từ ChromaDB
+  distance_threshold: 0.185 # Ngưỡng khoảng cách tối đa để khớp ngữ nghĩa
+  rerank_threshold: 0.987   # Ngưỡng Reranker khớp nhanh (Greedy Match)
+  hybrid_threshold: 0.75    # Ngưỡng Hungarian Hybrid tối thiểu để chấp nhận khớp
+
+llm:
+  # Chế độ chạy: "remote" (Ollama tự host) hoặc "nvidia" (API Cloud)
+  mode: "remote"
+  
+  # Khóa API để gọi dịch vụ NVIDIA (nếu bật chế độ nvidia)
+  api_key: ""
+  
+  # Tên model sử dụng
+  model_name: "qwen/qwen3-next-80b-a3b-instruct"
+  
+  # Tham số sinh văn bản cho NVIDIA mode
+  temperature: 0.7
+  top_p: 0.9
+  max_tokens: 4096
+  
+  # Tham số sinh văn bản cho Remote Ollama mode
+  remote_temperature: 0.5
+  remote_max_length: 2000
+  remote_timeout: 180
+
+embedding:
+  max_length: 2048        # Độ dài ngữ cảnh tối đa của mô hình Embedding
+  normalize: true         # Chuẩn hóa vector đầu ra
+  batch_size: 64          # Số lượng nhúng xử lý song song trên CPU/GPU
+
+web:
+  max_file_size: 20971520 # 20MB tối đa cho file upload
+  allowed_extensions:
+    - ".docx"
+    - ".pdf"

@@ -25,6 +25,7 @@ def jaccard(set_a: set, set_b: set) -> float:
     return intersection / union if union > 0 else 0.0
 
 
+
 def _clean_text(value: Optional[str]) -> str:
     return (value or "").strip()
 
@@ -57,9 +58,10 @@ def calculate_hybrid_score(record_a: ChunkRecord, record_b: ChunkRecord, pos_a: 
 
     s_title = get_title_sim(record_a.chunk.tieu_de, record_b.chunk.tieu_de)
     s_pos = 1.0 - abs(pos_a / n_a - pos_b / n_b) if n_a > 0 and n_b > 0 else 0.0
-    s_lex = jaccard(extract_keywords(record_a.query_text), extract_keywords(record_b.query_text))
+    set_a = record_a.cached_keywords or getattr(record_a.chunk, "cached_keywords", None) or extract_keywords(record_a.query_text)
+    set_b = record_b.cached_keywords or getattr(record_b.chunk, "cached_keywords", None) or extract_keywords(record_b.query_text)
+    s_lex = jaccard(set_a, set_b)
 
     if s_title is None:
         return 0.50 * s_embed + 0.20 * s_pos + 0.30 * s_lex
-
     return 0.35 * s_embed + 0.15 * s_title + 0.20 * s_pos + 0.30 * s_lex

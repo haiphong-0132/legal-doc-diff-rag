@@ -15,6 +15,7 @@ def format_chunk(chunk: ChunkDocumentForHierarchical, for_llm: bool = False) -> 
     except ValueError:
         pass
 
-    noi_dung = chunk.noi_dung or chunk.tieu_de or "(trống)"
+    # Nếu dùng cho LLM, lấy tieu_de (chứa nội dung gốc chưa gộp) thay vì noi_dung gộp để giảm kích thước prompt và tránh trùng lặp
+    noi_dung = chunk.tieu_de or chunk.noi_dung or "(trống)"
     vien_dan = ", ".join([decode_section_id(r) if r else r for r in (chunk.ref or [])]) or "Không có"
     return f"Mã đoạn: {ma_doan}\nNội dung: {noi_dung}\nCác viện dẫn: {vien_dan}"
