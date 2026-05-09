@@ -25,11 +25,13 @@ from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, 
 
 
 class DummyReranker:
-    def compute_score(self, pairs: list, normalize: bool = True) -> list[float]:
+    def __init__(self) -> None:
         logger.warning(
             "RERANKER WARNING: Local reranker weights not found in '%s'. Falling back to DummyReranker (scores = 1.0) to strictly prevent any internet downloads.",
             RERANKER_MODEL_DIR,
         )
+
+    def compute_score(self, pairs: list, normalize: bool = True) -> list[float]:
         return [1.0] * len(pairs)
 
 
@@ -73,7 +75,7 @@ def _load_chunks(file_path: str) -> tuple[List[ChunkDocumentForHierarchical], di
     registry = build_node_registry(payload)
 
     # 2. Tạo Chunks cấp Điều (Article)
-    chunks = HierarchicalChunker(chunk_by="dieu").chunk({"payload": payload})
+    chunks = HierarchicalChunker(chunk_by="dieu").chunk({"payload": payload}, registry=registry)
 
     logger.info("Loaded %d chunks and built registry with %d nodes from %s", len(chunks), len(registry), file_path)
     return chunks, registry

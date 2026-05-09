@@ -75,12 +75,14 @@ class HierarchicalChunker:
     def chunk(
         self,
         data: HierarchicalChunkInput | Dict[str, Any] | List[Dict[str, Any]],
+        registry: Dict[str, Dict[str, Any]] = None,
     ) -> List[ChunkDocumentForHierarchical]:
         document = self._validate_input(data)
         root_nodes = self._get_root_nodes(document)
 
         # 1. Dựng registry phẳng và pre-calculate/cache toàn bộ nội dung gộp
-        registry = build_node_registry(root_nodes)
+        if registry is None:
+            registry = build_node_registry(root_nodes)
 
         # 2. Duyệt cây để tạo chunks dựa trên dữ liệu đã cache
         chunks: List[ChunkDocumentForHierarchical] = []

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List, Optional
 
 import requests
 
 
-DEFAULT_BASE_URL = "https://lee-entry-draws-attractive.trycloudflare.com"
+DEFAULT_BASE_URL = os.getenv("API_BASE_URL", "https://lee-entry-draws-attractive.trycloudflare.com")
 DEFAULT_TIMEOUT = 180
 
 
@@ -80,6 +81,8 @@ def call_generate_api(
     """
     if prompt is None and messages is None:
         raise ValueError("Either prompt or messages must be provided")
+    if prompt is not None and messages is not None:
+        raise ValueError("Only one of prompt or messages can be provided")
 
     payload: Dict[str, Any] = {
         "max_length": max_length,

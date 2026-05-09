@@ -89,8 +89,12 @@ def build_global_matches(
                 for vb2_rec in vb2_records
             }
             for future in as_completed(future_to_id):
-                vb2_id, reranked = future.result()
-                rerank_results[vb2_id] = reranked
+                try:
+                    vb2_id, reranked = future.result()
+                    rerank_results[vb2_id] = reranked
+                except Exception as exc:
+                    vb2_id = future_to_id[future]
+                    logger.warning("Pass 1 worker failed for VB2=%s: %s", vb2_id, exc)
 
         # Greedy selection in original order to preserve determinism
         for vb2_record in vb2_records:
@@ -251,17 +255,17 @@ def match_sub_nodes(
             r.vector = vecs_1.get(r.chunk.metadata.section_id)
         for r in rec_list_2:
             r.vector = vecs_2.get(r.chunk.metadata.section_id)
-    except Exception as e:
+    except (RuntimeError, ValueError) as e:
         logger.warning("Không thể chạy Embedding On-The-Fly cho sub-nodes: %s. Chuyển sang so khớp không vector.", e)
 
     # 3. Gọi hàm build_global_matches (truyền vector_store=None để bỏ qua Pass 1)
-    # Ngưỡng lai lúc này có vector ngữ nghĩa được cấu hình là HYBRID_THRESHOLD gốc (0.45) để lọc chính xác nhất
+    from src.config import HYBRID_THRESHOLD
     matches = build_global_matches(
         vb1_records=rec_list_1,
         vb2_records=rec_list_2,
         vector_store=None,
         retrieval_service=None,
-        hybrid_threshold=0.45
+        hybrid_threshold=HYBRID_THRESHOLD
     )
 
     matched_pairs = []
