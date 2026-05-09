@@ -1,25 +1,31 @@
 import json
 import re
-import urllib.request
 
-from src.config import OLLAMA_MODEL, OLLAMA_URL, logger
+from src.config import logger
+from src.core.api.call_api import call_generate_api
 from src.core.matching.chunk_formatter import format_chunk
+from src.core.matching.llm_prompts import (
+    PAIR_REVIEW_SYSTEM_PROMPT,
+    PAIR_REVIEW_USER_PROMPT,
+    SINGLE_REVIEW_SYSTEM_PROMPT,
+    SINGLE_REVIEW_USER_PROMPT,
+)
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
 
-def call_ollama(prompt: str) -> str:
-    logger.info("Calling Ollama model=%s url=%s prompt_chars=%d", OLLAMA_MODEL, OLLAMA_URL, len(prompt))
-    payload = {"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "options": {"temperature": 0}}
-    req = urllib.request.Request(
-        OLLAMA_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "User-Agent": "legal-doc-diff-rag/1.0"},
-        method="POST",
+def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
+    prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
+    logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
+
+    response = call_generate_api(
+        messages=messages,
+        max_length=max_length,
+        temperature=0,
+        timeout=180,
     )
-    with urllib.request.urlopen(req, timeout=180) as resp:
-        response = json.loads(resp.read().decode("utf-8")).get("response", "").strip()
-    logger.info("Ollama response received: %d chars", len(response))
-    return response
+    answer = str(response.get("answer", "")).strip()
+    logger.info("Local generate API response received: %d chars", len(answer))
+    return answer
 
 
 def parse_json_response(raw_text: str):
@@ -33,37 +39,28 @@ def parse_json_response(raw_text: str):
         return json.loads(match.group(0))
 
 
-def _excerpt_from_chunk(chunk: ChunkDocumentForHierarchical) -> str:
-    return chunk.noi_dung or chunk.tieu_de or ""
+def llm_review_pair(
+    vb1_chunk: ChunkDocumentForHierarchical,
+    vb2_chunk: ChunkDocumentForHierarchical,
+    method: str,
+) -> tuple[ChangeItem | None, str]:
+    section_num_re = re.compile(
+        r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
+        r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
+        re.IGNORECASE,
+    )
+    vb1_normalized = re.sub(
+        r"\s+",
+        " ",
+        section_num_re.sub("", vb1_chunk.noi_dung or ""),
+    ).strip().lower()
+    vb2_normalized = re.sub(
+        r"\s+",
+        " ",
+        section_num_re.sub("", vb2_chunk.noi_dung or ""),
+    ).strip().lower()
 
-
-LlmReviewResult = tuple[ChangeItem | None, str]
-
-
-# Strip section numbering (e.g. "13.3.", "Điều 5.", "Khoản 2.1.") to compare pure content
-_RE_SECTION_NUM = re.compile(
-    r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
-    r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
-    re.IGNORECASE,
-)
-
-
-def _strip_numbering(text: str) -> str:
-    """Remove leading section numbers and normalize whitespace for content comparison."""
-    text = _RE_SECTION_NUM.sub("", text)
-    return re.sub(r"\s+", " ", text).strip().lower()
-
-
-def _content_identical(vb1: ChunkDocumentForHierarchical, vb2: ChunkDocumentForHierarchical) -> bool:
-    """Quick check: are two chunks identical in content (ignoring section numbering)?"""
-    t1 = _strip_numbering(vb1.noi_dung or "")
-    t2 = _strip_numbering(vb2.noi_dung or "")
-    return t1 == t2 and len(t1) > 0
-
-
-def llm_review_pair(vb1_chunk: ChunkDocumentForHierarchical, vb2_chunk: ChunkDocumentForHierarchical, method: str) -> LlmReviewResult:
-    # Pre-check: skip LLM if content is identical (only numbering differs)
-    if _content_identical(vb1_chunk, vb2_chunk):
+    if vb1_normalized == vb2_normalized and len(vb1_normalized) > 0:
         logger.info(
             "Content identical (numbering-only diff), skipping LLM: VB1=%s VB2=%s",
             vb1_chunk.metadata.section_id,
@@ -71,32 +68,22 @@ def llm_review_pair(vb1_chunk: ChunkDocumentForHierarchical, vb2_chunk: ChunkDoc
         )
         return None, "SKIPPED: content identical"
 
-    prompt = f"""Bạn là chuyên gia phân tích thay đổi văn bản pháp lý.
-Hãy so sánh 1 cặp chunk đã được ghép.
-
-NGUYÊN TẮC QUAN TRỌNG:
-- CHỈ báo cáo thay đổi về NỘI DUNG THỰC SỰ (quyền, nghĩa vụ, điều kiện, mức phạt, thời hạn, số tiền...).
-- KHÔNG báo cáo thay đổi về: mã đoạn, số điều khoản, số thứ tự (ví dụ: 13.2 → 13.1, Điều 5 → Điều 4), định dạng, dấu câu.
-
-Nếu nội dung giống nhau (chỉ khác mã đoạn/số thứ tự/định dạng) hoặc thay đổi phong cách viết nhưng nội dung vẫn giống nhau thì trả về:
-{{"identical": true}}
-
-Nếu có thay đổi thực sự về nội dung, trả về:
-{{"identical": false, "changes": [{{"old_content": "noi dung cu", "new_content": "noi dung moi"}}], "summary": "tom tat ngan cac diem thay doi quan trong"}}
-
-Method ghép cặp: {method}
-
-VB1:
-{format_chunk(vb1_chunk, True)}
-
-VB2:
-{format_chunk(vb2_chunk, True)}
-"""
-    vb1_excerpt = _excerpt_from_chunk(vb1_chunk)
-    vb2_excerpt = _excerpt_from_chunk(vb2_chunk)
+    messages = [
+        {"role": "system", "content": PAIR_REVIEW_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": PAIR_REVIEW_USER_PROMPT.format(
+                method=method,
+                vb1_text=format_chunk(vb1_chunk, True),
+                vb2_text=format_chunk(vb2_chunk, True),
+            ),
+        },
+    ]
+    vb1_excerpt = vb1_chunk.noi_dung or vb1_chunk.tieu_de or ""
+    vb2_excerpt = vb2_chunk.noi_dung or vb2_chunk.tieu_de or ""
 
     try:
-        raw_text = call_ollama(prompt)
+        raw_text = call_local_llm(messages)
         data = parse_json_response(raw_text)
     except Exception as exc:
         logger.warning(
@@ -112,7 +99,6 @@ VB2:
             vb1_excerpt=vb1_excerpt,
             vb2_excerpt=vb2_excerpt,
             summary="LLM khong tra ve ket qua hop le.",
-            impact="Chua ro",
             method=method,
         ), f"ERROR: {exc}"
 
@@ -132,10 +118,9 @@ VB2:
         vb1_excerpt=vb1_excerpt,
         vb2_excerpt=vb2_excerpt,
         summary=str(data.get("summary", "")).strip(),
-        impact="",
         method=method,
         changes=[
-            f"Cũ: {c.get('old_content', '').strip()} → Mới: {c.get('new_content', '').strip()}"
+            f"Cũ: {c.get('old_content', '').strip()}\nMới: {c.get('new_content', '').strip()}"
             if isinstance(c, dict)
             else str(c).strip()
             for c in data.get("changes", [])
@@ -144,22 +129,22 @@ VB2:
     ), raw_text
 
 
-def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> LlmReviewResult:
-    prompt = f"""Bạn là chuyên gia phân tích thay đổi văn bản pháp lý.
-Hãy phân tích 1 chunk đơn lẻ đã được xác định là `{kind}`.
-Trả về duy nhất JSON hợp lệ theo schema:
-{{
-  "summary": "Tóm tắt lại nội dung"
-}}
-
-Chunk:
-{format_chunk(chunk, True)}
-"""
-    excerpt = _excerpt_from_chunk(chunk)
+def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[ChangeItem | None, str]:
+    messages = [
+        {"role": "system", "content": SINGLE_REVIEW_SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": SINGLE_REVIEW_USER_PROMPT.format(
+                kind=kind,
+                chunk_text=format_chunk(chunk, True),
+            ),
+        },
+    ]
+    excerpt = chunk.noi_dung or chunk.tieu_de or ""
     raw_text = ""
 
     try:
-        raw_text = call_ollama(prompt)
+        raw_text = call_local_llm(messages, max_length=256)
         data = parse_json_response(raw_text)
     except Exception as exc:
         logger.warning("LLM single review failed for %s=%s: %s", kind, chunk.metadata.section_id, exc)
@@ -177,7 +162,6 @@ Chunk:
         vb1_excerpt=excerpt if kind == "xoa_bo" else "",
         vb2_excerpt=excerpt if kind == "them_moi" else "",
         summary=str(data.get("summary", "")).strip(),
-        impact="",
         method=kind,
         changes=[str(c).strip() for c in data.get("changes", []) if str(c).strip()],
     ), raw_text

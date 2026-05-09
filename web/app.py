@@ -17,7 +17,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://outputs-closes-sen-creates.trycloudflare.com",
+        "https://ben-overall-arlington-establishment.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -147,6 +147,33 @@ def _match_result_to_dict(m) -> dict:
     }
 
 
+def _semantic_match_to_dict(m, vb1_map: Dict[str, Any], vb2_map: Dict[str, Any]) -> dict:
+    item = {
+        "kind": "giong_nhau_ngu_nghia",
+        "vb2_chunk_id": m.vb2_chunk_id,
+        "vb1_chunk_id": m.vb1_chunk_id,
+        "method": m.method,
+        "distance": m.distance,
+        "rerank_score": m.rerank_score,
+        "hybrid_score": m.hybrid_score,
+        "summary": "Cặp chunk giống nhau về ngữ nghĩa",
+        "changes": [],
+    }
+    if m.vb1_chunk_id and m.vb1_chunk_id in vb1_map:
+        vb1 = vb1_map[m.vb1_chunk_id]
+        item["vb1"] = _chunk_to_dict(vb1)
+        item["vb1_excerpt"] = vb1.noi_dung or vb1.tieu_de or ""
+    else:
+        item["vb1_excerpt"] = ""
+    if m.vb2_chunk_id in vb2_map:
+        vb2 = vb2_map[m.vb2_chunk_id]
+        item["vb2"] = _chunk_to_dict(vb2)
+        item["vb2_excerpt"] = vb2.noi_dung or vb2.tieu_de or ""
+    else:
+        item["vb2_excerpt"] = ""
+    return item
+
+
 @app.get("/api/jobs/{job_id}/results")
 async def get_results(job_id: str):
     job = jobs.get(job_id)
@@ -168,7 +195,14 @@ async def get_results(job_id: str):
             pair["vb2"] = _chunk_to_dict(vb2_map[m.vb2_chunk_id])
         matched_pairs.append(pair)
 
-    grouped_changes: Dict[str, list] = {"sua_doi": [], "them_moi": [], "xoa_bo": []}
+    semantic_methods = {"high_confidence_greedy", "llm_semantic_identical"}
+    semantic_matches = [
+        _semantic_match_to_dict(m, vb1_map, vb2_map)
+        for m in r.match_results
+        if m.method in semantic_methods and m.vb1_chunk_id
+    ]
+
+    grouped_changes: Dict[str, list] = {"sua_doi": [], "them_moi": [], "xoa_bo": [], "giong_nhau_ngu_nghia": semantic_matches}
     for item in r.change_items:
         if item.kind not in grouped_changes:
             continue
@@ -182,6 +216,7 @@ async def get_results(job_id: str):
     return {
         "stats": r.stats,
         "matched_pairs": matched_pairs,
+        "semantic_matches": semantic_matches,
         "changes": grouped_changes,
         "report_text": r.report_text,
         "vb1_path": job.vb1_path,

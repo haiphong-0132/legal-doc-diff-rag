@@ -11,7 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 _MODEL_CACHE: Dict[str, object] = {}
 
 
-class OnnxEmbeddingModel:
+class EmbeddingModel:
     """
     Embedding model wrapper dùng SentenceTransformer (CPU / GPU tự động).
     Giữ nguyên interface để tương thích với toàn bộ pipeline.
@@ -63,3 +63,6 @@ class OnnxEmbeddingModel:
                 pbar.update(1)
 
         return results
+
+
+OnnxEmbeddingModel = EmbeddingModel

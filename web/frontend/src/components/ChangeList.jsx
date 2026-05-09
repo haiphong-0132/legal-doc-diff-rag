@@ -5,11 +5,14 @@ const TABS = [
   { key: 'sua_doi', label: 'Sửa đổi', badge: 'bg-amber-100 text-amber-700' },
   { key: 'them_moi', label: 'Thêm mới', badge: 'bg-green-100 text-green-700' },
   { key: 'xoa_bo', label: 'Xóa bỏ', badge: 'bg-red-100 text-red-700' },
+  { key: 'giong_nhau_ngu_nghia', label: 'Giống ngữ nghĩa', badge: 'bg-blue-100 text-blue-700' },
 ];
 
 function ChangeCard({ item, onClick }) {
-  const id = decodeChunkId(item.vb1_chunk_id || item.vb2_chunk_id);
-  const excerpt = item.vb1_excerpt || item.vb2_excerpt || '';
+  const leftId = item.vb1_chunk_id ? decodeChunkId(item.vb1_chunk_id) : '';
+  const rightId = item.vb2_chunk_id ? decodeChunkId(item.vb2_chunk_id) : '';
+  const id = item.kind === 'giong_nhau_ngu_nghia' && leftId && rightId ? `${leftId} ↔ ${rightId}` : (leftId || rightId);
+  const excerpt = item.vb2_excerpt || item.vb1_excerpt || item.vb2?.noi_dung || item.vb1?.noi_dung || '';
   const preview = excerpt.length > 120 ? excerpt.slice(0, 120) + '...' : excerpt;
 
   return (
@@ -22,11 +25,11 @@ function ChangeCard({ item, onClick }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-800 truncate">{id}</p>
           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{preview}</p>
-          {item.summary && item.summary !== 'tom tat ngan cac diem thay doi quan trong' && (
+          {item.kind !== 'giong_nhau_ngu_nghia' && item.summary && item.summary !== 'tom tat ngan cac diem thay doi quan trong' && (
             <p className="text-xs text-blue-600 mt-2 font-medium">{item.summary}</p>
           )}
         </div>
-        <span className="text-gray-300 text-lg shrink-0">→</span>
+        <span className="text-gray-300 text-lg shrink-0">{item.kind === 'giong_nhau_ngu_nghia' ? '↔' : '→'}</span>
       </div>
     </div>
   );

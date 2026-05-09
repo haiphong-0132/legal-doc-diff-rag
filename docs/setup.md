@@ -20,14 +20,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-
-## 3. Cài Ollama + model LLM
-
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull qwen2.5:3b
-```
-
 ## 4. Cài Node.js & Frontend
 
 ```bash

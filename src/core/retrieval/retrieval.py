@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Tuple
 
-from src.core.embedding.embedding_model import OnnxEmbeddingModel
+from src.core.embedding.embedding_model import EmbeddingModel
 from src.core.vector_store.chroma_store import ChromaStore
 from src.schemas import ChromaConfig, ChromaQueryRequest, ChromaQueryResult, EmbeddingRequest
 
@@ -14,7 +14,7 @@ RERANKER_DIR = MODELS_DIR / "Vietnamese_Reranker"
 
 
 def create_embedding_model():
-    return OnnxEmbeddingModel(model_dir=str(EMBEDDING_MODEL_DIR))
+    return EmbeddingModel(model_dir=str(EMBEDDING_MODEL_DIR))
 
 
 def create_vector_store():

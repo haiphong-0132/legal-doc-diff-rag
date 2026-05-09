@@ -5,9 +5,10 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    allowedHosts: ['ben-overall-arlington-establishment.trycloudflare.com'],
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'https://previews-clear-brakes-transmission.trycloudflare.com',
         changeOrigin: true,
       },
     },

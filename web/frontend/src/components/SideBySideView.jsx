@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import ChangeList from './ChangeList';
 import { decodeChunkId } from '../utils/formatId';
+import { API_BASE } from '../api';
 
 const MOBILE_TABS = [
   { key: 'vb1', label: 'VB1 — Cũ' },
@@ -9,22 +10,25 @@ const MOBILE_TABS = [
 ];
 
 const STAT_ITEMS = [
-  { key: 'raw_exact', label: 'Giống hệt', color: 'bg-green-100 text-green-700' },
-  { key: 'high_confidence_greedy', label: 'Tin cậy cao', color: 'bg-blue-100 text-blue-700' },
-  { key: 'hungarian_hybrid', label: 'Cần phân tích', color: 'bg-amber-100 text-amber-700' },
-  { key: 'llm_items', label: 'LLM', color: 'bg-purple-100 text-purple-700' },
+  { keys: ['giong_nhau_hoan_toan', 'raw_exact'], label: 'Giống hệt', color: 'bg-green-100 text-green-700' },
+  { keys: ['giong_nhau_ngu_nghia', 'high_confidence_greedy'], label: 'Giống nghĩa', color: 'bg-blue-100 text-blue-700' },
+  { keys: ['sua_doi', 'hungarian_hybrid'], label: 'Sửa đổi', color: 'bg-amber-100 text-amber-700' },
+  { keys: ['them_moi'], label: 'Thêm', color: 'bg-emerald-100 text-emerald-700' },
+  { keys: ['xoa_bo'], label: 'Xóa', color: 'bg-red-100 text-red-700' },
 ];
 
 const KIND_BADGE = {
   sua_doi: 'bg-amber-100 text-amber-700',
   them_moi: 'bg-green-100 text-green-700',
   xoa_bo:  'bg-red-100 text-red-700',
+  giong_nhau_ngu_nghia: 'bg-blue-100 text-blue-700',
 };
 
 const KIND_LABEL = {
   sua_doi: 'Sửa đổi',
   them_moi: 'Thêm mới',
   xoa_bo: 'Xóa bỏ',
+  giong_nhau_ngu_nghia: 'Giống ngữ nghĩa',
 };
 
 const MIN_COL_PCT = 15; // minimum column width %
@@ -117,7 +121,10 @@ export default function SideBySideView({ jobId, changes, stats }) {
   const w2 = p2 - p1;
   // w3 fills the rest via flex
 
-  const pdfUrl = (doc) => `/api/jobs/${jobId}/pdf/${doc}`;
+  const pdfUrl = (doc) => `${API_BASE}/jobs/${jobId}/pdf/${doc}`;
+  const vb1Total = stats?.so_luong_chunk_vb1 ?? stats?.vb1_total ?? 0;
+  const vb2Total = stats?.so_luong_chunk_vb2 ?? stats?.vb2_total ?? 0;
+  const elapsed = stats?.elapsed_s;
 
   /* ── Shared: selected-item detail panel ─────────────────────────── */
   const selectedDetailPanel = selectedItem && (
@@ -133,9 +140,11 @@ export default function SideBySideView({ jobId, changes, stats }) {
           >✕</button>
         </div>
         <p className="text-xs text-gray-500 mb-2">
-          {decodeChunkId(selectedItem.vb1_chunk_id || selectedItem.vb2_chunk_id)}
+          {selectedItem.kind === 'giong_nhau_ngu_nghia' && selectedItem.vb1_chunk_id && selectedItem.vb2_chunk_id
+            ? `${decodeChunkId(selectedItem.vb1_chunk_id)} ↔ ${decodeChunkId(selectedItem.vb2_chunk_id)}`
+            : decodeChunkId(selectedItem.vb1_chunk_id || selectedItem.vb2_chunk_id)}
         </p>
-        {selectedItem.summary && (
+        {selectedItem.kind !== 'giong_nhau_ngu_nghia' && selectedItem.summary && (
           <p className="text-xs text-gray-700 mb-2 leading-relaxed">
             <span className="font-semibold">Tóm tắt:</span> {selectedItem.summary}
           </p>
@@ -160,7 +169,7 @@ export default function SideBySideView({ jobId, changes, stats }) {
                 ) : (
                   <div key={i} className="text-xs text-gray-600 flex items-start gap-1">
                     <span className="shrink-0 text-gray-400">•</span>
-                    <span>{c}</span>
+                    <span className="whitespace-pre-line leading-relaxed">{c}</span>
                   </div>
                 )
               )}
@@ -175,12 +184,13 @@ export default function SideBySideView({ jobId, changes, stats }) {
   const statsHeader = stats && (
     <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 shrink-0">
       <p className="text-xs text-gray-400 mb-1.5">
-        {stats.vb1_total} chunks VB1 &middot; {stats.vb2_total} chunks VB2 &middot; {stats.elapsed_s}s
+        {vb1Total} chunks VB1 &middot; {vb2Total} chunks VB2
+        {elapsed != null && <> &middot; {elapsed}s</>}
       </p>
       <div className="flex flex-wrap gap-1.5">
-        {STAT_ITEMS.map(({ key, label, color }) => (
-          <span key={key} className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
-            {stats[key] ?? 0} {label}
+        {STAT_ITEMS.map(({ keys, label, color }) => (
+          <span key={keys[0]} className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
+            {readStat(stats, keys)} {label}
           </span>
         ))}
       </div>
@@ -276,12 +286,13 @@ export default function SideBySideView({ jobId, changes, stats }) {
           {stats && (
             <div className="mt-1.5">
               <p className="text-xs text-gray-400 mb-1.5">
-                {stats.vb1_total} chunks VB1 &middot; {stats.vb2_total} chunks VB2 &middot; {stats.elapsed_s}s
+                {vb1Total} chunks VB1 &middot; {vb2Total} chunks VB2
+                {elapsed != null && <> &middot; {elapsed}s</>}
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {STAT_ITEMS.map(({ key, label, color }) => (
-                  <span key={key} className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
-                    {stats[key] ?? 0} {label}
+                {STAT_ITEMS.map(({ keys, label, color }) => (
+                  <span key={keys[0]} className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
+                    {readStat(stats, keys)} {label}
                   </span>
                 ))}
               </div>
@@ -300,5 +311,9 @@ export default function SideBySideView({ jobId, changes, stats }) {
   );
 }
 
-
-
+function readStat(stats, keys) {
+  for (const key of keys) {
+    if (stats?.[key] != null) return stats[key];
+  }
+  return 0;
+}
