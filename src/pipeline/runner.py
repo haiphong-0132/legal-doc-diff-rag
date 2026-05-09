@@ -132,7 +132,7 @@ def _build_embedding_results(records: List[ChunkRecord]) -> List[EmbeddingResult
 
 
 def _chunk_content_for_report(chunk: ChunkDocumentForHierarchical) -> str:
-    return chunk.noi_dung or chunk.tieu_de or ""
+    return chunk.tieu_de or chunk.noi_dung or ""
 
 
 
@@ -247,98 +247,34 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     else:
         logger.info("Phase 1 skipped: remaining VB1=%d, remaining VB2=%d", len(rem_vb1), len(rem_vb2))
 
-    # Phase 2: Hierarchical Zoom-In & Unified LLM Review
+    # Phase 2: Flat Pairwise & Single LLM Review
     _notify("phase_2", "Phase 2: LLM phân tích các cặp thay đổi...")
     logger.info("Phase 2 started")
-    from src.core.matching.matcher import match_sub_nodes
-    from src.core.matching.llm_review import llm_review_khoan_with_diem
+    from src.core.matching.llm_review import llm_review_pair, llm_review_single
 
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
     change_items: List[ChangeItem] = []
     llm_identical_pairs = 0
 
-    from tqdm import tqdm
-    for match in tqdm(results, desc="Phase 2: LLM Review"):
-        if match.method != "hungarian_hybrid":
-            continue
-        if not match.vb1_chunk_id or not match.vb2_chunk_id:
-            continue
+    # Lọc ra các cặp cần chạy LLM Review thực tế
+    reviewable_matches = [
+        match for match in results 
+        if match.method in {"hungarian_hybrid", "high_confidence_greedy"} and match.vb1_chunk_id and match.vb2_chunk_id
+    ]
 
+    from tqdm import tqdm
+    for match in tqdm(reviewable_matches, desc="Phase 2: LLM Review"):
         vb1_id = match.vb1_chunk_id
         vb2_id = match.vb2_chunk_id
         vb1_c = vb1_map[vb1_id]
         vb2_c = vb2_map[vb2_id]
 
-        # Lấy các node tương ứng từ Registry
-        node_1 = registry_vb1.get(vb1_id.replace("_header", ""))
-        node_2 = registry_vb2.get(vb2_id.replace("_header", ""))
-        clauses_1 = node_1.get("con", []) if node_1 else []
-        clauses_2 = node_2.get("con", []) if node_2 else []
-
-        if not clauses_1 and not clauses_2:
-            # Nếu không có Khoản con (Điều đơn lập), chạy review phẳng nguyên bản
-            item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
-            if item is not None:
-                change_items.append(item)
-            else:
-                llm_identical_pairs += 1
+        item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
+        if item is not None:
+            change_items.append(item)
         else:
-            # Tiến hành Progressive Zoom-In phân cấp xuống các Khoản con
-            matched_clauses, unmatched_cl_1, unmatched_cl_2 = match_sub_nodes(clauses_1, clauses_2)
-
-            all_matched_subs = []
-            all_unmatched_sub_1 = []
-            all_unmatched_sub_2 = []
-
-            # Ghi nhận các Khoản đã khớp và tiếp tục Zoom-In xuống các Điểm con trực thuộc
-            for cl1_id, cl2_id, cl_score in matched_clauses:
-                all_matched_subs.append((cl1_id, cl2_id, cl_score))
-
-                c1_node = registry_vb1.get(cl1_id) or {}
-                c2_node = registry_vb2.get(cl2_id) or {}
-                pts_1 = c1_node.get("con", [])
-                pts_2 = c2_node.get("con", [])
-
-                if pts_1 or pts_2:
-                    matched_pts, unmatched_pts_1, unmatched_pts_2 = match_sub_nodes(pts_1, pts_2)
-                    all_matched_subs.extend(matched_pts)
-                    all_unmatched_sub_1.extend(unmatched_pts_1)
-                    all_unmatched_sub_2.extend(unmatched_pts_2)
-
-            # Thu thập các Khoản bị xóa/thêm mới cùng toàn bộ Điểm con bên dưới chúng
-            for cl1 in unmatched_cl_1:
-                all_unmatched_sub_1.append(cl1)
-                for pt in cl1.get("con", []):
-                    all_unmatched_sub_1.append(pt)
-
-            for cl2 in unmatched_cl_2:
-                all_unmatched_sub_2.append(cl2)
-                for pt in cl2.get("con", []):
-                    all_unmatched_sub_2.append(pt)
-
-            # LỌC CÁC CẶP CON: Dùng score để phân định các cặp thực sự khác nhau (có nguy cơ thay đổi pháp lý)
-            filtered_matched_subs = []
-            for sub1_id, sub2_id, score in all_matched_subs:
-                # Nếu score < 0.98, coi như có sự khác biệt về mặt câu chữ/nội dung pháp lý
-                if score < 0.98:
-                    filtered_matched_subs.append((sub1_id, sub2_id))
-
-            # Nếu không có bất kỳ thay đổi nào ở tất cả các con (không thêm mới, không xóa bỏ, và các cặp khớp đều giống hệt)
-            if not filtered_matched_subs and not all_unmatched_sub_1 and not all_unmatched_sub_2:
-                llm_identical_pairs += 1
-                logger.info("Skipped LLM review for Article VB1=%s <-> VB2=%s because all sub-nodes are identical based on scores.", vb1_id, vb2_id)
-            else:
-                # Gọi LLM Review gộp ngữ cảnh Điều + Khoản + Điểm duy nhất
-                items, _ = llm_review_khoan_with_diem(
-                    vb1_parent_id=vb1_id.replace("_header", ""),
-                    vb2_parent_id=vb2_id.replace("_header", ""),
-                    matched_sub_pairs=filtered_matched_subs,
-                    unmatched_sub_1=all_unmatched_sub_1,
-                    unmatched_sub_2=all_unmatched_sub_2,
-                    registry_vb1=registry_vb1,
-                    registry_vb2=registry_vb2
-                )
-                change_items.extend(items)
+            llm_identical_pairs += 1
+            match.method = "llm_semantic_identical"
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]
@@ -359,7 +295,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     added_count = len([item for item in change_items if item.kind == "them_moi"])
     deleted_count = len([item for item in change_items if item.kind == "xoa_bo"])
     logger.info("Phase 2 finished: llm_items=%d", len(change_items))
-    semantic_match_methods = {"high_confidence_greedy", "llm_semantic_identical"}
+    semantic_match_methods = {"llm_semantic_identical"}
     semantic_matches = []
     for match in results:
         if match.method not in semantic_match_methods or not match.vb1_chunk_id:

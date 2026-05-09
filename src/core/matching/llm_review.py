@@ -1,7 +1,20 @@
+import os
 import json
 import re
 
-from src.config import logger
+from src.config import (
+    LLM_MODE,
+    LLM_API_KEY,
+    LLM_MODEL_NAME,
+    LLM_API_URL,
+    LLM_TEMPERATURE,
+    LLM_TOP_P,
+    LLM_MAX_TOKENS,
+    LLM_REMOTE_TEMPERATURE,
+    LLM_REMOTE_MAX_LENGTH,
+    LLM_REMOTE_TIMEOUT,
+    logger
+)
 from src.core.api.call_api import call_generate_api
 from src.core.matching.chunk_formatter import format_chunk
 from src.core.matching.llm_prompts import (
@@ -13,30 +26,65 @@ from src.core.matching.llm_prompts import (
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
 
-def call_llm_api(prompt: str, max_length: int = 2000) -> str:
-    return call_local_llm([{"role": "user", "content": prompt}], max_length=max_length)
-
 
 def call_local_llm(messages: list[dict], max_length: int = 2000) -> str:
     prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
-    logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
-    try:
-        response = call_generate_api(
-            messages=messages,
-            max_length=max_length,
-            temperature=0,
-            timeout=180,
-        )
-        answer = str(response.get("answer", "")).strip()
-        logger.info("Local generate API response received: %d chars", len(answer))
-        return answer
-    except Exception as exc:
-        logger.error("Failed to call local generate API: %s", exc)
-        raise
+    
+    if LLM_MODE == "nvidia":
+        logger.info("Calling NVIDIA API model=%s messages=%d prompt_chars=%d", LLM_MODEL_NAME, len(messages), prompt_chars)
+        try:
+            from openai import OpenAI
+            
+            # Khởi tạo client OpenAI kết nối tới NVIDIA Endpoint
+            client = OpenAI(
+                base_url="https://integrate.api.nvidia.com/v1",
+                api_key=LLM_API_KEY or os.getenv("NVIDIA_API_KEY", "")
+            )
+            
+            # Gọi API
+            completion = client.chat.completions.create(
+                model=LLM_MODEL_NAME,
+                messages=messages,
+                temperature=LLM_TEMPERATURE,
+                top_p=LLM_TOP_P,
+                max_tokens=LLM_MAX_TOKENS,
+                stream=True
+            )
+            
+            # Thu thập stream kết quả
+            answer_parts = []
+            for chunk in completion:
+                if chunk.choices[0].delta.content:
+                    answer_parts.append(chunk.choices[0].delta.content)
+            
+            answer = "".join(answer_parts).strip()
+            logger.info("NVIDIA API response received: %d chars", len(answer))
+            return answer
+            
+        except Exception as exc:
+            logger.error("Failed to call NVIDIA API: %s", exc)
+            raise
+            
+    else:
+        # Mặc định: LLM_MODE == "remote"
+        logger.info("Calling remote generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
+        try:
+            response = call_generate_api(
+                messages=messages,
+                max_length=max_length if max_length != 2000 else LLM_REMOTE_MAX_LENGTH,
+                temperature=LLM_REMOTE_TEMPERATURE,
+                timeout=LLM_REMOTE_TIMEOUT,
+                base_url=LLM_API_URL,
+            )
+            answer = str(response.get("answer", "")).strip()
+            logger.info("Remote generate API response received: %d chars", len(answer))
+            return answer
+        except Exception as exc:
+            logger.error("Failed to call remote generate API: %s", exc)
+            raise
 
 
-# Giữ alias call_ollama để đảm bảo tương thích 100% với các phần khác (như web/chat.py)
-call_ollama = call_llm_api
+
 def parse_json_response(raw_text: str):
     raw_text = raw_text.strip()
     try:
@@ -139,8 +187,20 @@ def llm_review_pair(
         )
         return None, raw_text
 
+    # Đọc phân loại từ LLM và map về 3 trạng thái gốc
+    KIND_MAP = {
+        "sua_doi": "sua_doi",
+        "thay_the": "sua_doi",
+        "them_moi": "them_moi",
+        "them_noi_dung": "them_moi",
+        "xoa_bo": "xoa_bo",
+        "xoa_noi_dung": "xoa_bo",
+    }
+    llm_kind = str(data.get("kind", "sua_doi")).strip().lower()
+    llm_kind = KIND_MAP.get(llm_kind, "sua_doi")
+
     return ChangeItem(
-        kind="sua_doi",
+        kind=llm_kind,
         vb1_chunk_id=vb1_chunk.metadata.section_id,
         vb2_chunk_id=vb2_chunk.metadata.section_id,
         vb1_excerpt=vb1_excerpt,
@@ -195,116 +255,3 @@ def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[C
     ), raw_text
 
 
-def llm_review_khoan_with_diem(
-    vb1_parent_id: str,
-    vb2_parent_id: str,
-    matched_sub_pairs: list[tuple[str, str]],
-    unmatched_sub_1: list[dict],
-    unmatched_sub_2: list[dict],
-    registry_vb1: dict,
-    registry_vb2: dict,
-) -> tuple[list[ChangeItem], str]:
-    """
-    Review toàn bộ thay đổi cấp con (Khoản, Điểm) của một Điều cha trong cùng một cuộc gọi LLM duy nhất.
-    Giúp giữ trọn vẹn ngữ cảnh và tối ưu chi phí API.
-    """
-    comparison_text = []
-
-    comparison_text.append("=== ĐIỀU CHA ===")
-    p1 = registry_vb1.get(vb1_parent_id) or {}
-    p2 = registry_vb2.get(vb2_parent_id) or {}
-    comparison_text.append(f"VB1: {p1.get('tieu_de', '')} - {p1.get('noi_dung', '')}")
-    comparison_text.append(f"VB2: {p2.get('tieu_de', '')} - {p2.get('noi_dung', '')}\n")
-
-    comparison_text.append("=== CÁC PHẦN TỬ CON ĐÃ GHÉP CẶP ===")
-    for idx, (id1, id2) in enumerate(matched_sub_pairs):
-        n1 = registry_vb1.get(id1) or {}
-        n2 = registry_vb2.get(id2) or {}
-        comparison_text.append(f"Cặp #{idx+1}:")
-        comparison_text.append(f"  - VB1 [ID: {id1}]: {n1.get('tieu_de', '')} {n1.get('noi_dung', '')}")
-        comparison_text.append(f"  - VB2 [ID: {id2}]: {n2.get('tieu_de', '')} {n2.get('noi_dung', '')}")
-
-    if unmatched_sub_1:
-        comparison_text.append("\n=== CÁC PHẦN TỬ CON BỊ XÓA BỎ (CÓ TRONG VB1 NHƯNG KHÔNG CÓ TRONG VB2) ===")
-        for n1 in unmatched_sub_1:
-            comparison_text.append(f"  - VB1 [ID: {n1.get('id')}]: {n1.get('tieu_de', '')} {n1.get('noi_dung', '')}")
-
-    if unmatched_sub_2:
-        comparison_text.append("\n=== CÁC PHẦN TỬ CON THÊM MỚI (CÓ TRONG VB2 NHƯNG KHÔNG CÓ TRONG VB1) ===")
-        for n2 in unmatched_sub_2:
-            comparison_text.append(f"  - VB2 [ID: {n2.get('id')}]: {n2.get('tieu_de', '')} {n2.get('noi_dung', '')}")
-
-    comparison_str = "\n".join(comparison_text)
-
-    prompt = f"""<system>
-Bạn là hệ thống so sánh thay đổi văn bản pháp luật cấp cao.
-Chỉ trả về danh sách JSON (List of Objects) hợp lệ. Không bọc JSON trong markdown. Không giải thích.
-</system>
-
-<task>
-So sánh sự thay đổi về nội dung thực tế giữa các phần tử con (Khoản, Điểm) trong cùng một Điều cha.
-</task>
-
-<output_schema>
-[
-  {{
-    "kind": "sua_doi" | "them_moi" | "xoa_bo",
-    "vb1_chunk_id": "ID của phần tử trong VB1 (để null nếu là thêm mới)",
-    "vb2_chunk_id": "ID của phần tử trong VB2 (để null nếu là xóa bỏ)",
-    "vb1_excerpt": "Nội dung cũ liên quan từ VB1",
-    "vb2_excerpt": "Nội dung mới liên quan từ VB2",
-    "summary": "Tóm tắt ngắn gọn sự thay đổi thực tế hoặc nội dung thêm/xóa",
-    "changes": ["Chi tiết thay đổi 1", "Chi tiết thay đổi 2"]
-  }}
-]
-
-Dữ liệu so sánh:
-{comparison_str}
-"""
-
-    raw_text = ""
-    change_items = []
-    try:
-        raw_text = call_ollama(prompt)
-        parsed_data = parse_json_response(raw_text)
-        if not isinstance(parsed_data, list):
-            if isinstance(parsed_data, dict) and "changes" in parsed_data:
-                parsed_data = parsed_data["changes"]
-            else:
-                parsed_data = [parsed_data]
-
-        for item in parsed_data:
-            if not isinstance(item, dict):
-                continue
-            kind = item.get("kind") or "sua_doi"
-            change_items.append(ChangeItem(
-                kind=kind,
-                vb1_chunk_id=item.get("vb1_chunk_id"),
-                vb2_chunk_id=item.get("vb2_chunk_id"),
-                vb1_excerpt=item.get("vb1_excerpt") or "",
-                vb2_excerpt=item.get("vb2_excerpt") or "",
-                summary=item.get("summary") or "",
-                impact=item.get("impact") or "",
-                method=f"zoomin_{kind}",
-                changes=[str(c).strip() for c in item.get("changes", []) if str(c).strip()]
-            ))
-    except Exception as exc:
-        logger.warning(
-            "LLM hierarchical zoom-in review failed for VB1_parent=%s VB2_parent=%s: %s",
-            vb1_parent_id,
-            vb2_parent_id,
-            exc,
-        )
-        change_items.append(ChangeItem(
-            kind="sua_doi",
-            vb1_chunk_id=vb1_parent_id,
-            vb2_chunk_id=vb2_parent_id,
-            vb1_excerpt=f"Lỗi phân tích cấp con: {exc}",
-            vb2_excerpt="",
-            summary="LLM không trả về danh sách thay đổi hợp lệ.",
-            impact="",
-            method="zoomin_error",
-            changes=[]
-        ))
-
-    return change_items, raw_text

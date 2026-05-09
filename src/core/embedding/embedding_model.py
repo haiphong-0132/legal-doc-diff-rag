@@ -4,6 +4,7 @@ from typing import Dict, List
 import torch
 from tqdm import tqdm
 
+from src.config import EMBEDDING_MAX_LENGTH, EMBEDDING_NORMALIZE
 from src.schemas import EmbeddingRequest, EmbeddingResult
 
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
@@ -20,8 +21,8 @@ class EmbeddingModel:
     def __init__(
         self,
         model_dir: str,
-        max_length: int = 2048,
-        normalize: bool = True,
+        max_length: int = EMBEDDING_MAX_LENGTH,
+        normalize: bool = EMBEDDING_NORMALIZE,
         **kwargs,  # bỏ qua pooling, onnx_path nếu còn truyền vào
     ):
         self.model_dir = model_dir

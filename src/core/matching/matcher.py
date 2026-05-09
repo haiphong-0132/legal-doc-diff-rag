@@ -22,7 +22,7 @@ def _pass1_worker(
     vb2_record: ChunkRecord,
     vector_store: ChromaStore,
     retrieval_service: RetrievalService,
-    reranker_lock: threading.Lock,
+    reranker_lock: Optional[threading.Lock] = None,
 ):
     """Query vector store + rerank for one vb2 chunk. Thread-safe."""
     if not vb2_record.vector:
@@ -30,8 +30,13 @@ def _pass1_worker(
     retrieved = vector_store.query(ChromaQueryRequest(query_vector=vb2_record.vector, top_k=TOP_K))
     if not retrieved:
         return vb2_record.chunk.metadata.section_id, []
-    with reranker_lock:
+    
+    if reranker_lock is not None:
+        with reranker_lock:
+            reranked = retrieval_service.rerank_with_scores(vb2_record.query_text, retrieved)
+    else:
         reranked = retrieval_service.rerank_with_scores(vb2_record.query_text, retrieved)
+        
     return vb2_record.chunk.metadata.section_id, reranked
 
 
@@ -81,7 +86,12 @@ def build_global_matches(
     # ------------------------------------------------------------------
     if vector_store and retrieval_service:
         logger.info("Pass 1: Bắt đầu tìm kiếm ứng viên (Greedy Match) — %d workers", _MATCHER_WORKERS)
-        reranker_lock = threading.Lock()
+        
+        # Chỉ áp dụng lock nếu dùng mô hình local. Nếu dùng API (SimpleNamespace) thì cho chạy song song 100%
+        from types import SimpleNamespace
+        is_api_reranker = isinstance(getattr(retrieval_service, "reranker", None), SimpleNamespace)
+        reranker_lock = None if is_api_reranker else threading.Lock()
+        
         rerank_results: dict = {}
 
         with ThreadPoolExecutor(max_workers=_MATCHER_WORKERS) as executor:

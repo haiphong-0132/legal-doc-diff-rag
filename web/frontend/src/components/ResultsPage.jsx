@@ -118,16 +118,36 @@ function ChangeDetailModal({ item, onClose }) {
                   {item.changes.map((c, i) => (
                     <li key={i} className="rounded-lg border border-gray-200 bg-white px-3 py-2">
                       {typeof c === 'object' ? (
-                        <div className="space-y-2">
-                          <p className="leading-relaxed">
+                        <div className="space-y-1">
+                          <p className="leading-relaxed whitespace-pre-wrap">
                             <span className="font-semibold text-red-600">Cũ:</span> {c.old_content}
                           </p>
-                          <p className="leading-relaxed">
+                          <p className="leading-relaxed whitespace-pre-wrap">
                             <span className="font-semibold text-green-600">Mới:</span> {c.new_content}
                           </p>
                         </div>
                       ) : (
-                        <p className="whitespace-pre-line leading-relaxed">{c}</p>
+                        <div className="space-y-1">
+                          {String(c).split('\n').map((line, idx) => {
+                            if (line.trim().startsWith('Cũ:')) {
+                              return (
+                                <p key={idx} className="leading-relaxed whitespace-pre-wrap">
+                                  <span className="font-semibold text-red-600">Cũ:</span>{line.substring(line.indexOf(':') + 1)}
+                                </p>
+                              );
+                            }
+                            if (line.trim().startsWith('Mới:')) {
+                              return (
+                                <p key={idx} className="leading-relaxed whitespace-pre-wrap">
+                                  <span className="font-semibold text-green-600">Mới:</span>{line.substring(line.indexOf(':') + 1)}
+                                </p>
+                              );
+                            }
+                            return (
+                              <p key={idx} className="whitespace-pre-wrap leading-relaxed">{line}</p>
+                            );
+                          })}
+                        </div>
                       )}
                     </li>
                   ))}

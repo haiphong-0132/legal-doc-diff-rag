@@ -7,11 +7,9 @@ from typing import Any, Dict, List, Optional
 import requests
 from dotenv import load_dotenv
 
-# Tìm thư mục gốc của project chứa file .env
-root_dir = Path(__file__).resolve().parent.parent.parent.parent
-load_dotenv(dotenv_path=root_dir / ".env", override=True)
+from src.config import EMBED_API_URL, RERANK_API_URL, LLM_API_URL
 
-DEFAULT_BASE_URL = os.getenv("API_BASE_URL", "localhost:8080")
+DEFAULT_BASE_URL = LLM_API_URL
 DEFAULT_TIMEOUT = 180
 
 
@@ -41,7 +39,7 @@ def _post_json(
 
 def call_embed_api(
     texts: List[str],
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = EMBED_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """
@@ -70,7 +68,7 @@ def call_generate_api(
     messages: Optional[List[Dict[str, str]]] = None,
     max_length: int = 200,
     temperature: float = 0.7,
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = LLM_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """
@@ -110,7 +108,7 @@ def call_rerank_api(
     query: str,
     documents: List[str],
     top_k: int = 5,
-    base_url: str = DEFAULT_BASE_URL,
+    base_url: str = RERANK_API_URL,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
     """

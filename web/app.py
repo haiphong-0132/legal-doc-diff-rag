@@ -6,9 +6,11 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from src.config import logger
 from src.schemas import PipelineResult
 
 app = FastAPI(title="Legal Doc Diff API")
@@ -24,8 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MAX_FILE_SIZE = 20 * 1024 * 1024
-ALLOWED_EXT = {".docx", ".pdf"}
+from src.config import WEB_MAX_FILE_SIZE, WEB_ALLOWED_EXTENSIONS
+MAX_FILE_SIZE = WEB_MAX_FILE_SIZE
+ALLOWED_EXT = WEB_ALLOWED_EXTENSIONS
 
 
 @dataclass
@@ -204,8 +207,6 @@ async def get_results(job_id: str):
 
     grouped_changes: Dict[str, list] = {"sua_doi": [], "them_moi": [], "xoa_bo": [], "giong_nhau_ngu_nghia": semantic_matches}
     for item in r.change_items:
-        if item.kind not in grouped_changes:
-            continue
         d = _change_item_to_dict(item)
         if item.vb1_chunk_id and item.vb1_chunk_id in vb1_map:
             d["vb1"] = _chunk_to_dict(vb1_map[item.vb1_chunk_id])
@@ -240,26 +241,93 @@ def _get_or_create_pdf(job: Job, doc: str) -> Path:
         return Path(cached)
 
     import pypandoc
-    from weasyprint import HTML as WeasyprintHTML
 
     html = pypandoc.convert_file(
         str(p), "html5",
         extra_args=["--standalone", "--metadata", "title=Document"],
     )
+    # Cấu hình đăng ký Font chữ TrueType hỗ trợ tiếng Việt (Unicode) để tránh lỗi vỡ font/mất dấu UTF-8 khi xhtml2pdf fallback hoạt động.
+    import os
+    font_decl = ""
+    font_fam = "serif"
+    if os.name == "nt":  # Windows
+        font_decl = (
+            "@font-face {\n"
+            "  font-family: 'Vietnamese_Font';\n"
+            "  src: url('C:/Windows/Fonts/arial.ttf');\n"
+            "}\n"
+            "@font-face {\n"
+            "  font-family: 'Vietnamese_Font';\n"
+            "  src: url('C:/Windows/Fonts/arialbd.ttf');\n"
+            "  font-weight: bold;\n"
+            "}\n"
+        )
+        font_fam = "'Vietnamese_Font', Arial, sans-serif"
+    else:  # Linux / MacOS / Docker
+        # Thử tìm font DejaVu Sans hoặc Liberation Sans phổ biến trên Ubuntu/Debian
+        linux_font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+        linux_font_bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+        if not os.path.exists(linux_font):
+            linux_font = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+            linux_font_bold = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
+            
+        font_decl = (
+            f"@font-face {{\n"
+            f"  font-family: 'Vietnamese_Font';\n"
+            f"  src: url('{linux_font}');\n"
+            f"}}\n"
+            f"@font-face {{\n"
+            f"  font-family: 'Vietnamese_Font';\n"
+            f"  src: url('{linux_font_bold}');\n"
+            f"  font-weight: bold;\n"
+            f"}}\n"
+        )
+        font_fam = "'Vietnamese_Font', 'DejaVu Sans', sans-serif"
+
     css = (
-        "<style>"
-        "body{font-family:serif;max-width:820px;margin:24px auto;"
-        "font-size:14px;line-height:1.7;padding:0 20px;color:#1a1a1a}"
-        "h1,h2,h3,h4{font-weight:700;margin-top:1.4em}"
-        "p{margin:.5em 0}"
-        "table{border-collapse:collapse;width:100%}"
-        "td,th{border:1px solid #ccc;padding:4px 8px}"
+        "<style>\n"
+        f"{font_decl}\n"
+        f"body{{font-family:{font_fam};max-width:820px;margin:24px auto;\n"
+        "font-size:14px;line-height:1.7;padding:0 20px;color:#1a1a1a}\n"
+        "h1,h2,h3,h4{font-weight:700;margin-top:1.4em}\n"
+        "p{margin:.5em 0}\n"
+        "table{border-collapse:collapse;width:100%}\n"
+        "td,th{border:1px solid #ccc;padding:4px 8px}\n"
         "</style>"
     )
     html = html.replace("</head>", css + "</head>", 1)
 
     pdf_path = str(p.with_suffix(".pdf"))
-    WeasyprintHTML(string=html).write_pdf(pdf_path)
+    
+    # Thử convert bằng Weasyprint trước, nếu lỗi (thiếu thư viện hệ thống C trên Windows)
+    # thì tự động fallback sang xhtml2pdf (chạy thuần Python cực kỳ ổn định)
+    try:
+        from weasyprint import HTML as WeasyprintHTML
+        WeasyprintHTML(string=html).write_pdf(pdf_path)
+        logger.info("Successfully converted DOCX to PDF using WeasyPrint")
+    except Exception as exc:
+        logger.warning("Weasyprint conversion failed or library not found. Falling back to xhtml2pdf: %s", exc)
+        try:
+            import re as _re
+            from xhtml2pdf import pisa
+            # xhtml2pdf không hỗ trợ pseudo-selectors CSS hiện đại (:not, :hover, ::before, v.v.)
+            # Loại bỏ toàn bộ các rule chứa pseudo-selectors để tránh lỗi parse
+            sanitized_html = _re.sub(
+                r'[^{}]*(?::not\(|:hover|:focus|:active|::before|::after|:first-child|:last-child)[^{]*\{[^}]*\}',
+                '',
+                html,
+            )
+            with open(pdf_path, "wb") as pdf_file:
+                pisa_status = pisa.CreatePDF(sanitized_html, dest=pdf_file)
+                if pisa_status.err:
+                    raise RuntimeError(f"xhtml2pdf error status: {pisa_status.err}")
+            logger.info("Successfully converted DOCX to PDF using xhtml2pdf fallback")
+        except Exception as fallback_exc:
+            logger.error("All PDF conversion attempts failed! WeasyPrint: %s, xhtml2pdf: %s", exc, fallback_exc)
+            raise HTTPException(
+                500,
+                f"Không thể chuyển đổi sang PDF. Lỗi WeasyPrint (thiếu thư viện hệ thống GObject): {exc}. Lỗi Fallback (xhtml2pdf): {fallback_exc}"
+            )
 
     if doc == "vb1":
         job.vb1_pdf_path = pdf_path
