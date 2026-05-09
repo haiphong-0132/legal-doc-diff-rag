@@ -1,12 +1,13 @@
 import argparse
 import json
 import time
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, List
 
 import requests
 
-from src.config import EMBEDDING_MODEL_DIR, VB1_PATH, VB2_PATH, logger
+from src.config import EMBEDDING_MODEL_DIR, RERANKER_MODEL_DIR, VB1_PATH, VB2_PATH, logger
 from src.core.chunker.hierarchical import HierarchicalChunker
 from src.core.chunker.legal_parser import build_json_tree
 from src.core.api.call_api import DEFAULT_BASE_URL, call_embed_api, call_rerank_api
@@ -86,23 +87,23 @@ def _embed_chunks(
 ) -> List[ChunkRecord]:
     logger.info("Embedding %d chunks", len(chunks))
     pipeline = EmbeddingPipeline(chunk_documents=chunks)
-    requests = pipeline._to_embedding_requests()
+    reqs = pipeline._to_embedding_requests()
     if use_api:
-        api_result = call_embed_api([request.text for request in requests])
+        api_result = call_embed_api([r.text for r in reqs])
         embeddings = [
             EmbeddingResult(
-                chunk_id=request.chunk_id,
-                text=request.text,
+                chunk_id=r.chunk_id,
+                text=r.text,
                 vector=vector,
                 token_count=0,
             )
-            for request, vector in zip(requests, api_result.get("embeddings", []))
+            for r, vector in zip(reqs, api_result.get("embeddings", []))
         ]
     else:
         assert model is not None
-        embeddings = model.embed(requests)
+        embeddings = model.embed(reqs)
 
-    req_map = {r.chunk_id: r.text for r in requests if r.chunk_id}
+    req_map = {r.chunk_id: r.text for r in reqs if r.chunk_id}
     vec_map = {e.chunk_id: e.vector for e in embeddings if e.chunk_id}
 
     records = [
@@ -218,7 +219,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 
             reranker = SimpleNamespace(compute_score=compute_score)
         else:
-            reranker = create_reranker()
+            reranker = _init_reranker()
 
         retrieval_service = RetrievalService(
             embedding_model=None,

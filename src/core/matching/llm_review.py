@@ -32,6 +32,24 @@ def call_llm_api(prompt: str, max_length: int = 2000) -> str:
     return call_local_llm([{"role": "user", "content": prompt}], max_length=max_length)
 
 
+def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
+    prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
+    logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
+    try:
+        response = call_generate_api(
+            messages=messages,
+            max_length=max_length,
+            temperature=0,
+            timeout=180,
+        )
+        answer = str(response.get("answer", "")).strip()
+        logger.info("Local generate API response received: %d chars", len(answer))
+        return answer
+    except Exception as exc:
+        logger.error("Failed to call local generate API: %s", exc)
+        raise
+
+
 # Giữ alias call_ollama để đảm bảo tương thích 100% với các phần khác (như web/chat.py)
 call_ollama = call_llm_api
 def parse_json_response(raw_text: str):
