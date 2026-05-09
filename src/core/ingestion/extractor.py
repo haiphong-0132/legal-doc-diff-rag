@@ -1,10 +1,16 @@
 """
+Extract document content (PDF/DOCX) and convert to plain text for LLM processing.
+
+Usage:
 - Sửa giá trị `INPUT_PATH`.
 - Chạy: `python extractor.py`.
+
 Luồng dữ liệu:
 - `extract_file(INPUT_PATH)`:
-    - Nếu là .pdf  -> `extract_pdf_text` 
-    - Nếu là .docx -> `extract_docx_text`
+    - Nếu là .pdf  -> `extract_pdf_text` (any2md -> Pandoc HTML -> text)
+    - Nếu là .docx -> `extract_docx_text` (Pandoc HTML -> text)
+    
+Output: Plain text (HTML tags removed, ready for chunking/embedding)
 """
 import sys
 from pathlib import Path

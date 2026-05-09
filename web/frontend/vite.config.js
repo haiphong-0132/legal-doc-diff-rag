@@ -8,7 +8,7 @@ export default defineConfig({
     allowedHosts: ['ben-overall-arlington-establishment.trycloudflare.com'],
     proxy: {
       '/api': {
-        target: 'https://previews-clear-brakes-transmission.trycloudflare.com',
+        target: 'http://127.0.0.1:8001',
         changeOrigin: true,
       },
     },

@@ -12,71 +12,46 @@ from src.schemas import (
 from src.core.chunker.legal_parser import build_json_tree
 from src.core.ingestion.extractor import extract_file
 
-from src.core.matching.scoring import extract_keywords
-
 def build_node_registry(nodes: List[Dict[str, Any]], registry: Dict[str, Dict[str, Any]] = None) -> Dict[str, Dict[str, Any]]:
-    """
-    Phẳng hóa và tối ưu hóa cây JSON bằng duyệt đệ quy bottom-up (Post-order Traversal).
-    Mỗi node chỉ được duyệt đúng 1 lần duy nhất (O(N) Complexity).
-    """
     if registry is None:
         registry = {}
-
+    
     for node in nodes:
         node_id = node.get("id")
         if not node_id:
             continue
+    
+    registry[node_id] = node
 
-        # 1. Đăng ký node vào Registry phẳng O(1)
-        registry[node_id] = node
+    children = node.get("con", [])
+    build_node_registry(children, registry)
 
-        # 2. Đệ quy xử lý tất cả các con trước (Bottom-Up)
-        children = node.get("con", [])
-        build_node_registry(children, registry)
+    own_content = str(node.get("noi_dung") or "").strip()
 
-        # 3. Gộp nội dung của chính nó với nội dung đã gộp & cache sẵn của các con trực tiếp
-        own_content = str(node.get("noi_dung") or "").strip()
-        all_texts = []
-        if own_content:
-            all_texts.append(own_content)
+    all_texts = []
 
-        # Lấy trực tiếp kết quả cache O(1) từ các con trực tiếp đã tính xong ở bước đệ quy trước
-        for child in children:
-            child_merged = child.get("cached_merged_text", "")
-            if child_merged:
-                all_texts.append(child_merged)
+    if own_content:
+        all_texts.append(own_content)
 
-        merged_text = "\n".join(all_texts) if all_texts else ""
-        
-        # 4. Cache kết quả gộp văn bản của node hiện tại
-        node["cached_merged_text"] = merged_text
-
-        # 5. Phân tích và Cache sẵn tập keywords
-        node["cached_keywords"] = set(extract_keywords(merged_text))
-
-    return registry
-
+    for child in children:
+        child_merged = child.get("cached_merge_text", "")
+        if child_merged:
+            all_texts.append(child_merged)
+    
+    merged_text = "\n".join(all_texts) if all_texts else ""
 
 class HierarchicalChunker:
     """Chunk raw hierarchical JSON while keeping title, content, refs, and section id."""
-
-    def __init__(self, by_article: bool = True):
-        self.by_article = by_article
 
     def chunk(
         self,
         data: HierarchicalChunkInput | Dict[str, Any] | List[Dict[str, Any]],
     ) -> List[ChunkDocumentForHierarchical]:
         document = self._validate_input(data)
-        root_nodes = self._get_root_nodes(document)
-
-        # 1. Dựng registry phẳng và pre-calculate/cache toàn bộ nội dung gộp
-        registry = build_node_registry(root_nodes)
-
-        # 2. Duyệt cây để tạo chunks dựa trên dữ liệu đã cache
         chunks: List[ChunkDocumentForHierarchical] = []
-        for node in root_nodes:
-            chunks.extend(self._walk_node(node=node, registry=registry))
+
+        for node in self._get_root_nodes(document):
+            chunks.extend(self._walk_node(node=node))
 
         return chunks
 
@@ -107,49 +82,26 @@ class HierarchicalChunker:
         self,
         *,
         node: Dict[str, Any],
-        registry: Dict[str, Dict[str, Any]],
     ) -> List[ChunkDocumentForHierarchical]:
         chunks: List[ChunkDocumentForHierarchical] = []
 
-        node_id = str(node.get("id") or "").strip()
-        node_type = str(node.get("loai") or "").strip().lower()
-
-        # Nếu cấu hình theo Điều và gặp node Điều, lấy nội dung gộp đã cache và dừng duyệt sâu
-        if self.by_article and node_type == "dieu":
-            chunk = self._build_chunk_from_registry(node_id, registry, use_merged=True)
-            if chunk is not None:
-                chunks.append(chunk)
-            return chunks
-
-        # Trích xuất thông thường (không phải Điều): lấy nội dung riêng của node đó (không gộp)
-        chunk = self._build_chunk_from_registry(node_id, registry, use_merged=False)
+        chunk = self._build_chunk(node=node)
         if chunk is not None:
             chunks.append(chunk)
 
-        # Tiếp tục duyệt sâu vào các con
         for child in self._get_children(node):
-            chunks.extend(self._walk_node(node=child, registry=registry))
+            chunks.extend(self._walk_node(node=child))
 
         return chunks
 
-    def _build_chunk_from_registry(
+    def _build_chunk(
         self,
-        node_id: str,
-        registry: Dict[str, Dict[str, Any]],
-        use_merged: bool = False,
+        *,
+        node: Dict[str, Any],
     ) -> ChunkDocumentForHierarchical | None:
-        node = registry.get(node_id)
-        if not node:
-            return None
-
+        node_id = str(node.get("id") or "").strip()
         title = self._as_clean_str(node.get("tieu_de"))
-        
-        # Sử dụng nội dung gộp đã cache hoặc nội dung thô riêng lẻ
-        if use_merged:
-            content = self._as_clean_str(node.get("cached_merged_text"))
-        else:
-            content = self._as_clean_str(node.get("noi_dung"))
-
+        content = self._as_clean_str(node.get("noi_dung"))
         refs = self._get_refs(node)
 
         if not any([title, content, refs]):
@@ -207,3 +159,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -116,7 +116,9 @@ def build_json_tree(text):
 
             current_b_loai = 'dieu'
             current_b_id = f"dieu_{m.group(1).lower()}"
-            current_b_tieu_de = m.group(2).strip()
+            dieu_num = m.group(1)
+            dieu_title = m.group(2).strip()
+            current_b_tieu_de = f"Điều {dieu_num}. {dieu_title}" if dieu_title else f"Điều {dieu_num}"
             current_lines = []
         else:
             current_lines.append(line)
@@ -191,6 +193,7 @@ def build_json_tree(text):
                 safe_id = raw_id.replace('.', '_')
                 current_khoan = {
                     "id": f"{b_id}.khoan_{safe_id}", "loai": "khoan",
+                    "tieu_de": f"Khoản {raw_id}",
                     "lines": [line], "con": []
                 }
 
@@ -204,7 +207,9 @@ def build_json_tree(text):
                 safe_id = raw_id.replace('.', '_')
                 parent_id = current_khoan['id'] if current_khoan else b_id
                 current_diem = {
-                    "id": f"{parent_id}.diem_{safe_id}", "loai": "diem", "lines": [line]
+                    "id": f"{parent_id}.diem_{safe_id}", "loai": "diem",
+                    "tieu_de": f"Điểm {raw_id}",
+                    "lines": [line]
                 }
 
             elif level == 'text':
