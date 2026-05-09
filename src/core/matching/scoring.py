@@ -1,5 +1,6 @@
 import difflib
 import re
+from typing import Optional
 
 import numpy as np
 
@@ -24,13 +25,22 @@ def jaccard(set_a: set, set_b: set) -> float:
     return intersection / union if union > 0 else 0.0
 
 
-def get_title_sim(title_a: str, title_b: str) -> float:
+def _clean_text(value: Optional[str]) -> str:
+    return (value or "").strip()
+
+
+def get_title_sim(title_a: Optional[str], title_b: Optional[str]) -> Optional[float]:
+    title_a = _clean_text(title_a)
+    title_b = _clean_text(title_b)
+    if not title_a or not title_b:
+        return None
+
     try:
         from thefuzz import fuzz
 
-        return fuzz.token_sort_ratio(title_a or "", title_b or "") / 100.0
+        return fuzz.token_sort_ratio(title_a, title_b) / 100.0
     except ImportError:
-        return difflib.SequenceMatcher(None, str(title_a or "").lower(), str(title_b or "").lower()).ratio()
+        return difflib.SequenceMatcher(None, title_a.lower(), title_b.lower()).ratio()
 
 
 def calculate_hybrid_score(record_a: ChunkRecord, record_b: ChunkRecord, pos_a: int, pos_b: int, n_a: int, n_b: int) -> float:
@@ -48,4 +58,8 @@ def calculate_hybrid_score(record_a: ChunkRecord, record_b: ChunkRecord, pos_a: 
     s_title = get_title_sim(record_a.chunk.tieu_de, record_b.chunk.tieu_de)
     s_pos = 1.0 - abs(pos_a / n_a - pos_b / n_b) if n_a > 0 and n_b > 0 else 0.0
     s_lex = jaccard(extract_keywords(record_a.query_text), extract_keywords(record_b.query_text))
-    return 0.40 * s_embed + 0.25 * s_title + 0.15 * s_pos + 0.20 * s_lex
+
+    if s_title is None:
+        return 0.50 * s_embed + 0.20 * s_pos + 0.30 * s_lex
+
+    return 0.35 * s_embed + 0.15 * s_title + 0.20 * s_pos + 0.30 * s_lex

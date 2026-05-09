@@ -7,6 +7,9 @@ import { decodeChunkId } from '../utils/formatId';
 export default function ResultsPage({ jobId, data }) {
   const [mode, setMode] = useState('results'); // 'results' | 'sidebyside'
   const [selectedItem, setSelectedItem] = useState(null);
+  const vb1Total = data.stats.so_luong_chunk_vb1 ?? data.stats.vb1_total ?? 0;
+  const vb2Total = data.stats.so_luong_chunk_vb2 ?? data.stats.vb2_total ?? 0;
+  const elapsed = data.stats.elapsed_s;
 
   const toggleBar = (
     <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -14,8 +17,8 @@ export default function ResultsPage({ jobId, data }) {
         <h2 className="text-xl font-bold text-gray-800 mb-1">Kết quả so sánh</h2>
         {mode === 'results' && (
           <p className="text-sm text-gray-500">
-            {data.stats.vb1_total} chunks VB1 &middot; {data.stats.vb2_total} chunks VB2
-            &middot; {data.stats.elapsed_s}s
+            {vb1Total} chunks VB1 &middot; {vb2Total} chunks VB2
+            {elapsed != null && <> &middot; {elapsed}s</>}
           </p>
         )}
       </div>
@@ -67,6 +70,7 @@ export default function ResultsPage({ jobId, data }) {
 function ChangeDetailModal({ item, onClose }) {
   const vb1Text = item.vb1?.noi_dung || item.vb1_excerpt || '';
   const vb2Text = item.vb2?.noi_dung || item.vb2_excerpt || '';
+  const isSemantic = item.kind === 'giong_nhau_ngu_nghia';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -76,7 +80,11 @@ function ChangeDetailModal({ item, onClose }) {
             <span className={`text-xs font-semibold px-2 py-1 rounded-full mr-3 ${kindStyle(item.kind)}`}>
               {kindLabel(item.kind)}
             </span>
-            <span className="text-sm text-gray-600">{decodeChunkId(item.vb1_chunk_id || item.vb2_chunk_id)}</span>
+            <span className="text-sm text-gray-600">
+              {isSemantic && item.vb1_chunk_id && item.vb2_chunk_id
+                ? `${decodeChunkId(item.vb1_chunk_id)} ↔ ${decodeChunkId(item.vb2_chunk_id)}`
+                : decodeChunkId(item.vb1_chunk_id || item.vb2_chunk_id)}
+            </span>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl cursor-pointer">✕</button>
         </div>
@@ -96,9 +104,9 @@ function ChangeDetailModal({ item, onClose }) {
           )}
         </div>
 
-        {(item.summary || item.changes?.length > 0) && (
+        {((!isSemantic && item.summary) || item.changes?.length > 0) && (
           <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-2xl">
-            {item.summary && (
+            {!isSemantic && item.summary && (
               <p className="text-sm text-gray-700 mb-2">
                 <span className="font-medium">Tóm tắt:</span> {item.summary}
               </p>
@@ -106,9 +114,22 @@ function ChangeDetailModal({ item, onClose }) {
             {item.changes?.length > 0 && (
               <div>
                 <span className="text-sm font-medium text-gray-700">Chi tiết thay đổi:</span>
-                <ul className="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
+                <ul className="text-sm text-gray-600 mt-2 space-y-2">
                   {item.changes.map((c, i) => (
-                    <li key={i}>{typeof c === 'object' ? `${c.old_content} → ${c.new_content}` : c}</li>
+                    <li key={i} className="rounded-lg border border-gray-200 bg-white px-3 py-2">
+                      {typeof c === 'object' ? (
+                        <div className="space-y-2">
+                          <p className="leading-relaxed">
+                            <span className="font-semibold text-red-600">Cũ:</span> {c.old_content}
+                          </p>
+                          <p className="leading-relaxed">
+                            <span className="font-semibold text-green-600">Mới:</span> {c.new_content}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-line leading-relaxed">{c}</p>
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -121,12 +142,18 @@ function ChangeDetailModal({ item, onClose }) {
 }
 
 function kindLabel(kind) {
-  return { sua_doi: 'Sửa đổi', them_moi: 'Thêm mới', xoa_bo: 'Xóa bỏ' }[kind] || kind;
+  return {
+    sua_doi: 'Sửa đổi',
+    them_moi: 'Thêm mới',
+    xoa_bo: 'Xóa bỏ',
+    giong_nhau_ngu_nghia: 'Giống ngữ nghĩa',
+  }[kind] || kind;
 }
 function kindStyle(kind) {
   return {
     sua_doi: 'bg-amber-100 text-amber-700',
     them_moi: 'bg-green-100 text-green-700',
     xoa_bo: 'bg-red-100 text-red-700',
+    giong_nhau_ngu_nghia: 'bg-blue-100 text-blue-700',
   }[kind] || 'bg-gray-100 text-gray-600';
 }

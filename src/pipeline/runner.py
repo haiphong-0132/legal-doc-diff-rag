@@ -1,13 +1,17 @@
 import argparse
+import json
 import time
-from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, List
 
-from src.config import EMBEDDING_MODEL_DIR, RERANKER_MODEL_DIR, VB1_PATH, VB2_PATH, logger
+import requests
+
+from src.config import EMBEDDING_MODEL_DIR, VB1_PATH, VB2_PATH, logger
 from src.core.chunker.hierarchical import HierarchicalChunker
 from src.core.chunker.legal_parser import build_json_tree
+from src.core.api.call_api import DEFAULT_BASE_URL, call_embed_api, call_rerank_api
 from src.core.embedding.embedding import EmbeddingPipeline
-from src.core.embedding.embedding_model import OnnxEmbeddingModel
+from src.core.embedding.embedding_model import EmbeddingModel
 from src.core.ingestion.extractor import extract_file
 from src.core.matching.chunk_formatter import format_chunk
 from src.core.matching.llm_review import llm_review_pair, llm_review_single
@@ -19,29 +23,6 @@ from src.core.vector_store.vectorstore import VectorStorePipeline
 from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, ChunkRecord, EmbeddingResult, MatchResult, PipelineResult
 
 
-def _init_reranker() -> Any:
-    model_dir = Path(RERANKER_MODEL_DIR)
-    try:
-        from FlagEmbedding import FlagReranker
-    except ImportError as exc:
-        raise RuntimeError(
-            "Missing dependency `FlagEmbedding`. Please install it in the environment used to run the pipeline."
-        ) from exc
-
-    try:
-        import torch
-        use_gpu = torch.cuda.is_available()
-    except ImportError:
-        use_gpu = False
-
-    device = "cuda" if use_gpu else "cpu"
-    if (model_dir / "config.json").exists():
-        return FlagReranker(str(model_dir), use_fp16=use_gpu, devices=device)
-
-    # Fall back to shared retrieval utility (can download/cache model if available).
-    return create_reranker()
-
-
 def _load_chunks(file_path: str) -> List[ChunkDocumentForHierarchical]:
     logger.info("Ingestion started for %s", file_path)
     payload = build_json_tree(extract_file(file_path))
@@ -51,11 +32,24 @@ def _load_chunks(file_path: str) -> List[ChunkDocumentForHierarchical]:
     return chunks
 
 
-def _embed_chunks(chunks: List[ChunkDocumentForHierarchical], model: OnnxEmbeddingModel) -> List[ChunkRecord]:
+def _embed_chunks(chunks: List[ChunkDocumentForHierarchical], model: EmbeddingModel | None, use_api: bool) -> List[ChunkRecord]:
     logger.info("Embedding %d chunks", len(chunks))
     pipeline = EmbeddingPipeline(chunk_documents=chunks)
     requests = pipeline._to_embedding_requests()
-    embeddings = model.embed(requests)
+    if use_api:
+        api_result = call_embed_api([request.text for request in requests])
+        embeddings = [
+            EmbeddingResult(
+                chunk_id=request.chunk_id,
+                text=request.text,
+                vector=vector,
+                token_count=0,
+            )
+            for request, vector in zip(requests, api_result.get("embeddings", []))
+        ]
+    else:
+        assert model is not None
+        embeddings = model.embed(requests)
 
     req_map = {r.chunk_id: r.text for r in requests if r.chunk_id}
     vec_map = {e.chunk_id: e.vector for e in embeddings if e.chunk_id}
@@ -76,6 +70,10 @@ def _build_embedding_results(records: List[ChunkRecord]) -> List[EmbeddingResult
         results.append(EmbeddingResult(chunk_id=record.chunk.metadata.section_id, text=record.query_text, vector=record.vector))
     logger.info("Prepared %d embedding results for vector store", len(results))
     return results
+
+
+def _chunk_content_for_report(chunk: ChunkDocumentForHierarchical) -> str:
+    return chunk.noi_dung or chunk.tieu_de or ""
 
 
 
@@ -124,9 +122,16 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             len(rem_vb1),
             len(rem_vb2),
         )
-        model = OnnxEmbeddingModel(model_dir=EMBEDDING_MODEL_DIR)
-        vb1_records = _embed_chunks(rem_vb1, model)
-        vb2_records = _embed_chunks(rem_vb2, model)
+        try:
+            requests.get(DEFAULT_BASE_URL, timeout=3).raise_for_status()
+            use_api = True
+        except requests.RequestException:
+            use_api = False
+
+        logger.info("Local API available=%s", use_api)
+        model = None if use_api else EmbeddingModel(model_dir=EMBEDDING_MODEL_DIR)
+        vb1_records = _embed_chunks(rem_vb1, model, use_api)
+        vb2_records = _embed_chunks(rem_vb2, model, use_api)
         vb1_embeddings = _build_embedding_results(vb1_records)
 
         vector_store = ChromaStore(
@@ -136,12 +141,35 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         VectorStorePipeline(embeddings=vb1_embeddings).run(vector_store, batch_size=32)
         logger.info("Vector store upsert finished: %d embeddings", len(vb1_embeddings))
 
+        if use_api:
+            def compute_score(pairs, normalize=True):
+                if not pairs:
+                    return []
+                queries = [pair[0] for pair in pairs]
+                documents = [pair[1] for pair in pairs]
+                if len(set(queries)) == 1:
+                    rerank_result = call_rerank_api(queries[0], documents, top_k=len(documents))
+                    scores = [0.0] * len(documents)
+                    for item in rerank_result.get("results", []):
+                        scores[int(item["index"])] = float(item["score"])
+                    return scores
+                scores = []
+                for query, document in pairs:
+                    rerank_result = call_rerank_api(query, [document], top_k=1)
+                    results_ = rerank_result.get("results", [])
+                    scores.append(float(results_[0]["score"]) if results_ else 0.0)
+                return scores
+
+            reranker = SimpleNamespace(compute_score=compute_score)
+        else:
+            reranker = create_reranker()
+
         retrieval_service = RetrievalService(
             embedding_model=None,
             vector_store=vector_store,
-            reranker=_init_reranker(),
+            reranker=reranker,
         )
-        logger.info("Reranker initialized")
+        logger.info("Reranker initialized via %s", "api" if use_api else "local model")
 
         global_matches = build_global_matches(vb1_records, vb2_records, vector_store, retrieval_service)
         results.extend(global_matches)
@@ -176,6 +204,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         if item is not None:
             change_items.append(item)
         else:
+            match.method = "llm_semantic_identical"
             llm_identical_pairs += 1
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
@@ -189,31 +218,40 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         item, _ = llm_review_single(chunk, "xoa_bo")
         change_items.append(item)
 
-    llm_output = render_change_report(change_items)
     raw_exact_count = len([r for r in results if r.method == "raw_exact"])
     high_confidence_greedy_count = len([r for r in results if r.method == "high_confidence_greedy"])
     hungarian_hybrid_count = len([r for r in results if r.method == "hungarian_hybrid"])
     high_confidence_total = high_confidence_greedy_count + llm_identical_pairs
+    modified_count = len([item for item in change_items if item.kind == "sua_doi"])
+    added_count = len([item for item in change_items if item.kind == "them_moi"])
+    deleted_count = len([item for item in change_items if item.kind == "xoa_bo"])
     logger.info("Phase 2 finished: llm_items=%d", len(change_items))
+    semantic_match_methods = {"high_confidence_greedy", "llm_semantic_identical"}
+    semantic_matches = []
+    for match in results:
+        if match.method not in semantic_match_methods or not match.vb1_chunk_id:
+            continue
+        vb1_chunk = vb1_map.get(match.vb1_chunk_id)
+        vb2_chunk = vb2_map.get(match.vb2_chunk_id)
+        if not vb1_chunk or not vb2_chunk:
+            continue
+        semantic_matches.append(
+            {
+                "vb1_chunk_id": match.vb1_chunk_id,
+                "vb2_chunk_id": match.vb2_chunk_id,
+                "vb1_content": _chunk_content_for_report(vb1_chunk),
+                "vb2_content": _chunk_content_for_report(vb2_chunk),
+                "method": match.method,
+                "distance": match.distance,
+                "rerank_score": match.rerank_score,
+                "hybrid_score": match.hybrid_score,
+            }
+        )
 
-    # Phase 3: Reporting
-    logger.info("Phase 3 started: writing report")
+    report = render_change_report(change_items, semantic_matches=semantic_matches)
 
-    report = f"""# Báo cáo luồng so khớp pháp lý (Pair Matching Pipeline)
-- **VB1 (Cũ):** `{vb1_path}`
-- **VB2 (Mới):** `{vb2_path}`
-
-## Thống kê tổng quan:
-- **Giống hệt nhau (Raw Exact matches):** {raw_exact_count} cặp
-- **Giống nhau tin cậy cao :** {high_confidence_total} cặp
-- **Sửa đổi cần phân tích :** {hungarian_hybrid_count} cặp
-- **Số lượng yêu cầu đẩy lên LLM:** {len(change_items)} (Gồm các cặp sửa đổi + Các đoạn thêm mới/xóa bỏ)
-
----
-{llm_output}
-"""
     logger.info(
-        "Phase 3 finished: raw_exact=%d high_conf_total=%d (greedy=%d llm_identical=%d) hungarian_hybrid=%d llm_items=%d",
+        "Pipeline summary: raw_exact=%d high_conf_total=%d (greedy=%d llm_identical=%d) hungarian_hybrid=%d llm_items=%d",
         raw_exact_count,
         high_confidence_total,
         high_confidence_greedy_count,
@@ -223,16 +261,13 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     )
     logger.info("Pipeline Finished in %.2fs.", time.time() - start_time)
     stats = {
-        "raw_exact": raw_exact_count,
-        # Keep legacy key for frontend card, but now represent total high-confidence pairs.
-        "high_confidence_greedy": high_confidence_total,
-        "high_confidence_greedy_only": high_confidence_greedy_count,
-        "high_confidence_llm_identical": llm_identical_pairs,
-        "hungarian_hybrid": hungarian_hybrid_count,
-        "llm_items": len(change_items),
-        "vb1_total": len(vb1_chunks),
-        "vb2_total": len(vb2_chunks),
-        "elapsed_s": round(time.time() - start_time, 2),
+        "so_luong_chunk_vb1": len(vb1_chunks),
+        "so_luong_chunk_vb2": len(vb2_chunks),
+        "giong_nhau_hoan_toan": raw_exact_count,
+        "giong_nhau_ngu_nghia": high_confidence_total,
+        "sua_doi": modified_count,
+        "them_moi": added_count,
+        "xoa_bo": deleted_count,
     }
     _notify("done", "Hoàn thành!")
     return PipelineResult(
@@ -256,3 +291,5 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 if __name__ == "__main__":
     args = _build_arg_parser().parse_args()
     result = run_pipeline(vb1_path=args.vb1, vb2_path=args.vb2)
+    print(json.dumps(result.stats, ensure_ascii=False, indent=2))
+    print(json.dumps(result.report_text, ensure_ascii=False, indent=2))
