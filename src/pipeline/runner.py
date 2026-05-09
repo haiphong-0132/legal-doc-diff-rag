@@ -182,9 +182,11 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             len(rem_vb2),
         )
         try:
+            logger.info("Checking API at %s", f"{DEFAULT_BASE_URL.rstrip('/')}/docs")
             requests.get(f"{DEFAULT_BASE_URL.rstrip('/')}/docs", timeout=3).raise_for_status()
             use_api = True
-        except requests.RequestException:
+        except requests.RequestException as exc:
+            logger.warning("API Check failed: %s", exc)
             use_api = False
 
         logger.info("Local API available=%s", use_api)
@@ -255,7 +257,8 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     change_items: List[ChangeItem] = []
     llm_identical_pairs = 0
 
-    for match in results:
+    from tqdm import tqdm
+    for match in tqdm(results, desc="Phase 2: LLM Review"):
         if match.method != "hungarian_hybrid":
             continue
         if not match.vb1_chunk_id or not match.vb2_chunk_id:

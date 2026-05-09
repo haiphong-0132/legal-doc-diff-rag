@@ -3,6 +3,7 @@ from typing import List, Optional
 import os
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -88,7 +89,7 @@ def build_global_matches(
                 executor.submit(_pass1_worker, vb2_rec, vector_store, retrieval_service, reranker_lock): vb2_rec.chunk.metadata.section_id
                 for vb2_rec in vb2_records
             }
-            for future in as_completed(future_to_id):
+            for future in tqdm(as_completed(future_to_id), total=len(future_to_id), desc="Pass 1: Greedy Match"):
                 try:
                     vb2_id, reranked = future.result()
                     rerank_results[vb2_id] = reranked
@@ -147,7 +148,7 @@ def build_global_matches(
             ): i
             for i, vb2_rec in enumerate(rem_vb2_records)
         }
-        for future in as_completed(row_futures):
+        for future in tqdm(as_completed(row_futures), total=len(row_futures), desc="Pass 2: Hybrid Matrix"):
             i, row, meta_row = future.result()
             cost_matrix[i] = row
             for j, meta in meta_row.items():

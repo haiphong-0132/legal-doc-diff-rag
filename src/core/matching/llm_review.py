@@ -13,26 +13,11 @@ from src.core.matching.llm_prompts import (
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
 
-def call_local_llm(messages: list[dict], max_length: int = 2000) -> str:
-    prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
-    logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
-
-    response = call_generate_api(
-        messages=messages,
-        max_length=max_length,
-        temperature=0,
-        timeout=180,
-    )
-    answer = str(response.get("answer", "")).strip()
-    logger.info("Local generate API response received: %d chars", len(answer))
-    return answer
-
-
 def call_llm_api(prompt: str, max_length: int = 2000) -> str:
     return call_local_llm([{"role": "user", "content": prompt}], max_length=max_length)
 
 
-def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
+def call_local_llm(messages: list[dict], max_length: int = 2000) -> str:
     prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
     logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
     try:
@@ -57,10 +42,31 @@ def parse_json_response(raw_text: str):
     try:
         return json.loads(raw_text)
     except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", raw_text, flags=re.DOTALL)
-        if not match:
-            raise
-        return json.loads(match.group(0))
+        # Xử lý nếu model sinh ra markdown code block (VD: ```json ... ```)
+        match = re.search(r"```(?:json)?\s*(.*?)\s*```", raw_text, flags=re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(1))
+            except:
+                pass
+                
+        # Tìm đoạn JSON đầu tiên bằng cách đếm ngoặc {} (Hỗ trợ ngoặc lồng nhau)
+        start = raw_text.find('{')
+        if start != -1:
+            count = 0
+            for i in range(start, len(raw_text)):
+                if raw_text[i] == '{':
+                    count += 1
+                elif raw_text[i] == '}':
+                    count -= 1
+                    
+                if count == 0:
+                    json_str = raw_text[start:i+1]
+                    try:
+                        return json.loads(json_str)
+                    except:
+                        break
+        raise
 
 
 def llm_review_pair(
@@ -91,7 +97,6 @@ def llm_review_pair(
             vb2_chunk.metadata.section_id,
         )
         return None, "SKIPPED: content identical"
-
     messages = [
         {"role": "system", "content": PAIR_REVIEW_SYSTEM_PROMPT},
         {
@@ -105,7 +110,6 @@ def llm_review_pair(
     ]
     vb1_excerpt = vb1_chunk.noi_dung or vb1_chunk.tieu_de or ""
     vb2_excerpt = vb2_chunk.noi_dung or vb2_chunk.tieu_de or ""
-
     try:
         raw_text = call_local_llm(messages)
         data = parse_json_response(raw_text)
@@ -232,16 +236,16 @@ def llm_review_khoan_with_diem(
 
     comparison_str = "\n".join(comparison_text)
 
-    prompt = f"""Bạn là chuyên gia phân tích thay đổi văn bản pháp luật cấp cao.
-Hãy so sánh sự thay đổi về nội dung thực tế giữa các phần tử con (Khoản, Điểm) trong cùng một Điều cha.
+    prompt = f"""<system>
+Bạn là hệ thống so sánh thay đổi văn bản pháp luật cấp cao.
+Chỉ trả về danh sách JSON (List of Objects) hợp lệ. Không bọc JSON trong markdown. Không giải thích.
+</system>
 
-NGUYÊN TẮC REVIEW QUAN TRỌNG:
-1. CHỈ báo cáo thay đổi về NỘI DUNG THỰC SỰ (quyền, nghĩa vụ, điều kiện, mức phạt, thời hạn, số tiền, phạm vi...).
-2. KHÔNG báo cáo thay đổi về: số thứ tự điều khoản, mã đoạn con (ví dụ: a) -> b), Khoản 1 -> Khoản 2), lỗi định dạng, dấu câu.
-3. Nếu nội dung của một cặp ghép hoàn toàn giống nhau (chỉ khác số thứ tự/mã đoạn hoặc phong cách hành văn đồng nghĩa) -> BỎ QUA không ghi nhận thay đổi cho cặp đó.
-4. Với mỗi phần tử con THÊM MỚI hoặc XÓA BỎ, hãy tóm tắt nội dung pháp lý của phần tử đó.
+<task>
+So sánh sự thay đổi về nội dung thực tế giữa các phần tử con (Khoản, Điểm) trong cùng một Điều cha.
+</task>
 
-Yêu cầu trả về duy nhất một chuỗi JSON hợp lệ theo định dạng danh sách (List of Objects) như sau:
+<output_schema>
 [
   {{
     "kind": "sua_doi" | "them_moi" | "xoa_bo",

@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import requests
+from dotenv import load_dotenv
 
+# Tìm thư mục gốc của project chứa file .env
+root_dir = Path(__file__).resolve().parent.parent.parent.parent
+load_dotenv(dotenv_path=root_dir / ".env", override=True)
 
-DEFAULT_BASE_URL = os.getenv("API_BASE_URL", "https://lee-entry-draws-attractive.trycloudflare.com")
+DEFAULT_BASE_URL = os.getenv("API_BASE_URL", "localhost:8080")
 DEFAULT_TIMEOUT = 180
 
 
