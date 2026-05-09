@@ -13,7 +13,7 @@ from src.core.matching.llm_prompts import (
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
 
-def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
+def call_local_llm(messages: list[dict], max_length: int = 2000) -> str:
     prompt_chars = sum(len(str(message.get("content", ""))) for message in messages)
     logger.info("Calling local generate API messages=%d prompt_chars=%d", len(messages), prompt_chars)
 
@@ -28,6 +28,12 @@ def call_local_llm(messages: list[dict], max_length: int = 512) -> str:
     return answer
 
 
+def call_llm_api(prompt: str, max_length: int = 2000) -> str:
+    return call_local_llm([{"role": "user", "content": prompt}], max_length=max_length)
+
+
+# Giữ alias call_ollama để đảm bảo tương thích 100% với các phần khác (như web/chat.py)
+call_ollama = call_llm_api
 def parse_json_response(raw_text: str):
     raw_text = raw_text.strip()
     try:

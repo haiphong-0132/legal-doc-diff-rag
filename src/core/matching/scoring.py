@@ -25,6 +25,7 @@ def jaccard(set_a: set, set_b: set) -> float:
     return intersection / union if union > 0 else 0.0
 
 
+
 def _clean_text(value: Optional[str]) -> str:
     return (value or "").strip()
 
@@ -63,5 +64,4 @@ def calculate_hybrid_score(record_a: ChunkRecord, record_b: ChunkRecord, pos_a: 
 
     if s_title is None:
         return 0.50 * s_embed + 0.20 * s_pos + 0.30 * s_lex
-
     return 0.35 * s_embed + 0.15 * s_title + 0.20 * s_pos + 0.30 * s_lex
