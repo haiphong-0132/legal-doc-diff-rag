@@ -23,16 +23,67 @@ from src.core.vector_store.vectorstore import VectorStorePipeline
 from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, ChunkRecord, EmbeddingResult, MatchResult, PipelineResult
 
 
-def _load_chunks(file_path: str) -> List[ChunkDocumentForHierarchical]:
+class DummyReranker:
+    def compute_score(self, pairs: list, normalize: bool = True) -> list[float]:
+        logger.warning(
+            "RERANKER WARNING: Local reranker weights not found in '%s'. Falling back to DummyReranker (scores = 1.0) to strictly prevent any internet downloads.",
+            RERANKER_MODEL_DIR,
+        )
+        return [1.0] * len(pairs)
+
+
+def _init_reranker() -> Any:
+    model_dir = Path(RERANKER_MODEL_DIR)
+    try:
+        from FlagEmbedding import FlagReranker
+    except ImportError as exc:
+        raise RuntimeError(
+            "Missing dependency `FlagEmbedding`. Please install it in the environment used to run the pipeline."
+        ) from exc
+
+    try:
+        import torch
+        use_gpu = torch.cuda.is_available()
+    except ImportError:
+        use_gpu = False
+
+    device = "cuda" if use_gpu else "cpu"
+    
+    # Kiểm tra nghiêm ngặt sự hiện diện của file cấu hình và file trọng số chính thức
+    has_weights = any(
+        (model_dir / f).exists()
+        for f in ["pytorch_model.bin", "model.safetensors", "model.onnx", "onnx/model.onnx", "tf_model.h5"]
+    )
+    
+    if (model_dir / "config.json").exists() and has_weights:
+        return FlagReranker(str(model_dir), use_fp16=use_gpu, devices=device)
+
+    # Nếu không đủ file trọng số local, tuyệt đối không tải từ mạng, trả về DummyReranker
+    return DummyReranker()
+
+
+def _load_chunks(file_path: str) -> tuple[List[ChunkDocumentForHierarchical], dict]:
     logger.info("Ingestion started for %s", file_path)
     payload = build_json_tree(extract_file(file_path))
     logger.info("Built JSON tree for %s", file_path)
-    chunks = HierarchicalChunker().chunk({"payload": payload})
-    logger.info("Loaded %d chunks from %s", len(chunks), file_path)
-    return chunks
+
+    # 1. Dựng Registry phẳng O(1) và tính sẵn cached_keywords từ dưới lên
+    from src.core.chunker.hierarchical import build_node_registry
+    registry = build_node_registry(payload)
+
+    # 2. Tạo Chunks cấp Điều (Article)
+    chunks = HierarchicalChunker(chunk_by="dieu").chunk({"payload": payload})
+
+    logger.info("Loaded %d chunks and built registry with %d nodes from %s", len(chunks), len(registry), file_path)
+    return chunks, registry
 
 
-def _embed_chunks(chunks: List[ChunkDocumentForHierarchical], model: EmbeddingModel | None, use_api: bool) -> List[ChunkRecord]:
+def _embed_chunks(
+    chunks: List[ChunkDocumentForHierarchical],
+    model: EmbeddingModel | None,
+    use_api: bool,
+    registry: dict,
+) -> List[ChunkRecord]:
     logger.info("Embedding %d chunks", len(chunks))
     pipeline = EmbeddingPipeline(chunk_documents=chunks)
     requests = pipeline._to_embedding_requests()
@@ -55,7 +106,12 @@ def _embed_chunks(chunks: List[ChunkDocumentForHierarchical], model: EmbeddingMo
     vec_map = {e.chunk_id: e.vector for e in embeddings if e.chunk_id}
 
     records = [
-        ChunkRecord(chunk=c, query_text=req_map.get(c.metadata.section_id, ""), vector=vec_map.get(c.metadata.section_id))
+        ChunkRecord(
+            chunk=c,
+            query_text=req_map.get(c.metadata.section_id, ""),
+            vector=vec_map.get(c.metadata.section_id),
+            cached_keywords=registry.get(c.metadata.section_id.replace("_header", ""), {}).get("cached_keywords", set())
+        )
         for c in chunks
     ]
     logger.info("Embedding finished: %d/%d chunks have vectors", sum(1 for record in records if record.vector), len(records))
@@ -83,8 +139,8 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     logger.info("Pipeline started")
 
     _notify("loading", "Đang đọc và phân tách văn bản...")
-    vb1_chunks = _load_chunks(vb1_path)
-    vb2_chunks = _load_chunks(vb2_path)
+    vb1_chunks, registry_vb1 = _load_chunks(vb1_path)
+    vb2_chunks, registry_vb2 = _load_chunks(vb2_path)
     vb1_map = {c.metadata.section_id: c for c in vb1_chunks}
     logger.info("Chunk loading finished: VB1=%d, VB2=%d", len(vb1_chunks), len(vb2_chunks))
 
@@ -123,15 +179,15 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             len(rem_vb2),
         )
         try:
-            requests.get(DEFAULT_BASE_URL, timeout=3).raise_for_status()
+            requests.get(f"{DEFAULT_BASE_URL.rstrip('/')}/docs", timeout=3).raise_for_status()
             use_api = True
         except requests.RequestException:
             use_api = False
 
         logger.info("Local API available=%s", use_api)
         model = None if use_api else EmbeddingModel(model_dir=EMBEDDING_MODEL_DIR)
-        vb1_records = _embed_chunks(rem_vb1, model, use_api)
-        vb2_records = _embed_chunks(rem_vb2, model, use_api)
+        vb1_records = _embed_chunks(rem_vb1, model, use_api, registry_vb1)
+        vb2_records = _embed_chunks(rem_vb2, model, use_api, registry_vb2)
         vb1_embeddings = _build_embedding_results(vb1_records)
 
         vector_store = ChromaStore(
@@ -186,9 +242,12 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     else:
         logger.info("Phase 1 skipped: remaining VB1=%d, remaining VB2=%d", len(rem_vb1), len(rem_vb2))
 
-    # Phase 2: LLM per matched pair / addition / deletion
+    # Phase 2: Hierarchical Zoom-In & Unified LLM Review
     _notify("phase_2", "Phase 2: LLM phân tích các cặp thay đổi...")
     logger.info("Phase 2 started")
+    from src.core.matching.matcher import match_sub_nodes
+    from src.core.matching.llm_review import llm_review_khoan_with_diem
+
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
     change_items: List[ChangeItem] = []
     llm_identical_pairs = 0
@@ -196,16 +255,84 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     for match in results:
         if match.method != "hungarian_hybrid":
             continue
-        if not match.vb1_chunk_id:
+        if not match.vb1_chunk_id or not match.vb2_chunk_id:
             continue
-        vb1_c = vb1_map[match.vb1_chunk_id]
-        vb2_c = vb2_map[match.vb2_chunk_id]
-        item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
-        if item is not None:
-            change_items.append(item)
+
+        vb1_id = match.vb1_chunk_id
+        vb2_id = match.vb2_chunk_id
+        vb1_c = vb1_map[vb1_id]
+        vb2_c = vb2_map[vb2_id]
+
+        # Lấy các node tương ứng từ Registry
+        node_1 = registry_vb1.get(vb1_id.replace("_header", ""))
+        node_2 = registry_vb2.get(vb2_id.replace("_header", ""))
+        clauses_1 = node_1.get("con", []) if node_1 else []
+        clauses_2 = node_2.get("con", []) if node_2 else []
+
+        if not clauses_1 and not clauses_2:
+            # Nếu không có Khoản con (Điều đơn lập), chạy review phẳng nguyên bản
+            item, _ = llm_review_pair(vb1_c, vb2_c, match.method)
+            if item is not None:
+                change_items.append(item)
+            else:
+                llm_identical_pairs += 1
         else:
-            match.method = "llm_semantic_identical"
-            llm_identical_pairs += 1
+            # Tiến hành Progressive Zoom-In phân cấp xuống các Khoản con
+            matched_clauses, unmatched_cl_1, unmatched_cl_2 = match_sub_nodes(clauses_1, clauses_2)
+
+            all_matched_subs = []
+            all_unmatched_sub_1 = []
+            all_unmatched_sub_2 = []
+
+            # Ghi nhận các Khoản đã khớp và tiếp tục Zoom-In xuống các Điểm con trực thuộc
+            for cl1_id, cl2_id, cl_score in matched_clauses:
+                all_matched_subs.append((cl1_id, cl2_id, cl_score))
+
+                c1_node = registry_vb1.get(cl1_id) or {}
+                c2_node = registry_vb2.get(cl2_id) or {}
+                pts_1 = c1_node.get("con", [])
+                pts_2 = c2_node.get("con", [])
+
+                if pts_1 or pts_2:
+                    matched_pts, unmatched_pts_1, unmatched_pts_2 = match_sub_nodes(pts_1, pts_2)
+                    all_matched_subs.extend(matched_pts)
+                    all_unmatched_sub_1.extend(unmatched_pts_1)
+                    all_unmatched_sub_2.extend(unmatched_pts_2)
+
+            # Thu thập các Khoản bị xóa/thêm mới cùng toàn bộ Điểm con bên dưới chúng
+            for cl1 in unmatched_cl_1:
+                all_unmatched_sub_1.append(cl1)
+                for pt in cl1.get("con", []):
+                    all_unmatched_sub_1.append(pt)
+
+            for cl2 in unmatched_cl_2:
+                all_unmatched_sub_2.append(cl2)
+                for pt in cl2.get("con", []):
+                    all_unmatched_sub_2.append(pt)
+
+            # LỌC CÁC CẶP CON: Dùng score để phân định các cặp thực sự khác nhau (có nguy cơ thay đổi pháp lý)
+            filtered_matched_subs = []
+            for sub1_id, sub2_id, score in all_matched_subs:
+                # Nếu score < 0.98, coi như có sự khác biệt về mặt câu chữ/nội dung pháp lý
+                if score < 0.98:
+                    filtered_matched_subs.append((sub1_id, sub2_id))
+
+            # Nếu không có bất kỳ thay đổi nào ở tất cả các con (không thêm mới, không xóa bỏ, và các cặp khớp đều giống hệt)
+            if not filtered_matched_subs and not all_unmatched_sub_1 and not all_unmatched_sub_2:
+                llm_identical_pairs += 1
+                logger.info("Skipped LLM review for Article VB1=%s <-> VB2=%s because all sub-nodes are identical based on scores.", vb1_id, vb2_id)
+            else:
+                # Gọi LLM Review gộp ngữ cảnh Điều + Khoản + Điểm duy nhất
+                items, _ = llm_review_khoan_with_diem(
+                    vb1_parent_id=vb1_id.replace("_header", ""),
+                    vb2_parent_id=vb2_id.replace("_header", ""),
+                    matched_sub_pairs=filtered_matched_subs,
+                    unmatched_sub_1=all_unmatched_sub_1,
+                    unmatched_sub_2=all_unmatched_sub_2,
+                    registry_vb1=registry_vb1,
+                    registry_vb2=registry_vb2
+                )
+                change_items.extend(items)
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]

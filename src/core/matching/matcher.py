@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+
 import os
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -59,8 +60,9 @@ def _score_row(
 def build_global_matches(
     vb1_records: List[ChunkRecord],
     vb2_records: List[ChunkRecord],
-    vector_store: ChromaStore,
-    retrieval_service: RetrievalService,
+    vector_store: Optional[ChromaStore] = None,
+    retrieval_service: Optional[RetrievalService] = None,
+    hybrid_threshold: float = HYBRID_THRESHOLD,
 ) -> List[MatchResult]:
     if not vb1_records or not vb2_records:
         return []
@@ -76,47 +78,48 @@ def build_global_matches(
     # ------------------------------------------------------------------
     # Pass 1: Greedy Match — parallel query+rerank, sequential selection
     # ------------------------------------------------------------------
-    logger.info("Pass 1: Bắt đầu tìm kiếm ứng viên (Greedy Match) — %d workers", _MATCHER_WORKERS)
-    reranker_lock = threading.Lock()
-    rerank_results: dict = {}
+    if vector_store and retrieval_service:
+        logger.info("Pass 1: Bắt đầu tìm kiếm ứng viên (Greedy Match) — %d workers", _MATCHER_WORKERS)
+        reranker_lock = threading.Lock()
+        rerank_results: dict = {}
 
-    with ThreadPoolExecutor(max_workers=_MATCHER_WORKERS) as executor:
-        future_to_id = {
-            executor.submit(_pass1_worker, vb2_rec, vector_store, retrieval_service, reranker_lock): vb2_rec.chunk.metadata.section_id
-            for vb2_rec in vb2_records
-        }
-        for future in as_completed(future_to_id):
-            vb2_id, reranked = future.result()
-            rerank_results[vb2_id] = reranked
+        with ThreadPoolExecutor(max_workers=_MATCHER_WORKERS) as executor:
+            future_to_id = {
+                executor.submit(_pass1_worker, vb2_rec, vector_store, retrieval_service, reranker_lock): vb2_rec.chunk.metadata.section_id
+                for vb2_rec in vb2_records
+            }
+            for future in as_completed(future_to_id):
+                vb2_id, reranked = future.result()
+                rerank_results[vb2_id] = reranked
 
-    # Greedy selection in original order to preserve determinism
-    for vb2_record in vb2_records:
-        vb2_id = vb2_record.chunk.metadata.section_id
-        reranked = rerank_results.get(vb2_id, [])
-        if not reranked:
-            continue
-        top_item, rerank_score = reranked[0]
-        distance = float(top_item.distance)
-        rerank_score = float(rerank_score)
-        if distance < DISTANCE_THRESHOLD and rerank_score >= RERANK_THRESHOLD and top_item.chunk_id not in matched_vb1:
-            matches.append(
-                MatchResult(
-                    vb2_chunk_id=vb2_id,
-                    vb1_chunk_id=top_item.chunk_id,
-                    method="high_confidence_greedy",
-                    distance=distance,
-                    rerank_score=rerank_score,
+        # Greedy selection in original order to preserve determinism
+        for vb2_record in vb2_records:
+            vb2_id = vb2_record.chunk.metadata.section_id
+            reranked = rerank_results.get(vb2_id, [])
+            if not reranked:
+                continue
+            top_item, rerank_score = reranked[0]
+            distance = float(top_item.distance)
+            rerank_score = float(rerank_score)
+            if distance < DISTANCE_THRESHOLD and rerank_score >= RERANK_THRESHOLD and top_item.chunk_id not in matched_vb1:
+                matches.append(
+                    MatchResult(
+                        vb2_chunk_id=vb2_id,
+                        vb1_chunk_id=top_item.chunk_id,
+                        method="high_confidence_greedy",
+                        distance=distance,
+                        rerank_score=rerank_score,
+                    )
                 )
-            )
-            matched_vb1.add(top_item.chunk_id)
-            matched_vb2.add(vb2_id)
-            logger.info(
-                "Pass 1 accepted: VB2=%s -> VB1=%s (Dist=%.3f, Rerank=%.3f)",
-                vb2_id,
-                top_item.chunk_id,
-                distance,
-                rerank_score,
-            )
+                matched_vb1.add(top_item.chunk_id)
+                matched_vb2.add(vb2_id)
+                logger.info(
+                    "Pass 1 accepted: VB2=%s -> VB1=%s (Dist=%.3f, Rerank=%.3f)",
+                    vb2_id,
+                    top_item.chunk_id,
+                    distance,
+                    rerank_score,
+                )
 
     rem_vb1_records = [r for r in vb1_records if r.chunk.metadata.section_id not in matched_vb1]
     rem_vb2_records = [r for r in vb2_records if r.chunk.metadata.section_id not in matched_vb2]
@@ -153,7 +156,7 @@ def build_global_matches(
             continue
         vb2_id = rem_vb2_records[i].chunk.metadata.section_id
         vb1_id = rem_vb1_records[j].chunk.metadata.section_id
-        if meta["hybrid_score"] >= HYBRID_THRESHOLD:
+        if meta["hybrid_score"] >= hybrid_threshold:
             matches.append(
                 MatchResult(
                     vb2_chunk_id=vb2_id,
@@ -171,3 +174,108 @@ def build_global_matches(
                 meta["hybrid_score"],
             )
     return matches
+
+
+
+_EMBED_MODEL = None
+
+def get_embed_model():
+    """
+    Cache singleton OnnxEmbeddingModel để tránh việc đọc ổ đĩa lặp lại nhiều lần.
+    """
+    global _EMBED_MODEL
+    if _EMBED_MODEL is None:
+        from src.config import EMBEDDING_MODEL_DIR
+        from src.core.embedding.embedding_model import OnnxEmbeddingModel
+        _EMBED_MODEL = OnnxEmbeddingModel(model_dir=EMBEDDING_MODEL_DIR)
+    return _EMBED_MODEL
+
+
+def match_sub_nodes(
+    nodes_1: List[dict],
+    nodes_2: List[dict],
+) -> tuple[List[tuple[str, str, float]], List[dict], List[dict]]:
+    """
+    So khớp cục bộ các con (Khoản hoặc Điểm) sử dụng mô hình nhúng On-The-Fly
+    và thuật toán Hungarian tối ưu hóa toàn cục.
+    """
+    if not nodes_1 or not nodes_2:
+        return [], nodes_1, nodes_2
+
+    from src.schemas import ChunkRecord, ChunkDocumentForHierarchical, ChunkMetadata
+
+    # 1. Chuyển đổi các dict nodes thành ChunkRecord để đồng bộ dữ liệu
+    rec_list_1 = []
+    for n1 in nodes_1:
+        doc = ChunkDocumentForHierarchical(
+            metadata=ChunkMetadata(section_id=str(n1.get("id") or "")),
+            tieu_de=n1.get("tieu_de", ""),
+            noi_dung=n1.get("noi_dung", ""),
+            ref=n1.get("ref", [])
+        )
+        rec = ChunkRecord(
+            chunk=doc,
+            query_text=n1.get("noi_dung") or n1.get("tieu_de") or "",
+            vector=None,
+            cached_keywords=n1.get("cached_keywords", set())
+        )
+        rec_list_1.append(rec)
+
+    rec_list_2 = []
+    for n2 in nodes_2:
+        doc = ChunkDocumentForHierarchical(
+            metadata=ChunkMetadata(section_id=str(n2.get("id") or "")),
+            tieu_de=n2.get("tieu_de", ""),
+            noi_dung=n2.get("noi_dung", ""),
+            ref=n2.get("ref", [])
+        )
+        rec = ChunkRecord(
+            chunk=doc,
+            query_text=n2.get("noi_dung") or n2.get("tieu_de") or "",
+            vector=None,
+            cached_keywords=n2.get("cached_keywords", set())
+        )
+        rec_list_2.append(rec)
+
+    # 2. Sinh vector On-The-Fly để giải quyết triệt để vấn đề diễn đạt lại (Paraphrase)
+    try:
+        from src.schemas import EmbeddingRequest
+        reqs_1 = [EmbeddingRequest(chunk_id=r.chunk.metadata.section_id, text=r.query_text) for r in rec_list_1]
+        reqs_2 = [EmbeddingRequest(chunk_id=r.chunk.metadata.section_id, text=r.query_text) for r in rec_list_2]
+        
+        embed_model = get_embed_model()
+        vecs_1 = {res.chunk_id: res.vector for res in embed_model.embed(reqs_1)}
+        vecs_2 = {res.chunk_id: res.vector for res in embed_model.embed(reqs_2)}
+        
+        for r in rec_list_1:
+            r.vector = vecs_1.get(r.chunk.metadata.section_id)
+        for r in rec_list_2:
+            r.vector = vecs_2.get(r.chunk.metadata.section_id)
+    except Exception as e:
+        logger.warning("Không thể chạy Embedding On-The-Fly cho sub-nodes: %s. Chuyển sang so khớp không vector.", e)
+
+    # 3. Gọi hàm build_global_matches (truyền vector_store=None để bỏ qua Pass 1)
+    # Ngưỡng lai lúc này có vector ngữ nghĩa được cấu hình là HYBRID_THRESHOLD gốc (0.45) để lọc chính xác nhất
+    matches = build_global_matches(
+        vb1_records=rec_list_1,
+        vb2_records=rec_list_2,
+        vector_store=None,
+        retrieval_service=None,
+        hybrid_threshold=0.45
+    )
+
+    matched_pairs = []
+    matched_1_ids = set()
+    matched_2_ids = set()
+    for m in matches:
+        matched_pairs.append((m.vb1_chunk_id, m.vb2_chunk_id, m.hybrid_score or 0.0))
+        if m.vb1_chunk_id:
+            matched_1_ids.add(m.vb1_chunk_id)
+        if m.vb2_chunk_id:
+            matched_2_ids.add(m.vb2_chunk_id)
+
+    unmatched_1 = [n for n in nodes_1 if n.get("id") not in matched_1_ids]
+    unmatched_2 = [n for n in nodes_2 if n.get("id") not in matched_2_ids]
+
+    return matched_pairs, unmatched_1, unmatched_2
+

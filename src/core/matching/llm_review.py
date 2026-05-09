@@ -165,3 +165,118 @@ def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[C
         method=kind,
         changes=[str(c).strip() for c in data.get("changes", []) if str(c).strip()],
     ), raw_text
+
+
+def llm_review_khoan_with_diem(
+    vb1_parent_id: str,
+    vb2_parent_id: str,
+    matched_sub_pairs: list[tuple[str, str]],
+    unmatched_sub_1: list[dict],
+    unmatched_sub_2: list[dict],
+    registry_vb1: dict,
+    registry_vb2: dict,
+) -> tuple[list[ChangeItem], str]:
+    """
+    Review toàn bộ thay đổi cấp con (Khoản, Điểm) của một Điều cha trong cùng một cuộc gọi LLM duy nhất.
+    Giúp giữ trọn vẹn ngữ cảnh và tối ưu chi phí API.
+    """
+    comparison_text = []
+
+    comparison_text.append("=== ĐIỀU CHA ===")
+    p1 = registry_vb1.get(vb1_parent_id) or {}
+    p2 = registry_vb2.get(vb2_parent_id) or {}
+    comparison_text.append(f"VB1: {p1.get('tieu_de', '')} - {p1.get('noi_dung', '')}")
+    comparison_text.append(f"VB2: {p2.get('tieu_de', '')} - {p2.get('noi_dung', '')}\n")
+
+    comparison_text.append("=== CÁC PHẦN TỬ CON ĐÃ GHÉP CẶP ===")
+    for idx, (id1, id2) in enumerate(matched_sub_pairs):
+        n1 = registry_vb1.get(id1) or {}
+        n2 = registry_vb2.get(id2) or {}
+        comparison_text.append(f"Cặp #{idx+1}:")
+        comparison_text.append(f"  - VB1 [ID: {id1}]: {n1.get('tieu_de', '')} {n1.get('noi_dung', '')}")
+        comparison_text.append(f"  - VB2 [ID: {id2}]: {n2.get('tieu_de', '')} {n2.get('noi_dung', '')}")
+
+    if unmatched_sub_1:
+        comparison_text.append("\n=== CÁC PHẦN TỬ CON BỊ XÓA BỎ (CÓ TRONG VB1 NHƯNG KHÔNG CÓ TRONG VB2) ===")
+        for n1 in unmatched_sub_1:
+            comparison_text.append(f"  - VB1 [ID: {n1.get('id')}]: {n1.get('tieu_de', '')} {n1.get('noi_dung', '')}")
+
+    if unmatched_sub_2:
+        comparison_text.append("\n=== CÁC PHẦN TỬ CON THÊM MỚI (CÓ TRONG VB2 NHƯNG KHÔNG CÓ TRONG VB1) ===")
+        for n2 in unmatched_sub_2:
+            comparison_text.append(f"  - VB2 [ID: {n2.get('id')}]: {n2.get('tieu_de', '')} {n2.get('noi_dung', '')}")
+
+    comparison_str = "\n".join(comparison_text)
+
+    prompt = f"""Bạn là chuyên gia phân tích thay đổi văn bản pháp luật cấp cao.
+Hãy so sánh sự thay đổi về nội dung thực tế giữa các phần tử con (Khoản, Điểm) trong cùng một Điều cha.
+
+NGUYÊN TẮC REVIEW QUAN TRỌNG:
+1. CHỈ báo cáo thay đổi về NỘI DUNG THỰC SỰ (quyền, nghĩa vụ, điều kiện, mức phạt, thời hạn, số tiền, phạm vi...).
+2. KHÔNG báo cáo thay đổi về: số thứ tự điều khoản, mã đoạn con (ví dụ: a) -> b), Khoản 1 -> Khoản 2), lỗi định dạng, dấu câu.
+3. Nếu nội dung của một cặp ghép hoàn toàn giống nhau (chỉ khác số thứ tự/mã đoạn hoặc phong cách hành văn đồng nghĩa) -> BỎ QUA không ghi nhận thay đổi cho cặp đó.
+4. Với mỗi phần tử con THÊM MỚI hoặc XÓA BỎ, hãy tóm tắt nội dung pháp lý của phần tử đó.
+
+Yêu cầu trả về duy nhất một chuỗi JSON hợp lệ theo định dạng danh sách (List of Objects) như sau:
+[
+  {{
+    "kind": "sua_doi" | "them_moi" | "xoa_bo",
+    "vb1_chunk_id": "ID của phần tử trong VB1 (để null nếu là thêm mới)",
+    "vb2_chunk_id": "ID của phần tử trong VB2 (để null nếu là xóa bỏ)",
+    "vb1_excerpt": "Nội dung cũ liên quan từ VB1",
+    "vb2_excerpt": "Nội dung mới liên quan từ VB2",
+    "summary": "Tóm tắt ngắn gọn sự thay đổi thực tế hoặc nội dung thêm/xóa",
+    "changes": ["Chi tiết thay đổi 1", "Chi tiết thay đổi 2"]
+  }}
+]
+
+Dữ liệu so sánh:
+{comparison_str}
+"""
+
+    raw_text = ""
+    change_items = []
+    try:
+        raw_text = call_ollama(prompt)
+        parsed_data = parse_json_response(raw_text)
+        if not isinstance(parsed_data, list):
+            if isinstance(parsed_data, dict) and "changes" in parsed_data:
+                parsed_data = parsed_data["changes"]
+            else:
+                parsed_data = [parsed_data]
+
+        for item in parsed_data:
+            if not isinstance(item, dict):
+                continue
+            kind = item.get("kind") or "sua_doi"
+            change_items.append(ChangeItem(
+                kind=kind,
+                vb1_chunk_id=item.get("vb1_chunk_id"),
+                vb2_chunk_id=item.get("vb2_chunk_id"),
+                vb1_excerpt=item.get("vb1_excerpt") or "",
+                vb2_excerpt=item.get("vb2_excerpt") or "",
+                summary=item.get("summary") or "",
+                impact=item.get("impact") or "",
+                method=f"zoomin_{kind}",
+                changes=[str(c).strip() for c in item.get("changes", []) if str(c).strip()]
+            ))
+    except Exception as exc:
+        logger.warning(
+            "LLM hierarchical zoom-in review failed for VB1_parent=%s VB2_parent=%s: %s",
+            vb1_parent_id,
+            vb2_parent_id,
+            exc,
+        )
+        change_items.append(ChangeItem(
+            kind="sua_doi",
+            vb1_chunk_id=vb1_parent_id,
+            vb2_chunk_id=vb2_parent_id,
+            vb1_excerpt=f"Lỗi phân tích cấp con: {exc}",
+            vb2_excerpt="",
+            summary="LLM không trả về danh sách thay đổi hợp lệ.",
+            impact="",
+            method="zoomin_error",
+            changes=[]
+        ))
+
+    return change_items, raw_text
