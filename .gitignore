@@ -50,3 +50,4 @@ data/*
 # Virtual environment
 myenv/
 Host code/*
+node_modules/

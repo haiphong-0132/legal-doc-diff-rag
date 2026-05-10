@@ -12,7 +12,7 @@ function ChangeCard({ item, onClick }) {
   const leftId = item.vb1_chunk_id ? decodeChunkId(item.vb1_chunk_id) : '';
   const rightId = item.vb2_chunk_id ? decodeChunkId(item.vb2_chunk_id) : '';
   const id = item.kind === 'giong_nhau_ngu_nghia' && leftId && rightId ? `${leftId} ↔ ${rightId}` : (leftId || rightId);
-  const excerpt = item.vb2_excerpt || item.vb1_excerpt || item.vb2?.noi_dung || item.vb1?.noi_dung || '';
+  const excerpt = item.vb2?.tieu_de || item.vb1?.tieu_de || item.vb2_excerpt || item.vb1_excerpt || item.vb2?.noi_dung || item.vb1?.noi_dung || '';
   const preview = excerpt.length > 120 ? excerpt.slice(0, 120) + '...' : excerpt;
 
   return (

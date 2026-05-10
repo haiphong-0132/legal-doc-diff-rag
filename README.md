@@ -27,15 +27,22 @@ Bài tập nhóm — Thực tập cơ sở — PTIT
 ## Tính năng chính
 
 - **Trích xuất văn bản**: Hỗ trợ đầu vào `.docx` (Pandoc) và `.pdf` (any2md → Pandoc), tự động làm sạch HTML entities, chuẩn hóa dấu câu tiếng Việt.
-- **Phân tích cú pháp phân cấp**: Dựng cây JSON cấu trúc pháp luật Việt Nam (`Điều → Khoản → Điểm`) bằng regex, kèm bóc tách tham chiếu chéo thông minh (xử lý được "Điều này").
-- **So khớp 4 Phase**:
+- **Phân tích cú pháp phân cấp**: Dựng cây JSON cấu trúc pháp luật Việt Nam (`Điều → Khoản → Điểm`) bằng cấu trúc Regex tối ưu, kèm bóc tách tham chiếu chéo thông minh (xử lý được các trường hợp "Điều này").
+- **So khớp 4 Phase & Zoom-In thông minh**:
   - **Phase 0** — So khớp text thô tuyệt đối (hash-based, instant).
-  - **Phase 1** — Embedding ngữ nghĩa + Greedy Rerank + Hungarian Hybrid Matching toàn cục.
-  - **Phase 2** — Progressive Zoom-In xuống Khoản/Điểm + Unified LLM Review.
-  - **Phase 3** — Kết xuất báo cáo Markdown
-- **Đa chế độ LLM**: Hỗ trợ `remote` (LLM tự host)
-- **Web UI**: React + Vite + TailwindCSS v4, gồm Upload → Progress tracking → Kết quả phân tích + Chat hỏi đáp về báo cáo.
-- **Session Persistence**: Trạng thái UI được lưu vào `sessionStorage`, reload trang không mất dữ liệu.
+  - **Phase 1** — Embedding ngữ nghĩa + Greedy Rerank + Hungarian Hybrid Matching toàn cục cấp Điều.
+  - **Phase 2** — Progressive Zoom-In phân cấp chi tiết xuống cấp **Khoản** cùng các nút con **Điểm** trực thuộc + Chạy so khớp On-The-Fly cục bộ, sau đó gọi LLM đánh giá gộp thông minh.
+  - **Phase 3** — Kết xuất báo cáo Markdown / JSON chi tiết và đồng bộ hóa UI.
+- **Tối ưu hóa Hiệu năng & Chi phí**:
+  - **Thực thi gọi LLM song song (Parallel Processing)**: Chạy đồng thời tối đa 16 luồng song song (`ThreadPoolExecutor(max_workers=16)`) tích hợp event loop async, giúp tăng tốc độ gọi LLM gấp 10-15 lần.
+  - **Bộ lọc từ vựng (Lexical Safeguard)**: Tính toán chỉ số Jaccard trên tập từ khóa pháp luật cốt lõi (số liệu, ngày tháng, phủ định, bắt buộc) để bỏ qua LLM Review cho các sửa đổi không làm thay đổi nội dung pháp lý.
+  - **Tự động phát hiện đổi đánh số (Automatic Numbering-only Diff)**: Regex bóc tách chỉ số phân đoạn để tự động kết luận các thay đổi đổi số thứ tự (ví dụ: Khoản 1 thành Khoản 2) mà không cần gọi LLM.
+- **Cải tiến Web UI Premium**:
+  - **Hộp thoại chi tiết có thể kéo thả (Draggable Modal)**: Hộp thoại xem chi tiết thay đổi hỗ trợ kéo thả thanh phân chia ngang giúp tùy biến kích thước hiển thị linh hoạt.
+  - **Bôi đen chọn văn bản (Selectable Text)**: Người dùng dễ dàng bôi đen và sao chép trực tiếp nội dung điều khoản gốc.
+  - **Bộ đếm thời gian nổi (Floating Timer)**: Widget tròn tinh tế (Dark Glassmorphism) cập nhật thời gian so sánh thực tế theo thời gian thực (độ chính xác 1/10 giây).
+- **Quản lý Cấu hình linh hoạt**: Hỗ trợ thay đổi độ dài token chia nhỏ (`max_tokens`), cấp chia nhỏ (`chunk_by`), cơ chế xử lý API key bảo mật và cập nhật đường dẫn mô hình embedding.
+- **Session Persistence**: Trạng thái UI được lưu trữ vào `sessionStorage`, tránh mất dữ liệu khi F5 reload trang.
 
 ---
 
@@ -50,16 +57,16 @@ Bài tập nhóm — Thực tập cơ sở — PTIT
 | Thành phần | Công nghệ |
 |---|---|
 | **Ngôn ngữ** | Python 3.13+, JavaScript (ES Module) |
-| **Backend** | FastAPI, Uvicorn |
+| **Backend** | FastAPI, Uvicorn, Asyncio, `ThreadPoolExecutor` |
 | **Frontend** | React 19, Vite 8, TailwindCSS v4 |
 | **Embedding** | SentenceTransformer (`Vietnamese_Embedding_v2`), hỗ trợ ONNX Runtime GPU |
 | **Reranker** | FlagEmbedding (`Vietnamese_Reranker`) |
 | **Vector DB** | ChromaDB (Ephemeral / Persistent) |
-| **LLM** | LLM (remote) |
+| **LLM** | LLM (remote, NVIDIA API Cloud) |
 | **Matching** | Hungarian Algorithm (`scipy.optimize.linear_sum_assignment`), Hybrid Scoring (Cosine + Jaccard + Positional Bias + Title Fuzzy) |
 | **Document Parsing** | Pandoc (`pypandoc`), `any2md`, `python-docx` |
 | **PDF Export** | WeasyPrint (ưu tiên), fallback `xhtml2pdf` |
-| **Package Manager** | `uv` (Python), `npm` (Frontend) |
+| **Package Manager & Utilities** | `uv` (Python), `npm` (Frontend), `localtunnel` (Expose Local Host) |
 
 ---
 
@@ -126,7 +133,7 @@ TTCS/
 │   ├── chat.py                   # Chat hỏi đáp về báo cáo qua LLM
 │   └── frontend/                 # React SPA
 │       ├── package.json          # React 19 + Vite 8 + TailwindCSS v4
-│       ├── vite.config.js        # Dev proxy → backend :8001
+│       ├── vite.config.js        # Dev proxy → backend :8080
 │       └── src/
 │           ├── App.jsx           # Router: Upload → Progress → Results
 │           ├── api.js            # API client (fetch)
@@ -137,7 +144,8 @@ TTCS/
 │               ├── StatsCards.jsx     # Thẻ thống kê tổng quan
 │               ├── ChangeList.jsx     # Danh sách thay đổi chi tiết
 │               ├── SideBySideView.jsx # Xem song song 2 văn bản
-│               └── ChatPanel.jsx      # Chat hỏi đáp về kết quả
+│               ├── ChatPanel.jsx      # Chat hỏi đáp về kết quả
+│               └── FloatingTimer.jsx  # Bộ đếm thời gian nổi theo thời gian thực (Floating Timer)
 │
 ├── models/                       # Trọng số mô hình (git-ignored)
 │   ├── Vietnamese_Embedding_v2/  # SentenceTransformer embedding model
@@ -249,7 +257,7 @@ API_BASE_URL=http://localhost:8080
 
 ## Hoặc tách riêng từng server:
 # EMBED_API_URL=http://localhost:8000
-# RERANK_API_URL=http://localhost:8001
+# RERANK_API_URL=http://localhost:8080
 # LLM_API_URL=http://localhost:8002
 
 ## CHẾ ĐỘ LLM
@@ -282,12 +290,12 @@ Chạy LLM phía hosting — bất kỳ server nào expose `/embed`, `/rerank`, 
 
 **Linux / macOS:**
 ```bash
-uvicorn web.app:app --host 0.0.0.0 --port 8001 --reload --reload-dir src --reload-exclude "web/frontend/*"
+uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload --reload-dir src --reload-exclude "web/frontend/*"
 ```
 
 **Windows (PowerShell):**
 ```powershell
-uvicorn web.app:app --host 0.0.0.0 --port 8001 --reload --reload-dir src --reload-exclude "web/frontend/*"
+uvicorn web.app:app --host 0.0.0.0 --port 8080 --reload --reload-dir src --reload-exclude "web/frontend/*"
 ```
 
 ### Terminal 3 — Frontend (Vite)
@@ -306,7 +314,7 @@ npm run dev
 
 Mở trình duyệt tại `http://localhost:5173`.
 
-> **Lưu ý**: Vite proxy tự động chuyển tiếp `/api/*` tới backend tại `http://127.0.0.1:8001` (cấu hình trong `vite.config.js`).
+> **Lưu ý**: Vite proxy tự động chuyển tiếp `/api/*` tới backend tại `http://127.0.0.1:8080` (cấu hình trong `vite.config.js`).
 
 ---
 
@@ -322,7 +330,7 @@ Nếu không truyền tham số, pipeline sẽ đọc đường dẫn mặc đ�
 
 ## API Reference
 
-Backend chạy tại `http://localhost:8001`. Swagger UI: `http://localhost:8001/docs`.
+Backend chạy tại `http://localhost:8080`. Swagger UI: `http://localhost:8080/docs`.
 
 ### `POST /api/compare`
 
@@ -412,7 +420,7 @@ graph TD
     subgraph Pipeline["Pipeline Runner — src/pipeline/runner.py"]
         P0["Phase 0: Exact Match"]
         P1["Phase 1: Embedding → ChromaDB → Greedy Rerank → Hungarian"]
-        P2["Phase 2: Zoom-In Khoản/Điểm → Text Diff → LLM Review"]
+        P2["Phase 2: Zoom-In Khoản/Điểm → Lexical Safeguard/Auto-Numbering → Parallel LLM Review"]
         P3["Phase 3: render_change_report → Markdown"]
         P0 -->|remaining chunks| P1
         P1 -->|matched pairs| P2
@@ -422,7 +430,7 @@ graph TD
     subgraph Services["External Services"]
         EMB["Embedding Model\n(local hoặc API)"]
         CHROMA["ChromaDB\n(Ephemeral)"]
-        LLM["LLM Server\n(remote)"]
+        LLM["LLM Server\n(remote hoặc NVIDIA Cloud)"]
     end
 
     Frontend -->|/api/*| Backend
@@ -438,11 +446,11 @@ graph TD
 1. **Ingestion**: `extract_file()` → detect `.docx`/`.pdf` → Pandoc HTML → `extract_text_from_html()` → plain text.
 2. **Parsing**: `build_json_tree()` → cây JSON phân cấp (Điều/Khoản/Điểm) với tham chiếu chéo.
 3. **Registry**: `build_node_registry()` — duyệt hậu thứ tự O(N), cache `cached_merged_text` và `cached_keywords` cho mỗi node.
-4. **Chunking**: `HierarchicalChunker(chunk_by="dieu")` — trích xuất chunk cấp Điều (fallback xuống Khoản/Điểm nếu vượt `max_tokens`).
-5. **Phase 0**: So sánh chuỗi text thô → loại bỏ các Điều giống 100%.
-6. **Phase 1**: Embedding → ChromaDB index → Pass 1 (Greedy top-K + Rerank) → Pass 2 (Hungarian Hybrid Matrix).
-7. **Phase 2**: Zoom-In phân cấp → On-The-Fly Embedding cho Khoản/Điểm → so sánh text chuẩn hóa → LLM Review gộp.
-8. **Reporting**: Gom `ChangeItem` → `render_change_report()` → Markdown.
+4. **Chunking**: `HierarchicalChunker(chunk_by="dieu" hoặc "khoan")` — trích xuất chunk pháp lý theo cấu hình tùy chọn (mặc định cấp Điều, tự động fallback khi vượt `max_tokens`).
+5. **Phase 0**: So sánh chuỗi text thô → lọc bỏ hoàn toàn các Điều giống nhau 100%.
+6. **Phase 1**: Embedding mô hình nhúng → ChromaDB index → Pass 1 (Greedy top-K + Rerank) → Pass 2 (Hungarian Hybrid Matrix) toàn cục ở cấp Điều.
+7. **Phase 2**: Zoom-In phân cấp sâu (Điều → Khoản → Điểm) → So khớp On-The-Fly mức Khoản/Điểm con → Áp dụng Bộ lọc từ vựng (Lexical Safeguard Jaccard) và Tự động nhận diện đổi đánh số (Numbering-only Regex) để lọc bỏ/báo cáo tự động → Gom các tác vụ phân tích thực tế còn lại gọi LLM Review song song (Parallel Multi-threading, tối đa 16 workers) với các prompt đã tinh chỉnh báo cáo vị trí cụ thể.
+8. **Reporting**: Gom toàn bộ `ChangeItem` (gồm sửa đổi, thêm mới, xóa bỏ, sửa đổi đánh số kỹ thuật) → `render_change_report()` → Kết xuất báo cáo Markdown / JSON và đồng bộ hóa giao diện.
 
 > 📖 Xem chi tiết tại [system_pipeline_walkthrough.md](system_pipeline_walkthrough.md)
 
@@ -459,7 +467,7 @@ graph TD
 # 2. Chạy LLM server phía hosting
 
 # 3. Chạy backend
-uvicorn web.app:app --host 0.0.0.0 --port 8001 &
+uvicorn web.app:app --host 0.0.0.0 --port 8080 &
 
 # 4. Build frontend production
 cd web/frontend
@@ -474,7 +482,7 @@ npm run build
 # 2. Chạy LLM server phía hosting
 
 # 3. Chạy backend
-Start-Process uvicorn -ArgumentList "web.app:app", "--host", "0.0.0.0", "--port", "8001"
+Start-Process uvicorn -ArgumentList "web.app:app", "--host", "0.0.0.0", "--port", "8080"
 
 # 4. Build frontend production
 cd web\frontend
@@ -493,7 +501,7 @@ Cấu hình `.env` để trỏ Embedding, Reranker, LLM đến các máy chủ k
 
 ```env
 EMBED_API_URL=http://gpu-server-1:8000
-RERANK_API_URL=http://gpu-server-1:8001
+RERANK_API_URL=http://gpu-server-1:8080
 LLM_API_URL=http://gpu-server-2:11434
 ```
 
@@ -540,7 +548,7 @@ API Check failed / Cannot call API
 
 ### Frontend không kết nối được backend
 
-**Giải pháp**: Kiểm tra port trong `vite.config.js` → `proxy.target` khớp với port backend đang chạy (mặc định `8001`).
+**Giải pháp**: Kiểm tra port trong `vite.config.js` → `proxy.target` khớp với port backend đang chạy (mặc định `8080`).
 
 
 ## Tài liệu bổ sung

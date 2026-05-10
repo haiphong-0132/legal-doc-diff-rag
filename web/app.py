@@ -208,10 +208,14 @@ async def get_results(job_id: str):
     grouped_changes: Dict[str, list] = {"sua_doi": [], "them_moi": [], "xoa_bo": [], "giong_nhau_ngu_nghia": semantic_matches}
     for item in r.change_items:
         d = _change_item_to_dict(item)
-        if item.vb1_chunk_id and item.vb1_chunk_id in vb1_map:
-            d["vb1"] = _chunk_to_dict(vb1_map[item.vb1_chunk_id])
-        if item.vb2_chunk_id and item.vb2_chunk_id in vb2_map:
-            d["vb2"] = _chunk_to_dict(vb2_map[item.vb2_chunk_id])
+        if item.vb1_chunk_id:
+            vb1_lookup = item.vb1_chunk_id.split('.')[0]
+            if vb1_lookup in vb1_map:
+                d["vb1"] = _chunk_to_dict(vb1_map[vb1_lookup])
+        if item.vb2_chunk_id:
+            vb2_lookup = item.vb2_chunk_id.split('.')[0]
+            if vb2_lookup in vb2_map:
+                d["vb2"] = _chunk_to_dict(vb2_map[vb2_lookup])
         grouped_changes.setdefault(item.kind, []).append(d)
 
     return {

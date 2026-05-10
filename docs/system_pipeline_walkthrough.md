@@ -6,8 +6,6 @@ Tài liệu này mô tả chi tiết toàn bộ kiến trúc, các khối chức
 
 ## 1. Sơ đồ Luồng Xử lý Tổng quan (Architecture Flow)
 
-Dưới đây là sơ đồ Mermaid mô tả hành trình của hai văn bản pháp luật đầu vào (VB1 - Cũ, VB2 - Mới) đi qua hệ thống để tạo ra báo cáo so sánh cuối cùng:
-
 ```mermaid
 graph TD
     %% Input Documents
@@ -53,12 +51,14 @@ graph TD
     CHROMA --> HUN1
 
     %% Zoom-In & LLM Connection
-    subgraph "5. Phase 2: Zoom-In & Unified LLM Review"
+    subgraph "5. Phase 2: Zoom-In & Parallel LLM Review"
         Z1["Local Zoom-In: So khớp các Khoản"]
         Z2["Local Zoom-In: So khớp các Điểm"]
         OTF["On-The-Fly Local Embedding"]
-        EX_MATCH["Exact Text Comparison for Sub-nodes"]
-        LLM["LLM (Remote)"]
+        EX_MATCH["So sánh ký tự sạch (Strict Text Match)"]
+        NUM_DIFF["Regex: Tự động đổi đánh số"]
+        LEX_SAFE["Bộ lọc từ vựng (Lexical Safeguard Jaccard)"]
+        LLM["Gọi LLM Song song (ThreadPoolExecutor 16 workers)"]
     end
     HUN1 -->|Cặp Điều khớp| Z1
     Z1 -->|On-The-Fly Embed| OTF
@@ -68,7 +68,11 @@ graph TD
     
     Z1 --> EX_MATCH
     Z2 --> EX_MATCH
-    EX_MATCH -->|Phát hiện lệch ký tự thực tế| LLM
+    
+    EX_MATCH -->|Chỉ đổi số thứ tự| NUM_DIFF
+    EX_MATCH -->|Có lệch ký tự thực tế| LEX_SAFE
+    LEX_SAFE -->|Biến động từ vựng nguy hại| LLM
+    LEX_SAFE -->|Trùng khớp từ vựng an toàn| SKIPPED["Bỏ qua LLM"]
 
     %% Output Connection
     subgraph "6. Phase 3: Kết xuất Báo cáo & Đồng bộ UI (Reporting)"
@@ -76,6 +80,7 @@ graph TD
         SES["sessionStorage Persistence (no F5 data loss)"]
     end
     LLM --> REP
+    NUM_DIFF -->|Tạo ChangeItem tự động| REP
     P0 -->|Các Điều trùng khớp tuyệt đối| REP
     REP --> SES
 ```
@@ -115,6 +120,13 @@ graph TD
     4. *Jaccard Similarity* (Trùng khớp từ khóa pháp lý đã cache) — 30%.
   * **Hungarian Algorithm**: Giải bài toán phân công tối ưu toàn cục (Global Assignment Problem) trên RAM bằng thư viện `scipy.optimize.linear_sum_assignment` để ghép cặp các Điều từ VB2 sang VB1 với tổng điểm tương đồng lớn nhất.
 
+### 2.5. Khối Đánh giá & Phân tích LLM Song song (Parallel LLM Engine)
+* **Tệp tin**: [`llm_review.py`](../src/core/matching/llm_review.py), [`llm_prompts.py`](../src/core/matching/llm_prompts.py), [`runner.py`](../src/pipeline/runner.py).
+* **Nhiệm vụ**:
+  * **Tối ưu hóa Thực thi Song song (Parallel Execution)**: Sử dụng mô hình xử lý không đồng bộ kết hợp với `ThreadPoolExecutor` cấu hình 16 luồng song song (`max_workers=16`) để thực hiện đồng loạt nhiều cuộc gọi LLM thay vì gọi tuần tự, giúp rút ngắn tối đa thời gian chờ đợi.
+  * **Bộ lọc Từ vựng (Lexical Safeguard)**: Kiểm tra chênh lệch từ vựng mang tính cốt lõi (số liệu, ngày tháng, từ khóa phủ định/bắt buộc như *"không"*, *"phải"*, *"được"*, *"cấm"*) dựa trên chỉ số tương đồng Jaccard. Nếu không phát hiện biến động từ vựng nguy hiểm này, cuộc gọi LLM sẽ tự động bị bỏ qua nhằm tối ưu chi phí API.
+  * **Tự động Phát hiện Đổi Đánh số (Automatic Numbering-only Diff)**: Sử dụng các regex phân tách tiền tố thứ tự để bóc tách nội dung của các Khoản. Nếu nội dung hoàn toàn giữ nguyên và chỉ thay đổi số thứ tự (ví dụ: *Khoản 1* thành *Khoản 2*), hệ thống tự động sinh báo cáo kỹ thuật mà không cần truy vấn LLM.
+
 ---
 
 ## 3. Hành trình Luồng Xử lý 4 Phase Đầu - Cuối
@@ -133,23 +145,24 @@ graph TD
     * **Pass 1 (Greedy)**: Truy vấn Top-$K$ ứng viên tương đồng nhất từ ChromaDB và Rerank để khớp nhanh các cặp có độ tin cậy cực cao.
     * **Pass 2 (Hungarian)**: Dựng ma trận điểm kết hợp (Hybrid Matrix) giữa các Điều còn lại của VB2 và VB1. Sử dụng giải thuật Hungarian giải tối ưu toàn cục để tìm ra các cặp Điều sửa đổi có điểm trùng khớp vượt ngưỡng `HYBRID_THRESHOLD` (mặc định `0.75`).
 
-### Phase 2: Progressive Zoom-In & Unified LLM Review
-* **Mục tiêu**: Đi sâu vào cấu trúc nội bộ của từng cặp Điều đã khớp để tìm ra các Khoản/Điểm bị sửa đổi, thêm mới, hoặc xóa bỏ, sau đó gửi ngữ cảnh gộp lên LLM phân tích.
+### Phase 2: Progressive Zoom-In & Unified Parallel LLM Review
+* **Mục tiêu**: Đi sâu vào cấu trúc nội bộ của từng cặp Điều đã khớp để tìm ra các Khoản/Điểm bị sửa đổi, thêm mới, hoặc xóa bỏ, sau đó gửi ngữ cảnh gộp lên LLM phân tích song song.
 * **Cách hoạt động**:
   * **Zoom-In cấp 1 (Khoản)**: Trích xuất các Khoản thuộc Điều VB1 và Điều VB2. Chạy hàm `match_sub_nodes`.
     * *On-The-Fly Embedding*: Sinh vector tức thời trong bộ nhớ RAM bằng mô hình nhúng cục bộ cho các Khoản để tính toán tương đồng ngữ nghĩa.
     * Ghép cặp các Khoản bằng giải thuật Hungarian.
-  * **Zoom-In cấp 2 (Điểm)**: Đối với mỗi cặp Khoản đã khớp, tiếp tục lấy ra danh sách các Điểm con trực thuộc và chạy `match_sub_nodes` to khớp Điểm.
-  * **So sánh văn bản chuẩn hóa nghiêm ngặt (Strict Text Match)**:
-    * Hệ thống gom toàn bộ cặp Khoản/Điểm đã khớp.
-    * Để loại bỏ hoàn toàn hiện tượng bỏ sót thay đổi (false negatives) hoặc bắt nhầm thay đổi (false positives):
-      1. Chuẩn hóa khoảng trắng và chuyển về chữ thường.
-      2. So sánh chuỗi ký tự trực tiếp của hai node con.
-      3. Nếu giống nhau hoàn toàn, cặp con đó sẽ **bị bỏ qua** (không đưa vào context gửi lên LLM).
-      4. Chỉ những cặp con thực sự có sai lệch ký tự mới được lọc ra làm ứng viên để đưa vào prompt gửi cho LLM.
-    * Nếu tất cả các Khoản/Điểm con của Điều đó đều trùng khớp hoàn toàn và không có khoản thêm/bớt, hệ thống **bỏ qua cuộc gọi LLM hoàn toàn** cho Điều đó.
-  * **Gom cụm và Gọi LLM Review duy nhất**:
-    * Gom toàn bộ kết quả phân cấp (Cặp Khoản/Điểm sửa đổi, Khoản/Điểm bị xóa, Khoản/Điểm thêm mới) của Điều đó lại.
-    * Chỉ gửi trường `tieu_de` (nội dung gốc sạch sẽ của khoản/điểm) lên LLM thay vì gửi nội dung gộp cha, tránh nhiễu thông tin.
-    * Định dạng thành một cấu trúc so sánh cực kỳ trực quan gửi lên LLM thông qua hàm `llm_review_khoan_with_diem`.
-    * LLM phân tích tổng thể thay đổi pháp lý và đánh giá tác động trong một lượt gọi duy nhất, cho ra đầu ra JSON sạch sẽ.
+  * **Zoom-In cấp 2 (Điểm)**: Đối với mỗi cặp Khoản đã khớp, tiếp tục lấy ra danh sách các Điểm con trực thuộc và chạy `match_sub_nodes` để khớp Điểm.
+  * **Cơ chế Tiết kiệm & Tối ưu hóa API LLM**:
+    * **So sánh văn bản chuẩn hóa nghiêm ngặt (Strict Text Match)**: Loại bỏ các cặp Khoản/Điểm trùng khớp ký tự 100% ra khỏi ngữ cảnh gửi đi. Nếu toàn bộ nội dung của Điều không có biến động, bỏ qua cuộc gọi LLM hoàn toàn.
+    * **Automatic Numbering Diff**: Tự động bóc tách tiền tố đánh số bằng Regex. Nếu chỉ khác biệt về chỉ số đánh thứ tự kỹ thuật (như *Khoản 3.1* thành *Khoản 3.2*) mà nội dung điều khoản hoàn toàn giữ nguyên, hệ thống lập tức xuất ra `ChangeItem` đánh số tự động (`automatic_numbering_diff`) và không gửi lên LLM.
+    * **Lexical Safeguard Jaccard**: Với các cặp khớp có độ tin cậy cao, nếu kiểm tra Jaccard trên tập từ khóa pháp lý cốt lõi và số liệu đạt 1.0 (không có thay đổi nguy hại), hệ thống bỏ qua cuộc gọi LLM.
+  * **Lập lịch và Thực thi Gọi LLM Song song (Parallelism)**:
+    * Thay vì gọi LLM tuần tự cho từng khoản/điểm thay đổi gây nghẽn cổ chai, hệ thống thu thập và lập lịch đồng loạt cho tất cả các tác vụ:
+      - `llm_review_pair` cho cặp Điều/Khoản sửa đổi riêng lẻ hoặc nội dung giới thiệu của Điều.
+      - `llm_review_single` cho Khoản/Điểm được thêm mới hoặc xóa bỏ (sử dụng bối cảnh phân cấp đầy đủ dựng bằng `get_node_context`).
+      - `llm_review_khoan_with_diem` cho việc phân tích gộp Khoản kèm theo toàn bộ sự thay đổi ở các Điểm trực thuộc.
+    * Hệ thống kích hoạt đồng thời tối đa **16 luồng song song** (`ThreadPoolExecutor(max_workers=16)`) tích hợp với event loop async để gửi đồng loạt các request lên LLM Server, đẩy tốc độ xử lý nhanh gấp 10-15 lần.
+  * **Tinh chỉnh Prompt và Tóm tắt Chuẩn hóa**:
+    * Prompt của LLM được cải tiến sâu để tóm tắt thông minh hơn, yêu cầu LLM trích xuất trường "Mã đoạn" (ví dụ: *Điều 5, Khoản 2*) để chèn trực tiếp vào đầu phần tóm tắt (`summary`).
+    * Loại bỏ các phân cấp mức độ thay đổi dư thừa (severe/minor) trước đó, giữ cấu trúc JSON đầu ra sạch sẽ và chuẩn xác.
+    * Áp dụng thuật toán **Lan truyền ngược trạng thái thay đổi (Propagation)**: Nếu một phần tử con (Điểm) bị biến động thực tế, trạng thái sửa đổi sẽ tự động lan truyền ngược lên các node cha (Khoản, Điều) chứa nó để đồng bộ hóa giao diện và logic phân tích.

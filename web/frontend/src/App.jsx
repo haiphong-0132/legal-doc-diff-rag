@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import UploadPage from './components/UploadPage';
 import ProgressView from './components/ProgressView';
 import ResultsPage from './components/ResultsPage';
+import FloatingTimer from './components/FloatingTimer';
 
 export default function App() {
   const [step, setStep] = useState(() => {
@@ -92,6 +93,7 @@ export default function App() {
           <ResultsPage jobId={jobId} data={results} />
         )}
       </main>
+      <FloatingTimer step={step} results={results} />
     </div>
   );
 }
