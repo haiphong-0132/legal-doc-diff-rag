@@ -24,6 +24,7 @@ thresholds_cfg = yaml_config.get("pipeline_thresholds", {})
 llm_cfg = yaml_config.get("llm", {})
 embed_cfg = yaml_config.get("embedding", {})
 web_cfg = yaml_config.get("web", {})
+chunk_cfg = yaml_config.get("chunking", {})
 
 # -------------------------------------------------------------------------
 # 1. CẤU HÌNH ĐƯỜNG DẪN (PATHS)
@@ -79,6 +80,12 @@ EMBEDDING_BATCH_SIZE = int(embed_cfg.get("batch_size", 32))
 # -------------------------------------------------------------------------
 WEB_MAX_FILE_SIZE = int(web_cfg.get("max_file_size", 20 * 1024 * 1024))
 WEB_ALLOWED_EXTENSIONS = set(web_cfg.get("allowed_extensions", [".docx", ".pdf"]))
+
+# -------------------------------------------------------------------------
+# 7. CẤU HÌNH CHUNKING PHÂN CẤP
+# -------------------------------------------------------------------------
+CHUNK_MAX_TOKENS = int(os.getenv("CHUNK_MAX_TOKENS", chunk_cfg.get("max_tokens", 512)))
+CHUNK_BY = os.getenv("CHUNK_BY", chunk_cfg.get("chunk_by", "dieu"))
 
 # -------------------------------------------------------------------------
 # THIẾT LẬP LOGGER CHUNG

@@ -1,7 +1,7 @@
 paths:
   # Thư mục chứa trọng số mô hình cục bộ
-  embedding_model_dir: "./models/Vietnamese_Embedding_v2"
-  reranker_model_dir: "./models/bge-reranker-v2-m3"
+  embedding_model_dir: "./models/Vietnamese_Embedding"
+  reranker_model_dir: "./models/Vietnamese_Reranker"
   
   # Đường dẫn file tài liệu mặc định
   vb1_path: "vb1.docx"
@@ -10,8 +10,8 @@ paths:
 pipeline_thresholds:
   top_k: 8                # Số ứng viên tối đa lấy từ ChromaDB
   distance_threshold: 0.185 # Ngưỡng khoảng cách tối đa để khớp ngữ nghĩa
-  rerank_threshold: 0.987   # Ngưỡng Reranker khớp nhanh (Greedy Match)
-  hybrid_threshold: 0.75    # Ngưỡng Hungarian Hybrid tối thiểu để chấp nhận khớp
+  rerank_threshold: 0.98   # Ngưỡng Reranker khớp nhanh (Greedy Match)
+  hybrid_threshold: 0.65    # Ngưỡng Hungarian Hybrid tối thiểu để chấp nhận khớp
 
 llm:
   # Chế độ chạy: "remote" (Ollama tự host) hoặc "nvidia" (API Cloud)
@@ -24,9 +24,9 @@ llm:
   model_name: "qwen/qwen3-next-80b-a3b-instruct"
   
   # Tham số sinh văn bản cho NVIDIA mode
-  temperature: 0.7
+  temperature: 0.5
   top_p: 0.9
-  max_tokens: 4096
+  max_tokens: 4100
   
   # Tham số sinh văn bản cho Remote Ollama mode
   remote_temperature: 0.5
@@ -43,3 +43,7 @@ web:
   allowed_extensions:
     - ".docx"
     - ".pdf"
+
+chunking:
+  max_tokens: 512          # Độ dài token tối đa cho mỗi chunk phân cấp (Mặc định: 512)
+  chunk_by: "khoan"         # Chọn "dieu", "khoan", "diem"

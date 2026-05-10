@@ -208,14 +208,7 @@ class HierarchicalChunker:
             if token_count <= self.max_tokens:
                 return [article_chunk]
         
-        # 2. NẾU CẢ ĐIỀU > max_tokens -> FALLBACK 1: Duyệt xuống các Khoản con
-        if article_chunk and article_chunk.tieu_de:
-            chunks.append(ChunkDocumentForHierarchical(
-                metadata=ChunkMetadata(section_id=f"{node_id}_header"),
-                tieu_de=article_chunk.tieu_de,
-                noi_dung="",
-                ref=article_chunk.ref
-            ))
+        # 2. NẾU CẢ ĐIỀU > max_tokens -> FALLBACK 1: Duyệt xuống các Khoản con trực tiếp mà không sinh chunk header trống
 
         # Duyệt qua các Khoản trực thuộc Điều này
         for child in self._get_children(node):

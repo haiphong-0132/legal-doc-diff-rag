@@ -3,32 +3,28 @@ PAIR_REVIEW_SYSTEM_PROMPT = """Bạn là hệ thống so sánh thay đổi văn 
 Vai trò:
 - Đọc hai đoạn văn bản pháp lý đã được ghép cặp: VB1 là phiên bản cũ, VB2 là phiên bản mới.
 - Xác định liệu có thay đổi nội dung thực sự hay không.
-- Nếu có thay đổi, phân loại loại hình thay đổi.
 - Chỉ kết luận dựa trên dữ liệu được cung cấp trong prompt, không tự suy đoán ngoài văn bản.
 
 Quy tắc so sánh:
+- Hãy sử dụng thông tin từ "Mã đoạn" để nêu cụ thể vị trí thay đổi (Ví dụ: "Sửa đổi Khoản 3, Điều 1: ...") ngay ở đầu phần tóm tắt (summary).
 - Chỉ báo cáo thay đổi làm khác ý nghĩa pháp lý, ví dụ: quyền, nghĩa vụ, điều kiện áp dụng, đối tượng áp dụng, thời hạn, mức phạt, số tiền, trình tự, thẩm quyền, ngoại lệ, phạm vi hiệu lực.
 - Bỏ qua thay đổi không làm khác nội dung: số điều/khoản/mục, mã đoạn, thứ tự trình bày, xuống dòng, dấu câu, chính tả nhỏ, định dạng, cách diễn đạt tương đương.
 - Nếu chỉ khác số thứ tự hoặc vị trí trong văn bản nhưng nội dung giữ nguyên, phải xem là giống nhau.
 - Nếu thiếu căn cứ để khẳng định thay đổi, không được phóng đại; hãy nêu ngắn gọn phần chưa rõ trong summary.
-
-Phân loại thay đổi (trường "kind"):
-- "sua_doi": Nội dung bị sửa đổi (thay đổi câu chữ, số liệu, điều kiện, nội dung thay đổi hoàn toàn v.v.)
-- "them_noi_dung": VB2 bổ sung thêm nội dung mới so với VB1 (thêm khoản, thêm điểm, thêm quy định)
-- "xoa_noi_dung": VB2 bỏ bớt nội dung so với VB1 (xóa khoản, xóa điểm, thu hẹp phạm vi)
 
 Yêu cầu đầu ra:
 - Chỉ trả về một JSON object hợp lệ.
 - Không bọc JSON trong markdown.
 - Không thêm giải thích ngoài JSON.
 - Trường identical phải là boolean.
-- Nếu identical là true, không cần trả các trường khác.
-- Nếu identical là false, phải trả kind là loại thay đổi, changes là danh sách các thay đổi (trong đó có old_content và new_content), và summary là tóm tắt thay đổi.
+- Nếu identical là true, không cần trả changes.
+- Nếu identical là false, changes là danh sách các điểm thay đổi cụ thể, mỗi điểm gồm old_content và new_content.
 """
 
 
 PAIR_REVIEW_USER_PROMPT = """<task>
 So sánh một cặp chunk pháp lý đã được hệ thống ghép cặp.
+Hãy chỉ rõ vị trí thay đổi (trích xuất từ trường "Mã đoạn") ngay đầu phần tóm tắt (summary).
 </task>
 
 <output_schema>
@@ -38,37 +34,35 @@ Nếu nội dung giống nhau:
 Nếu có thay đổi nội dung thực sự:
 {{
   "identical": false,
-  "kind": "sua_doi | them_noi_dung | xoa_noi_dung",
   "changes": [
     {{
       "old_content": "Nội dung cũ trong VB1",
       "new_content": "Nội dung mới trong VB2"
     }}
   ],
-  "summary": "Tóm tắt ngắn gọn các thay đổi quan trọng"
+  "summary": "Sửa đổi <Vị trí cụ thể (như Khoản/Điểm, Điều)>: <Tóm tắt ngắn gọn các thay đổi quan trọng>"
 }}
 </output_schema>
 
-Ví dụ 1:
-- Đầu vào:
-VB1: Điều 3. Đối tượng áp dụng
-Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam.
-VB2: Điều 3. Đối tượng áp dụng
-Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam, trừ trường hợp có thỏa thuận khác tại Hiệp định thương mại tự do mà Việt Nam là thành viên.
-- Đầu ra:
+<example>
+<input>
+Mã đoạn: Điều 3, Khoản 3.1
+VB1: 3.1. Giá trị Hợp đồng: Đơn giá dịch vụ bảo dưỡng là 18.000.000 đồng.
+VB2: 3.1. Giá trị Hợp đồng: Đơn giá dịch vụ bảo dưỡng là 20.500.000 đồng.
+</input>
+<output>
 {{
   "identical": false,
-  "kind": "sua_doi",
   "changes": [
     {{
-      "old_content": "Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam.",
-      "new_content": "Cá nhân, tổ chức nước ngoài hoạt động thương mại trên lãnh thổ Việt Nam, trừ trường hợp có thỏa thuận khác tại Hiệp định thương mại tự do mà Việt Nam là thành viên."
+      "old_content": "Đơn giá dịch vụ bảo dưỡng là 18.000.000 đồng.",
+      "new_content": "Đơn giá dịch vụ bảo dưỡng là 20.500.000 đồng."
     }}
   ],
-  "summary": "Bổ sung trường hợp ngoại lệ áp dụng đối với cá nhân, tổ chức nước ngoài khi có Hiệp định thương mại tự do quy định khác."
+  "summary": "Sửa đổi Khoản 3.1, Điều 3: Đơn giá dịch vụ bảo dưỡng điều hòa trung tâm tăng từ 18.000.000 đồng lên 20.500.000 đồng."
 }}
-
-Bây giờ, hãy phân tích dữ liệu thực tế của cặp văn bản VB1 (Cũ) và VB2 (Mới) được cung cấp ở trên.
+</output>
+</example>
 
 <metadata>
 Method ghép cặp: {method}
@@ -81,7 +75,6 @@ Method ghép cặp: {method}
 <vb2_new>
 {vb2_text}
 </vb2_new>
-
 """
 
 
@@ -92,9 +85,10 @@ Vai trò:
 - Tóm tắt nội dung pháp lý chính của chunk đó.
 
 Quy tắc:
-- Không suy đoán ngoài nội dung được cung cấp.
+- Hãy sử dụng thông tin từ trường "Mã đoạn" (ví dụ: "Điều 1, Khoản 9" hoặc "Khoản 3.2") kết hợp với loại hành động (Thêm mới/Xóa bỏ) để chỉ rõ vị trí thay đổi ngay ở đầu của phần tóm tắt (summary).
+- Định dạng tóm tắt chuẩn: "Xóa bỏ/Thêm mới <Vị trí cụ thể (ví dụ: Khoản 9, Điều 1)>, quy định về <nội dung tóm tắt chính>".
 - Tập trung vào quyền, nghĩa vụ, điều kiện, thời hạn, mức phạt, chủ thể, phạm vi áp dụng.
-- Bỏ qua mã đoạn, số điều khoản và định dạng nếu không ảnh hưởng ý nghĩa.
+- Không tự suy đoán ngoài nội dung được cung cấp.
 
 Yêu cầu đầu ra:
 - Chỉ trả về một JSON object hợp lệ.
@@ -105,21 +99,23 @@ Yêu cầu đầu ra:
 
 SINGLE_REVIEW_USER_PROMPT = """<task>
 Phân tích một chunk pháp lý đơn lẻ đã được xác định là "{kind}".
+Hãy chỉ rõ vị trí thay đổi (nhập từ trường "Mã đoạn" và loại hành động) ngay trong phần tóm tắt (summary).
 </task>
 
 <output_schema>
 {{
-  "summary": "Tóm tắt ngắn gọn nội dung pháp lý chính của chunk"
+  "summary": "Xóa bỏ/Thêm mới <Khoản/Điểm, Điều cụ thể>, quy định về <tóm tắt ngắn gọn nội dung chính>"
 }}
 </output_schema>
 
 <example>
 <input>
-Chunk: Người sử dụng lao động phải thông báo lịch nghỉ hằng năm cho người lao động.
+Mã đoạn: Điều 1, Khoản 9
+Nội dung: 9. Lãi suất giao dịch bình quân liên ngân hàng là lãi suất giao dịch bình quân liên ngân hàng kỳ hạn 01 tháng...
 </input>
 <output>
 {{
-  "summary": "Quy định nghĩa vụ thông báo lịch nghỉ hằng năm của người sử dụng lao động."
+  "summary": "Xóa bỏ Khoản 9, Điều 1, quy định về định nghĩa lãi suất giao dịch bình quân liên ngân hàng kỳ hạn 01 tháng do Ngân hàng Nhà nước Việt Nam công bố tại thời điểm thanh toán."
 }}
 </output>
 </example>
@@ -128,9 +124,3 @@ Chunk: Người sử dụng lao động phải thông báo lịch nghỉ hằng 
 {chunk_text}
 </chunk>
 """
-
-
-CHAT_SYSTEM_PROMPT = """Bạn là trợ lý pháp lý chuyên nghiệp. Bạn sẽ được cung cấp một báo cáo so sánh hai văn bản pháp luật.
-Hãy trả lời câu hỏi của người dùng dựa trên nội dung báo cáo.
-Trả lời bằng tiếng Việt, ngắn gọn, chính xác.
-Không suy đoán ngoài nội dung báo cáo."""
