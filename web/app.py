@@ -177,6 +177,61 @@ def _semantic_match_to_dict(m, vb1_map: Dict[str, Any], vb2_map: Dict[str, Any])
     return item
 
 
+def _parse_id_to_key(id_str: Optional[str]) -> tuple:
+    if not id_str:
+        return (999, ())
+    
+    segments = id_str.strip().split('.')
+    key_parts = []
+    
+    for seg in segments:
+        if not seg:
+            continue
+        parts = seg.split('_')
+        prefix = parts[0].lower()
+        
+        # Phân tích phần số và chữ sau prefix để sắp xếp chính xác tự nhiên (ví dụ: 1, 2, 10...)
+        sub_keys = []
+        for p in parts[1:]:
+            if p.isdigit():
+                sub_keys.append((0, int(p)))
+            else:
+                sub_keys.append((1, p.lower()))
+        
+        # Thiết lập thứ tự ưu tiên cho từng cấp bậc của văn bản pháp luật Việt Nam
+        prefix_order = 99
+        if prefix in ("modau", "mo_dau"):
+            prefix_order = 0
+        elif prefix == "phan":
+            prefix_order = 1
+        elif prefix == "chuong":
+            prefix_order = 2
+        elif prefix == "muc":
+            prefix_order = 3
+        elif prefix == "dieu":
+            prefix_order = 4
+        elif prefix == "khoan":
+            prefix_order = 5
+        elif prefix == "diem":
+            prefix_order = 6
+        elif prefix == "chinh":
+            prefix_order = 7
+            
+        key_parts.append((prefix_order, tuple(sub_keys)))
+        
+    return (0, tuple(key_parts))
+
+
+def _sort_matched_pair(pair: dict) -> tuple:
+    chunk_id = pair.get("vb2_chunk_id") or pair.get("vb1_chunk_id")
+    return _parse_id_to_key(chunk_id)
+
+
+def _sort_change_item(item: dict) -> tuple:
+    chunk_id = item.get("vb2_chunk_id") or item.get("vb1_chunk_id")
+    return _parse_id_to_key(chunk_id)
+
+
 @app.get("/api/jobs/{job_id}/results")
 async def get_results(job_id: str):
     job = jobs.get(job_id)
@@ -217,6 +272,12 @@ async def get_results(job_id: str):
             if vb2_lookup in vb2_map:
                 d["vb2"] = _chunk_to_dict(vb2_map[vb2_lookup])
         grouped_changes.setdefault(item.kind, []).append(d)
+
+    # Sắp xếp lại tất cả kết quả theo thứ tự tự nhiên của Điều Khoản Điểm
+    matched_pairs = sorted(matched_pairs, key=_sort_matched_pair)
+    semantic_matches = sorted(semantic_matches, key=_sort_change_item)
+    for kind in list(grouped_changes.keys()):
+        grouped_changes[kind] = sorted(grouped_changes[kind], key=_sort_change_item)
 
     return {
         "stats": r.stats,

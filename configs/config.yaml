@@ -46,4 +46,4 @@ web:
 
 chunking:
   max_tokens: 512          # Độ dài token tối đa cho mỗi chunk phân cấp (Mặc định: 512)
-  chunk_by: "khoan"         # Chọn "dieu", "khoan", "diem"
+  chunk_by: "dieu"         # Chọn "dieu", "khoan", "diem"
