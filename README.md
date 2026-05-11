@@ -1,8 +1,14 @@
 # Legal Doc Diff RAG
 
-> **Hệ thống so sánh văn bản pháp luật Việt Nam tự động** — Phát hiện, phân loại và phân tích tác động thay đổi giữa hai phiên bản văn bản pháp lý sử dụng RAG (Retrieval-Augmented Generation) kết hợp LLM.
+> Bài tập nhóm - Thực tập cơ sở - PTIT: NGHIÊN CỨU TRỢ LÝ SO SÁNH VĂN BẢN PHÁP LÝ CHẠY CỤC BỘ DÙNG RAG VÀ LOCAL LLM
 
 Bài tập nhóm — Thực tập cơ sở — PTIT
+
+Thành viên:
+
+- Kiều Hồng Phong - B22DCKH084
+- Lê Đình Đạt - B23DCKH021
+- Nguyễn Đặng Long Vũ - B23DCKH133
 
 ---
 
@@ -20,7 +26,6 @@ Bài tập nhóm — Thực tập cơ sở — PTIT
 - [API Reference](#api-reference)
 - [Architecture Overview](#architecture-overview)
 - [Deployment Guide](#deployment-guide)
-- [Troubleshooting](#troubleshooting)
 
 ---
 
