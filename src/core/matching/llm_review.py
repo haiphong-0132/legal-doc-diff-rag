@@ -162,6 +162,8 @@ def llm_review_pair(
     vb2_chunk: ChunkDocumentForHierarchical,
     method: str,
 ) -> tuple[ChangeItem | None, str]:
+    import difflib
+
     section_num_re = re.compile(
         r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
         r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
@@ -197,17 +199,50 @@ def llm_review_pair(
             )
             return None, "SKIPPED: lexical safeguard safe"
 
+    # Phân tách dòng và bullet point để so sánh đối chứng thô cực kỳ chuẩn xác
+    def split_into_sentences_or_bullets(text: str) -> list[str]:
+        lines = [l.strip() for l in text.split("\n") if l.strip()]
+        result = []
+        for line in lines:
+            parts = re.split(r"(?<=\.)\s+(?=-\s)", line)
+            for part in parts:
+                if part.strip():
+                    result.append(part.strip())
+        return result
+
+    lines1 = split_into_sentences_or_bullets(vb1_chunk.noi_dung or vb1_chunk.tieu_de or "")
+    lines2 = split_into_sentences_or_bullets(vb2_chunk.noi_dung or vb2_chunk.tieu_de or "")
+
+    diff = list(difflib.ndiff(lines1, lines2))
+    diff_summary = []
+    for line in diff:
+        if line.startswith("- ") or line.startswith("+ "):
+            diff_summary.append(line)
+
+    # Nếu không có sự khác biệt thô nào sau khi bóc tách chi tiết, bỏ qua luôn để tránh tốn token LLM
+    if not diff_summary:
+        logger.info(
+            "Determined identical after deep sentence diff, skipping LLM: VB1=%s VB2=%s",
+            vb1_chunk.metadata.section_id,
+            vb2_chunk.metadata.section_id,
+        )
+        return None, "SKIPPED: sentence diff is empty"
+
+    # Gửi kèm gợi ý khác biệt thô trực quan để LLM không bao giờ bỏ sót sự thay đổi
+    user_prompt = PAIR_REVIEW_USER_PROMPT.format(
+        method=method,
+        vb1_text=format_chunk(vb1_chunk, True),
+        vb2_text=format_chunk(vb2_chunk, True),
+    )
+    user_prompt += f"\n\n<difference_hints>\nHệ thống phân tích thô phát hiện các dòng thay đổi sau đây (- là cũ/bị xóa, + là mới/thêm vào):\n"
+    user_prompt += "\n".join(diff_summary)
+    user_prompt += "\n</difference_hints>"
+
     messages = [
         {"role": "system", "content": PAIR_REVIEW_SYSTEM_PROMPT},
-        {
-            "role": "user",
-            "content": PAIR_REVIEW_USER_PROMPT.format(
-                method=method,
-                vb1_text=format_chunk(vb1_chunk, True),
-                vb2_text=format_chunk(vb2_chunk, True),
-            ),
-        },
+        {"role": "user", "content": user_prompt},
     ]
+
     vb1_excerpt = vb1_chunk.noi_dung or vb1_chunk.tieu_de or ""
     vb2_excerpt = vb2_chunk.noi_dung or vb2_chunk.tieu_de or ""
     try:
@@ -239,21 +274,52 @@ def llm_review_pair(
         )
         return None, raw_text
 
+    # Xử lý lọc và chuẩn hóa danh sách thay đổi từ LLM, bỏ các phần cũ mới giống hệt nhau (hallucination)
+    filtered_changes = []
+    for c in data.get("changes", []):
+        if isinstance(c, dict):
+            old = str(c.get("old_content", "")).strip()
+            new = str(c.get("new_content", "")).strip()
+            if old == new:
+                continue  # Loại bỏ hoàn toàn nếu cũ mới giống nhau
+            if old and new:
+                filtered_changes.append(f"Cũ: {old}\nMới: {new}")
+            elif old:
+                filtered_changes.append(f"Xóa bỏ: {old}")
+            elif new:
+                filtered_changes.append(f"Thêm mới: {new}")
+        else:
+            if str(c).strip():
+                filtered_changes.append(str(c).strip())
+
+    # Fallback bảo vệ tuyệt đối: Nếu LLM bị ảo giác trả về danh sách trống nhưng thực tế có thay đổi thô
+    if not filtered_changes and diff_summary:
+        for line in diff_summary:
+            if line.startswith("- "):
+                filtered_changes.append(f"Xóa bỏ: {line[2:].strip()}")
+            elif line.startswith("+ "):
+                filtered_changes.append(f"Thêm mới: {line[2:].strip()}")
+
+    summary_text = str(data.get("summary", "")).strip()
+    # Nếu tóm tắt ghi "Không có thay đổi" nhưng thực tế có thay đổi chi tiết
+    if ("không có thay đổi" in summary_text.lower() or "không thay đổi" in summary_text.lower()) and filtered_changes:
+        section_id_decoded = vb1_chunk.metadata.section_id
+        try:
+            from src.core.embedding import decode_section_id
+            section_id_decoded = decode_section_id(section_id_decoded)
+        except:
+            pass
+        summary_text = f"Sửa đổi {section_id_decoded}: Có sự điều chỉnh, thêm bớt chi tiết trong nội dung điều khoản."
+
     return ChangeItem(
-        kind="sua_doi",  # Vì là cặp ghép khớp nên chắc chắn loại thay đổi là sửa đổi
+        kind="sua_doi",
         vb1_chunk_id=vb1_chunk.metadata.section_id,
         vb2_chunk_id=vb2_chunk.metadata.section_id,
         vb1_excerpt=vb1_excerpt,
         vb2_excerpt=vb2_excerpt,
-        summary=str(data.get("summary", "")).strip(),
+        summary=summary_text,
         method=method,
-        changes=[
-            f"Cũ: {c.get('old_content', '').strip()}\nMới: {c.get('new_content', '').strip()}"
-            if isinstance(c, dict)
-            else str(c).strip()
-            for c in data.get("changes", [])
-            if c and str(c).strip()
-        ],
+        changes=filtered_changes,
     ), raw_text
 
 
@@ -305,6 +371,29 @@ def llm_review_khoan_with_diem(
     registry_vb2: dict,
     method: str
 ) -> tuple[ChangeItem | None, str]:
+    # Tìm xem Điểm nào thực tế có sự thay đổi để đặt ID đại diện chính xác hơn cấp Khoản
+    changed_diem_1_id = None
+    changed_diem_2_id = None
+    
+    changed_diems_list = []
+    for d1_id, d2_id, _ in matched_diem:
+        d1 = registry_vb1.get(d1_id, {})
+        d2 = registry_vb2.get(d2_id, {})
+        s1 = re.sub(r"\s+", " ", str(d1.get('cached_merged_text') or d1.get('noi_dung') or "")).strip().lower()
+        s2 = re.sub(r"\s+", " ", str(d2.get('cached_merged_text') or d2.get('noi_dung') or "")).strip().lower()
+        if s1 != s2:
+            changed_diems_list.append((d1_id, d2_id))
+            
+    if changed_diems_list:
+        changed_diem_1_id, changed_diem_2_id = changed_diems_list[0]
+    elif unmatched_diem_2:
+        changed_diem_2_id = unmatched_diem_2[0].get("id")
+    elif unmatched_diem_1:
+        changed_diem_1_id = unmatched_diem_1[0].get("id")
+
+    final_vb1_id = changed_diem_1_id if changed_diem_1_id else node_khoan_1.get("id")
+    final_vb2_id = changed_diem_2_id if changed_diem_2_id else node_khoan_2.get("id")
+
     # 1. Dựng cấu trúc diff trực quan gửi cho LLM
     diff_lines = []
     diff_lines.append(f"KHOẢN GỐC (VB1): {node_khoan_1.get('cached_merged_text') or node_khoan_1.get('noi_dung')}")
@@ -363,8 +452,8 @@ NGUYÊN TẮC:
         logger.warning("LLM khoan_with_diem review failed: %s", exc)
         return ChangeItem(
             kind="sua_doi",
-            vb1_chunk_id=node_khoan_1.get("id"),
-            vb2_chunk_id=node_khoan_2.get("id"),
+            vb1_chunk_id=final_vb1_id,
+            vb2_chunk_id=final_vb2_id,
             vb1_excerpt=node_khoan_1.get("cached_merged_text") or node_khoan_1.get("noi_dung", ""),
             vb2_excerpt=node_khoan_2.get("cached_merged_text") or node_khoan_2.get("noi_dung", ""),
             summary="LLM khong tra ve ket qua hop le.",
@@ -376,8 +465,8 @@ NGUYÊN TẮC:
 
     return ChangeItem(
         kind="sua_doi",
-        vb1_chunk_id=node_khoan_1.get("id"),
-        vb2_chunk_id=node_khoan_2.get("id"),
+        vb1_chunk_id=final_vb1_id,
+        vb2_chunk_id=final_vb2_id,
         vb1_excerpt=node_khoan_1.get("cached_merged_text") or node_khoan_1.get("noi_dung", ""),
         vb2_excerpt=node_khoan_2.get("cached_merged_text") or node_khoan_2.get("noi_dung", ""),
         summary=str(data.get("summary", "")).strip(),

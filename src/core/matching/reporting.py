@@ -25,11 +25,17 @@ def _append_item_header(lines: List[str], index: int, title: str) -> None:
     lines.append("")
 
 
-def _append_changes(lines: List[str], changes: List[str]) -> None:
+def _append_changes(lines: List[str], changes: List[Any]) -> None:
     if not changes:
         return
     lines.append("Chi tiết thay đổi:")
     for change in changes:
+        if isinstance(change, dict):
+            old = change.get("old_content", "")
+            new = change.get("new_content", "")
+            change = f"Cũ: {old}\nMới: {new}"
+        elif not isinstance(change, str):
+            change = str(change)
         for line in change.splitlines():
             lines.append(f"- {line}")
     lines.append("")

@@ -22,7 +22,7 @@ from src.core.matching.reporting import render_change_report
 from src.core.retrieval.retrieval import RetrievalService, create_reranker
 from src.core.vector_store.chroma_store import ChromaStore
 from src.core.vector_store.vectorstore import VectorStorePipeline
-from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, ChunkRecord, EmbeddingResult, MatchResult, PipelineResult
+from src.schemas import ChangeItem, ChromaConfig, ChunkDocumentForHierarchical, ChunkMetadata, ChunkRecord, EmbeddingResult, MatchResult, PipelineResult
 
 
 class DummyReranker:
@@ -135,6 +135,31 @@ def _build_embedding_results(records: List[ChunkRecord]) -> List[EmbeddingResult
 
 def _chunk_content_for_report(chunk: ChunkDocumentForHierarchical) -> str:
     return chunk.tieu_de or chunk.noi_dung or ""
+
+
+def strip_numbering(text: str) -> str:
+    """
+    Loại bỏ CHỈ tiền tố đánh số ĐƠN GIẢN (1., a), 1.a) - KHÔNG xóa con số bên trong nội dung (1.614).
+    VD: "2. Giá mua bán điện là 1.614" → "Giá mua bán điện là 1.614"
+    VD: "a) Điểm a" → "Điểm a"
+    """
+    if not text:
+        return ""
+    text = str(text).strip()
+    # Regex: Match CHỈ tiền tố:
+    # [0-9]{1,2} = 1-2 chữ số (1, 10, 99) - KHÔNG match 1.614 vì [.] được treat là literal
+    # [a-z] = chữ cái (a, b, c)
+    # Theo sau: optional [.), :, -]
+    text = re.sub(
+        r'^[\s]*'
+        r'(?:điều|khoản|mục|chương|điểm|phần|article|section|clause)?[\s]*'
+        r'(?:[0-9]{1,2}|[a-z])'  # CHỈ 1-2 chữ số HOẶC 1 chữ (KHÔNG [.\-] giữa để tránh 1.614)
+        r'[\s]*[.):\-]*\s*',
+        '',
+        text.lower(),
+        flags=re.IGNORECASE
+    )
+    return text.strip()
 
 
 def get_node_context(node_id: str, registry: dict) -> str:
@@ -290,7 +315,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     # Phase 2: Progressive Zoom-In & Unified LLM Review (Tối ưu hóa chạy SONG SONG)
     _notify("phase_2", "Phase 2: Lên lịch phân tích LLM...")
     logger.info("Phase 2 started")
-    from src.core.matching.llm_review import llm_review_pair, llm_review_single, llm_review_khoan_with_diem
+    from src.core.matching.llm_review import llm_review_pair, llm_review_single
     from src.core.matching.matcher import match_sub_nodes
 
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
@@ -334,244 +359,381 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 })
             continue
 
-        khoan_nodes_1 = node_dieu_1.get("con", [])
-        khoan_nodes_2 = node_dieu_2.get("con", [])
+        node_loai = str(node_dieu_1.get("loai") or "").strip().lower()
 
-        if not khoan_nodes_1 and not khoan_nodes_2:
-            # Điều không có Khoản -> Chạy LLM Review trực tiếp cho cặp Điều
-            vb1_c = vb1_map[vb1_id]
-            vb2_c = vb2_map[vb2_id]
-            def cb_dieu_no_khoan(res, m=match):
-                nonlocal llm_identical_pairs
-                item, _ = res
-                if item is not None:
-                    change_items.append(item)
-                else:
-                    llm_identical_pairs += 1
-                    m.method = "llm_semantic_identical"
-            tasks.append({
-                "func": llm_review_pair,
-                "args": (vb1_c, vb2_c, match.method),
-                "callback": cb_dieu_no_khoan
-            })
-            continue
+        # Định nghĩa các callback helper để xử lý kết quả LLM thu được sau song song
+        def cb_dieu_intro(res, v1_id=vb1_id, v2_id=vb2_id):
+            item, _ = res
+            if item:
+                if not item.vb1_chunk_id:
+                    item.vb1_chunk_id = v1_id
+                if not item.vb2_chunk_id:
+                    item.vb2_chunk_id = v2_id
+                change_items.append(item)
 
-        # Check intro text of the Điều itself
-        dieu_intro_1 = re.sub(r"\s+", " ", str(node_dieu_1.get("noi_dung", ""))).strip().lower()
-        dieu_intro_2 = re.sub(r"\s+", " ", str(node_dieu_2.get("noi_dung", ""))).strip().lower()
-        if dieu_intro_1 and dieu_intro_2 and dieu_intro_1 != dieu_intro_2:
-            from src.schemas import ChunkDocumentForHierarchical, ChunkMetadata
-            chunk1 = ChunkDocumentForHierarchical(
-                metadata=ChunkMetadata(section_id=node_dieu_1.get("id")),
-                tieu_de=f"{node_dieu_1.get('tieu_de', '')}\n{node_dieu_1.get('noi_dung', '')}".strip(),
-                noi_dung=node_dieu_1.get("noi_dung", ""),
-                ref=node_dieu_1.get("ref", [])
-            )
-            chunk2 = ChunkDocumentForHierarchical(
-                metadata=ChunkMetadata(section_id=node_dieu_2.get("id")),
-                tieu_de=f"{node_dieu_2.get('tieu_de', '')}\n{node_dieu_2.get('noi_dung', '')}".strip(),
-                noi_dung=node_dieu_2.get("noi_dung", ""),
-                ref=node_dieu_2.get("ref", [])
-            )
-            def cb_dieu_intro(res, v1_id=vb1_id, v2_id=vb2_id):
-                item, _ = res
-                if item:
-                    item.vb1_chunk_id = v1_id if v1_id else item.vb1_chunk_id
-                    item.vb2_chunk_id = v2_id if v2_id else item.vb2_chunk_id
-                    change_items.append(item)
-            tasks.append({
-                "func": llm_review_pair,
-                "args": (chunk1, chunk2, "progressive_zoom_in"),
-                "callback": cb_dieu_intro
-            })
+        def cb_unmatched_khoan_1(res, v1_id=vb1_id, v2_id=vb2_id):
+            item, _ = res
+            if item:
+                if not item.vb1_chunk_id:
+                    item.vb1_chunk_id = v1_id
+                if not item.vb2_chunk_id:
+                    item.vb2_chunk_id = v2_id
+                change_items.append(item)
 
-        # Chạy so khớp các Khoản thuộc Điều này (sử dụng On-The-Fly embedding)
-        matched_khoan_pairs, unmatched_khoan_1, unmatched_khoan_2 = match_sub_nodes(
-            khoan_nodes_1, khoan_nodes_2, use_api=use_api
-        )
+        def cb_unmatched_khoan_2(res, v1_id=vb1_id, v2_id=vb2_id):
+            item, _ = res
+            if item:
+                if not item.vb1_chunk_id:
+                    item.vb1_chunk_id = v1_id
+                if not item.vb2_chunk_id:
+                    item.vb2_chunk_id = v2_id
+                change_items.append(item)
 
-        # Đăng ký các Khoản thêm mới/xóa bỏ (Sử dụng bộ dựng bối cảnh phân cấp tự động get_node_context)
-        from src.schemas import ChunkDocumentForHierarchical, ChunkMetadata
+        def cb_matched_khoan(res, v1_id=vb1_id, v2_id=vb2_id):
+            item, _ = res
+            if item:
+                if not item.vb1_chunk_id:
+                    item.vb1_chunk_id = v1_id
+                if not item.vb2_chunk_id:
+                    item.vb2_chunk_id = v2_id
+                change_items.append(item)
 
-        for k1 in unmatched_khoan_1:
-            context1 = get_node_context(k1["id"], registry_vb1)
-            chunk1 = ChunkDocumentForHierarchical(
-                metadata=ChunkMetadata(section_id=k1["id"]),
-                tieu_de=k1.get("noi_dung") or k1.get("tieu_de", ""),
-                noi_dung=context1,
-                ref=k1.get("ref", [])
-            )
-            def cb_unmatched_khoan_1(res, v1_id=vb1_id, v2_id=vb2_id):
-                item, _ = res
-                if item:
-                    item.vb1_chunk_id = v1_id if v1_id else item.vb1_chunk_id
-                    item.vb2_chunk_id = v2_id if v2_id else item.vb2_chunk_id
-                    change_items.append(item)
-            tasks.append({
-                "func": llm_review_single,
-                "args": (chunk1, "xoa_bo"),
-                "callback": cb_unmatched_khoan_1
-            })
-            
-        for k2 in unmatched_khoan_2:
-            context2 = get_node_context(k2["id"], registry_vb2)
-            chunk2 = ChunkDocumentForHierarchical(
-                metadata=ChunkMetadata(section_id=k2["id"]),
-                tieu_de=k2.get("noi_dung") or k2.get("tieu_de", ""),
-                noi_dung=context2,
-                ref=k2.get("ref", [])
-            )
-            def cb_unmatched_khoan_2(res, v1_id=vb1_id, v2_id=vb2_id):
-                item, _ = res
-                if item:
-                    item.vb1_chunk_id = v1_id if v1_id else item.vb1_chunk_id
-                    item.vb2_chunk_id = v2_id if v2_id else item.vb2_chunk_id
-                    change_items.append(item)
-            tasks.append({
-                "func": llm_review_single,
-                "args": (chunk2, "them_moi"),
-                "callback": cb_unmatched_khoan_2
-            })
+        def cb_khoan_with_diem(res, v1_id=vb1_id, v2_id=vb2_id):
+            item, _ = res
+            if item:
+                if not item.vb1_chunk_id:
+                    item.vb1_chunk_id = v1_id
+                if not item.vb2_chunk_id:
+                    item.vb2_chunk_id = v2_id
+                change_items.append(item)
 
-        # Với các cặp Khoản đã khớp, tiếp tục "Zoom-In" xuống mức ĐIỂM
-        for id_khoan_1, id_khoan_2, _ in matched_khoan_pairs:
-            node_khoan_1 = registry_vb1.get(id_khoan_1, {})
-            node_khoan_2 = registry_vb2.get(id_khoan_2, {})
+        if node_loai == "dieu":
+            khoan_nodes_1 = node_dieu_1.get("con", [])
+            khoan_nodes_2 = node_dieu_2.get("con", [])
 
-            # Strict text match cho cấp Khoản
-            s1 = re.sub(r"\s+", " ", str(node_khoan_1.get("cached_merged_text") or node_khoan_1.get("noi_dung", ""))).strip().lower()
-            s2 = re.sub(r"\s+", " ", str(node_khoan_2.get("cached_merged_text") or node_khoan_2.get("noi_dung", ""))).strip().lower()
-            
-            diem_nodes_1 = node_khoan_1.get("con", [])
-            diem_nodes_2 = node_khoan_2.get("con", [])
-            
-            # Bỏ qua LLM call nếu Khoản giống hệt nhau về chữ và KHÔNG có sự biến động Điểm con (hoặc không có Điểm con)
-            if s1 == s2 and s1 and not diem_nodes_1 and not diem_nodes_2:
+            if not khoan_nodes_1 and not khoan_nodes_2:
+                # Điều không có Khoản -> Chạy LLM Review trực tiếp cho cặp Điều
+                vb1_c = vb1_map[vb1_id]
+                vb2_c = vb2_map[vb2_id]
+                def cb_dieu_no_khoan(res, m=match):
+                    nonlocal llm_identical_pairs
+                    item, _ = res
+                    if item is not None:
+                        change_items.append(item)
+                    else:
+                        llm_identical_pairs += 1
+                        m.method = "llm_semantic_identical"
+                tasks.append({
+                    "func": llm_review_pair,
+                    "args": (vb1_c, vb2_c, match.method),
+                    "callback": cb_dieu_no_khoan
+                })
                 continue
 
-            # Kiểm tra tự động thay đổi chỉ về đánh số (numbering-only diff) không cần gọi LLM
-            if s1 and s2 and not diem_nodes_1 and not diem_nodes_2:
-                num_prefix_re = re.compile(
-                    r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
-                    r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
-                    re.IGNORECASE,
-                )
-                s1_stripped = num_prefix_re.sub("", s1).strip()
-                s2_stripped = num_prefix_re.sub("", s2).strip()
-                if s1_stripped == s2_stripped and len(s1_stripped) > 0:
-                    # Rút trích nhãn số thứ tự cũ/mới của Khoản để hiển thị thân thiện
-                    m1 = num_prefix_re.match(node_khoan_1.get("noi_dung", ""))
-                    m2 = num_prefix_re.match(node_khoan_2.get("noi_dung", ""))
-                    lbl1 = m1.group(0).strip(" \t\n\r.:)") if m1 else "Khoản cũ"
-                    lbl2 = m2.group(0).strip(" \t\n\r.:)") if m2 else "Khoản mới"
-                    
-                    auto_item = ChangeItem(
-                        kind="sua_doi",
-                        vb1_chunk_id=vb1_id,
-                        vb2_chunk_id=vb2_id,
-                        summary=f"Sửa đổi đánh số: Thay đổi số thứ tự từ {lbl1} sang {lbl2}.",
-                        impact="Thay đổi số thứ tự điều khoản kỹ thuật, nội dung quy định không đổi.",
-                        changes=[{
-                            "old_content": node_khoan_1.get("noi_dung", ""),
-                            "new_content": node_khoan_2.get("noi_dung", "")
-                        }],
-                        vb1_excerpt=node_khoan_1.get("noi_dung", ""),
-                        vb2_excerpt=node_khoan_2.get("noi_dung", ""),
-                        method="automatic_numbering_diff"
-                    )
-                    change_items.append(auto_item)
-                    continue
-
-            if not diem_nodes_1 and not diem_nodes_2:
-                # Khoản không có Điểm -> Chạy LLM Review trực tiếp cho cặp Khoản (Sử dụng bối cảnh phân cấp tự động)
-                context1 = get_node_context(node_khoan_1["id"], registry_vb1)
-                context2 = get_node_context(node_khoan_2["id"], registry_vb2)
-
+            # Check intro text of the Điều itself
+            dieu_intro_1 = re.sub(r"\s+", " ", str(node_dieu_1.get("noi_dung", ""))).strip().lower()
+            dieu_intro_2 = re.sub(r"\s+", " ", str(node_dieu_2.get("noi_dung", ""))).strip().lower()
+            if dieu_intro_1 and dieu_intro_2 and dieu_intro_1 != dieu_intro_2:
                 chunk1 = ChunkDocumentForHierarchical(
-                    metadata=ChunkMetadata(section_id=node_khoan_1.get("id")),
-                    tieu_de=node_khoan_1.get("noi_dung") or node_khoan_1.get("tieu_de", ""),
-                    noi_dung=context1,
-                    ref=node_khoan_1.get("ref", [])
+                    metadata=ChunkMetadata(section_id=node_dieu_1.get("id")),
+                    tieu_de=f"{node_dieu_1.get('tieu_de', '')}\n{node_dieu_1.get('noi_dung', '')}".strip(),
+                    noi_dung=node_dieu_1.get("noi_dung", ""),
+                    ref=node_dieu_1.get("ref", [])
                 )
                 chunk2 = ChunkDocumentForHierarchical(
-                    metadata=ChunkMetadata(section_id=node_khoan_2.get("id")),
-                    tieu_de=node_khoan_2.get("noi_dung") or node_khoan_2.get("tieu_de", ""),
-                    noi_dung=context2,
-                    ref=node_khoan_2.get("ref", [])
+                    metadata=ChunkMetadata(section_id=node_dieu_2.get("id")),
+                    tieu_de=f"{node_dieu_2.get('tieu_de', '')}\n{node_dieu_2.get('noi_dung', '')}".strip(),
+                    noi_dung=node_dieu_2.get("noi_dung", ""),
+                    ref=node_dieu_2.get("ref", [])
                 )
-                def cb_matched_khoan(res, v1_id=vb1_id, v2_id=vb2_id):
-                    item, _ = res
-                    if item:
-                        item.vb1_chunk_id = v1_id if v1_id else item.vb1_chunk_id
-                        item.vb2_chunk_id = v2_id if v2_id else item.vb2_chunk_id
-                        change_items.append(item)
+                tasks.append({
+                    "func": llm_review_pair,
+                    "args": (chunk1, chunk2, "progressive_zoom_in"),
+                    "callback": cb_dieu_intro
+                })
+
+            # Chạy so khớp các Khoản thuộc Điều này (sử dụng On-The-Fly embedding)
+            matched_khoan_pairs, unmatched_khoan_1, unmatched_khoan_2 = match_sub_nodes(
+                khoan_nodes_1, khoan_nodes_2, use_api=use_api
+            )
+
+            # Đăng ký các Khoản thêm mới/xóa bỏ
+            for k1 in unmatched_khoan_1:
+                context1 = get_node_context(k1["id"], registry_vb1)
+                chunk1 = ChunkDocumentForHierarchical(
+                    metadata=ChunkMetadata(section_id=k1["id"]),
+                    tieu_de=k1.get("noi_dung") or k1.get("tieu_de", ""),
+                    noi_dung=context1,
+                    ref=k1.get("ref", [])
+                )
+                tasks.append({
+                    "func": llm_review_single,
+                    "args": (chunk1, "xoa_bo"),
+                    "callback": cb_unmatched_khoan_1
+                })
+                
+            for k2 in unmatched_khoan_2:
+                context2 = get_node_context(k2["id"], registry_vb2)
+                chunk2 = ChunkDocumentForHierarchical(
+                    metadata=ChunkMetadata(section_id=k2["id"]),
+                    tieu_de=k2.get("noi_dung") or k2.get("tieu_de", ""),
+                    noi_dung=context2,
+                    ref=k2.get("ref", [])
+                )
+                tasks.append({
+                    "func": llm_review_single,
+                    "args": (chunk2, "them_moi"),
+                    "callback": cb_unmatched_khoan_2
+                })
+
+            # Với các cặp Khoản đã khớp, tiếp tục "Zoom-In" xuống mức ĐIỂM
+            for id_khoan_1, id_khoan_2, _ in matched_khoan_pairs:
+                node_khoan_1 = registry_vb1.get(id_khoan_1, {})
+                node_khoan_2 = registry_vb2.get(id_khoan_2, {})
+
+                # So sánh CHỈ tieu_de (không cached_merged_text) - LOGIC FIX
+                tieu_de_1 = strip_numbering(node_khoan_1.get("tieu_de", ""))
+                tieu_de_2 = strip_numbering(node_khoan_2.get("tieu_de", ""))
+                
+                # Nội dung Khoản để check nếu không có tieu_de
+                noi_dung_1 = re.sub(r"\s+", " ", str(node_khoan_1.get("noi_dung", ""))).strip().lower()
+                noi_dung_2 = re.sub(r"\s+", " ", str(node_khoan_2.get("noi_dung", ""))).strip().lower()
+                
+                diem_nodes_1 = node_khoan_1.get("con", [])
+                diem_nodes_2 = node_khoan_2.get("con", [])
+                
+                # Bỏ qua hoàn toàn nếu chỉ đánh số khác (numbering-only): noi_dung giống nhưng tiền tố khác
+                if noi_dung_1 and noi_dung_2 and not diem_nodes_1 and not diem_nodes_2:
+                    # Loại bỏ tiền tố số đơn KHÔNG loại hết con số bên trong
+                    noi_dung_1_stripped = strip_numbering(noi_dung_1)
+                    noi_dung_2_stripped = strip_numbering(noi_dung_2)
+                    if noi_dung_1_stripped == noi_dung_2_stripped and len(noi_dung_1_stripped) > 0:
+                        # Nội dung giống nhau (sau loại tiền tố), chỉ đánh số khác → bỏ qua hoàn toàn
+                        continue
+
+                # ✅ PHẢI GỌI LLM nếu không có Điểm con để kiểm tra noi_dung (có thể sua_doi)
+                # Không được skip chỉ vì tieu_de giống!
+                if not diem_nodes_1 and not diem_nodes_2:
+                    # Khoản không có Điểm -> Chạy LLM Review cho cặp Khoản (dù tieu_de có giống)
+                    context1 = get_node_context(node_khoan_1["id"], registry_vb1)
+                    context2 = get_node_context(node_khoan_2["id"], registry_vb2)
+
+                    chunk1 = ChunkDocumentForHierarchical(
+                        metadata=ChunkMetadata(section_id=node_khoan_1.get("id")),
+                        tieu_de=node_khoan_1.get("noi_dung") or node_khoan_1.get("tieu_de", ""),
+                        noi_dung=context1,
+                        ref=node_khoan_1.get("ref", [])
+                    )
+                    chunk2 = ChunkDocumentForHierarchical(
+                        metadata=ChunkMetadata(section_id=node_khoan_2.get("id")),
+                        tieu_de=node_khoan_2.get("noi_dung") or node_khoan_2.get("tieu_de", ""),
+                        noi_dung=context2,
+                        ref=node_khoan_2.get("ref", [])
+                    )
+                    tasks.append({
+                        "func": llm_review_pair,
+                        "args": (chunk1, chunk2, "progressive_zoom_in"),
+                        "callback": cb_matched_khoan
+                    })
+                    continue
+
+                # Có Điểm con -> Match các Điểm
+                matched_diem_pairs, unmatched_diem_1, unmatched_diem_2 = match_sub_nodes(
+                    diem_nodes_1, diem_nodes_2, use_api=use_api
+                )
+                
+                # Xử lý các Điểm không khớp (them_moi / xoa_bo)
+                for d1 in unmatched_diem_1:
+                    context_d1 = get_node_context(d1["id"], registry_vb1)
+                    chunk_d1 = ChunkDocumentForHierarchical(
+                        metadata=ChunkMetadata(section_id=d1["id"]),
+                    tieu_de=d1.get("noi_dung") or d1.get("tieu_de", ""),
+                    noi_dung=context_d1,
+                    ref=d1.get("ref", [])
+                )
+                tasks.append({
+                    "func": llm_review_single,
+                    "args": (chunk_d1, "xoa_bo"),
+                    "callback": cb_unmatched_khoan_1
+                })
+                
+                for d2 in unmatched_diem_2:
+                    context_d2 = get_node_context(d2["id"], registry_vb2)
+                    chunk_d2 = ChunkDocumentForHierarchical(
+                        metadata=ChunkMetadata(section_id=d2["id"]),
+                        tieu_de=d2.get("noi_dung") or d2.get("tieu_de", ""),
+                        noi_dung=context_d2,
+                        ref=d2.get("ref", [])
+                    )
+                    tasks.append({
+                        "func": llm_review_single,
+                        "args": (chunk_d2, "them_moi"),
+                        "callback": cb_unmatched_khoan_2
+                    })
+                
+                # Xử lý các Điểm khớp: so sánh tieu_de
+                for d1_id, d2_id, _ in matched_diem_pairs:
+                    d1_node = registry_vb1.get(d1_id, {})
+                    d2_node = registry_vb2.get(d2_id, {})
+                    
+                    d1_tieu_de = strip_numbering(d1_node.get("tieu_de", ""))
+                    d2_tieu_de = strip_numbering(d2_node.get("tieu_de", ""))
+                    
+                    # LLM review nếu tieu_de khác
+                    if d1_tieu_de != d2_tieu_de and (d1_tieu_de or d2_tieu_de):
+                        context_d1 = get_node_context(d1_id, registry_vb1)
+                        context_d2 = get_node_context(d2_id, registry_vb2)
+                        
+                        chunk_d1 = ChunkDocumentForHierarchical(
+                            metadata=ChunkMetadata(section_id=d1_id),
+                            tieu_de=d1_node.get("noi_dung") or d1_node.get("tieu_de", ""),
+                            noi_dung=context_d1,
+                            ref=d1_node.get("ref", [])
+                        )
+                        chunk_d2 = ChunkDocumentForHierarchical(
+                            metadata=ChunkMetadata(section_id=d2_id),
+                            tieu_de=d2_node.get("noi_dung") or d2_node.get("tieu_de", ""),
+                            noi_dung=context_d2,
+                            ref=d2_node.get("ref", [])
+                        )
+                        tasks.append({
+                            "func": llm_review_pair,
+                            "args": (chunk_d1, chunk_d2, "progressive_zoom_in"),
+                            "callback": cb_matched_khoan
+                        })
+
+        elif node_loai == "khoan":
+            # Điều khoản được so khớp ở cấp Khoản (chunk_by == "khoan")
+            diem_nodes_1 = node_dieu_1.get("con", [])
+            diem_nodes_2 = node_dieu_2.get("con", [])
+
+            # So sánh CHỈ tieu_de (LOGIC FIX)
+            tieu_de_1 = strip_numbering(node_dieu_1.get("tieu_de", ""))
+            tieu_de_2 = strip_numbering(node_dieu_2.get("tieu_de", ""))
+            
+            noi_dung_1 = re.sub(r"\s+", " ", str(node_dieu_1.get("noi_dung", ""))).strip().lower()
+            noi_dung_2 = re.sub(r"\s+", " ", str(node_dieu_2.get("noi_dung", ""))).strip().lower()
+
+            # Bỏ qua hoàn toàn nếu chỉ đánh số khác (LOGIC FIX)
+            if noi_dung_1 and noi_dung_2 and not diem_nodes_1 and not diem_nodes_2:
+                # Loại bỏ tiền tố số đơn KHÔNG loại hết con số bên trong
+                noi_dung_1_stripped = strip_numbering(noi_dung_1)
+                noi_dung_2_stripped = strip_numbering(noi_dung_2)
+                if noi_dung_1_stripped == noi_dung_2_stripped and len(noi_dung_1_stripped) > 0:
+                    # Nội dung giống nhau (sau loại tiền tố), chỉ đánh số khác → bỏ qua hoàn toàn
+                    continue
+
+            # ✅ PHẢI GỌI LLM nếu không có Điểm con để kiểm tra noi_dung
+            if not diem_nodes_1 and not diem_nodes_2:
+                # Khoản không có Điểm -> Chạy LLM Review cho cặp Khoản (dù tieu_de có giống)
+                context1 = get_node_context(node_dieu_1["id"], registry_vb1)
+                context2 = get_node_context(node_dieu_2["id"], registry_vb2)
+
+                chunk1 = ChunkDocumentForHierarchical(
+                    metadata=ChunkMetadata(section_id=node_dieu_1.get("id")),
+                    tieu_de=node_dieu_1.get("noi_dung") or node_dieu_1.get("tieu_de", ""),
+                    noi_dung=context1,
+                    ref=node_dieu_1.get("ref", [])
+                )
+                chunk2 = ChunkDocumentForHierarchical(
+                    metadata=ChunkMetadata(section_id=node_dieu_2.get("id")),
+                    tieu_de=node_dieu_2.get("noi_dung") or node_dieu_2.get("tieu_de", ""),
+                    noi_dung=context2,
+                    ref=node_dieu_2.get("ref", [])
+                )
                 tasks.append({
                     "func": llm_review_pair,
                     "args": (chunk1, chunk2, "progressive_zoom_in"),
                     "callback": cb_matched_khoan
                 })
             else:
-                # So khớp các Điểm thuộc Khoản này
-                matched_diem_pairs, unmatched_diem_1, unmatched_diem_2 = match_sub_nodes(
-                    diem_nodes_1, diem_nodes_2, use_api=use_api
-                )
-                
-                # Check strict again if ALL matched diems are exactly the same and no diems are added/removed
-                if not unmatched_diem_1 and not unmatched_diem_2:
-                    all_diems_exact = True
-                    for d1_id, d2_id, _ in matched_diem_pairs:
-                        d1_s = re.sub(r"\s+", " ", str(registry_vb1.get(d1_id, {}).get("cached_merged_text") or registry_vb1.get(d1_id, {}).get("noi_dung", ""))).strip().lower()
-                        d2_s = re.sub(r"\s+", " ", str(registry_vb2.get(d2_id, {}).get("cached_merged_text") or registry_vb2.get(d2_id, {}).get("noi_dung", ""))).strip().lower()
-                        if d1_s != d2_s:
-                            all_diems_exact = False
-                            break
-                    if all_diems_exact:
-                        if s1 == s2:
-                            continue # Bỏ qua Khoản này vì nội dung Khoản giống nhau và tất cả các Điểm cũng giống nhau 100%
-                        
-                        # Bản vá tự động cho trường hợp các Điểm con khớp 100%, chỉ khác số thứ tự Khoản
-                        num_prefix_re = re.compile(
-                            r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
-                            r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
-                            re.IGNORECASE,
+                # Có Điểm con -> Zoom-in thêm một cấp
+                    matched_diem_pairs, unmatched_diem_1, unmatched_diem_2 = match_sub_nodes(
+                        diem_nodes_1, diem_nodes_2, use_api=use_api
+                    )
+                    
+                    # Xử lý các Điểm không khớp (them_moi / xoa_bo)
+                    for d1 in unmatched_diem_1:
+                        context_d1 = get_node_context(d1["id"], registry_vb1)
+                        chunk_d1 = ChunkDocumentForHierarchical(
+                            metadata=ChunkMetadata(section_id=d1["id"]),
+                            tieu_de=d1.get("noi_dung") or d1.get("tieu_de", ""),
+                            noi_dung=context_d1,
+                            ref=d1.get("ref", [])
                         )
-                        s1_stripped = num_prefix_re.sub("", s1).strip()
-                        s2_stripped = num_prefix_re.sub("", s2).strip()
-                        if s1_stripped == s2_stripped and len(s1_stripped) > 0:
-                            m1 = num_prefix_re.match(node_khoan_1.get("noi_dung", ""))
-                            m2 = num_prefix_re.match(node_khoan_2.get("noi_dung", ""))
-                            lbl1 = m1.group(0).strip(" \t\n\r.:)") if m1 else "Khoản cũ"
-                            lbl2 = m2.group(0).strip(" \t\n\r.:)") if m2 else "Khoản mới"
+                        tasks.append({
+                            "func": llm_review_single,
+                            "args": (chunk_d1, "xoa_bo"),
+                            "callback": cb_unmatched_khoan_1
+                        })
+                    
+                    for d2 in unmatched_diem_2:
+                        context_d2 = get_node_context(d2["id"], registry_vb2)
+                        chunk_d2 = ChunkDocumentForHierarchical(
+                            metadata=ChunkMetadata(section_id=d2["id"]),
+                            tieu_de=d2.get("noi_dung") or d2.get("tieu_de", ""),
+                            noi_dung=context_d2,
+                            ref=d2.get("ref", [])
+                        )
+                        tasks.append({
+                            "func": llm_review_single,
+                            "args": (chunk_d2, "them_moi"),
+                            "callback": cb_unmatched_khoan_2
+                        })
+                    
+                    # Xử lý các Điểm khớp: so sánh tieu_de
+                    for d1_id, d2_id, _ in matched_diem_pairs:
+                        d1_node = registry_vb1.get(d1_id, {})
+                        d2_node = registry_vb2.get(d2_id, {})
+                        
+                        d1_tieu_de = strip_numbering(d1_node.get("tieu_de", ""))
+                        d2_tieu_de = strip_numbering(d2_node.get("tieu_de", ""))
+                        
+                        # LLM review nếu tieu_de khác
+                        if d1_tieu_de != d2_tieu_de and (d1_tieu_de or d2_tieu_de):
+                            context_d1 = get_node_context(d1_id, registry_vb1)
+                            context_d2 = get_node_context(d2_id, registry_vb2)
                             
-                            auto_item = ChangeItem(
-                                kind="sua_doi",
-                                vb1_chunk_id=vb1_id,
-                                vb2_chunk_id=vb2_id,
-                                summary=f"Sửa đổi đánh số: Thay đổi số thứ tự từ {lbl1} sang {lbl2}.",
-                                impact="Thay đổi số thứ tự điều khoản kỹ thuật, nội dung quy định không đổi.",
-                                changes=[{
-                                    "old_content": node_khoan_1.get("noi_dung", ""),
-                                    "new_content": node_khoan_2.get("noi_dung", "")
-                                }],
-                                vb1_excerpt=node_khoan_1.get("noi_dung", ""),
-                                vb2_excerpt=node_khoan_2.get("noi_dung", ""),
-                                method="automatic_numbering_diff"
+                            chunk_d1 = ChunkDocumentForHierarchical(
+                                metadata=ChunkMetadata(section_id=d1_id),
+                                tieu_de=d1_node.get("noi_dung") or d1_node.get("tieu_de", ""),
+                                noi_dung=context_d1,
+                                ref=d1_node.get("ref", [])
                             )
-                            change_items.append(auto_item)
-                            continue
+                            chunk_d2 = ChunkDocumentForHierarchical(
+                                metadata=ChunkMetadata(section_id=d2_id),
+                                tieu_de=d2_node.get("noi_dung") or d2_node.get("tieu_de", ""),
+                                noi_dung=context_d2,
+                                ref=d2_node.get("ref", [])
+                            )
+                            tasks.append({
+                                "func": llm_review_pair,
+                                "args": (chunk_d1, chunk_d2, "progressive_zoom_in"),
+                                "callback": cb_matched_khoan
+                            })
 
-                # Gộp toàn bộ kết quả so khớp của Khoản và các Điểm con
-                def cb_khoan_with_diem(res, v1_id=vb1_id, v2_id=vb2_id):
-                    item, _ = res
-                    if item:
-                        item.vb1_chunk_id = v1_id if v1_id else item.vb1_chunk_id
-                        item.vb2_chunk_id = v2_id if v2_id else item.vb2_chunk_id
-                        change_items.append(item)
-                tasks.append({
-                    "func": llm_review_khoan_with_diem,
-                    "args": (node_khoan_1, node_khoan_2, matched_diem_pairs, unmatched_diem_1, unmatched_diem_2, registry_vb1, registry_vb2, "progressive_zoom_in"),
-                    "callback": cb_khoan_with_diem
-                })
+        else:
+            # node_loai == "diem" hoặc khác -> So sánh trực tiếp qua llm_review_pair
+            context1 = get_node_context(node_dieu_1["id"], registry_vb1)
+            context2 = get_node_context(node_dieu_2["id"], registry_vb2)
+
+            chunk1 = ChunkDocumentForHierarchical(
+                metadata=ChunkMetadata(section_id=node_dieu_1.get("id")),
+                tieu_de=node_dieu_1.get("noi_dung") or node_dieu_1.get("tieu_de", ""),
+                noi_dung=context1,
+                ref=node_dieu_1.get("ref", [])
+            )
+            chunk2 = ChunkDocumentForHierarchical(
+                metadata=ChunkMetadata(section_id=node_dieu_2.get("id")),
+                tieu_de=node_dieu_2.get("noi_dung") or node_dieu_2.get("tieu_de", ""),
+                noi_dung=context2,
+                ref=node_dieu_2.get("ref", [])
+            )
+            tasks.append({
+                "func": llm_review_pair,
+                "args": (chunk1, chunk2, "progressive_zoom_in"),
+                "callback": cb_matched_khoan
+            })
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]

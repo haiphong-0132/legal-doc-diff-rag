@@ -19,6 +19,8 @@ def _post_json(
     payload: Dict[str, Any],
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
+    if not base_url.startswith(("http://", "https://")):
+        base_url = f"http://{base_url}"
     url = f"{base_url.rstrip('/')}/{endpoint.lstrip('/')}"
     try:
         response = requests.post(url, json=payload, timeout=timeout)

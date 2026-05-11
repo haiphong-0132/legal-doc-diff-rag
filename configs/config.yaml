@@ -1,6 +1,6 @@
 paths:
   # Thư mục chứa trọng số mô hình cục bộ
-  embedding_model_dir: "./models/Vietnamese_Embedding"
+  embedding_model_dir: "./models/Vietnamese_Embedding_v2"
   reranker_model_dir: "./models/Vietnamese_Reranker"
   
   # Đường dẫn file tài liệu mặc định
