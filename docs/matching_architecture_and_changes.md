@@ -52,22 +52,23 @@ flowchart TD
 
     P1 --> P2
 
-    subgraph P2 [Phase 2 — Progressive Zoom + LLM]
+    subgraph P2 [Phase 2 — Progressive Zoom + LLM, chạy song song]
         L[Duyệt cặp đã khớp] --> M{node_loai?}
         M -->|dieu có khoản| N[match_sub_nodes khoản]
         M -->|khoan có điểm| O[match_sub_nodes điểm]
+        M -->|dieu phẳng| FD[llm_review_dieu_flat<br/>tách sửa/thêm/xóa]
         M -->|lá| Q[llm_review_pair]
         N & O --> R[Zoom xuống cấp con]
         R --> Q
         Q --> S{identical?}
-        S -->|true| T[type: exact/danh_so/paraphrase]
+        S -->|true| T[giống nhau → bỏ qua<br/>giong_nhau_hoan_toan]
         S -->|false| U[ChangeItem sua_doi]
     end
 
     P2 --> P3
 
     subgraph P3 [Propagation + Phân loại]
-        V[Lan truyền thay đổi lên cha] --> W[Đếm + reclassify type]
+        V[Lan truyền thay đổi lên cha] --> W[Gộp item + phân loại sửa/thêm/xóa]
     end
 
     P3 --> X[PipelineResult<br/>stats + change_items + report]
@@ -84,6 +85,62 @@ flowchart TD
 | `distance_threshold` | 0.185 | Ngưỡng vector cho Greedy |
 | `rerank_threshold` | 0.98 | Ngưỡng rerank cho Greedy |
 | `hybrid_threshold` | 0.65 | Ngưỡng Hungarian chấp nhận khớp |
+
+### Schema dữ liệu (Pydantic) — nguồn để vẽ lại Hình 3.2
+
+```mermaid
+classDiagram
+    class ChunkMetadata {
+        +str section_id
+    }
+    class ChunkDocument {
+        +str text
+        +ChunkMetadata metadata
+    }
+    class ChunkDocumentForHierarchical {
+        +ChunkMetadata metadata
+        +str tieu_de
+        +str noi_dung
+        +List~str~ ref
+        +List~str~ tables
+    }
+    class EmbeddingRequest {
+        +str chunk_id
+        +str text
+    }
+    class EmbeddingResult {
+        +str chunk_id
+        +str text
+        +List~float~ vector
+        +int token_count
+    }
+    class ChromaConfig {
+        +str collection_name
+        +str persist_directory
+        +str distance_metric
+        +bool is_persist
+    }
+    class ChromaUpsertRequest {
+        +str chunk_id
+        +List~float~ vector
+        +str text
+        +Dict metadata
+    }
+    class ChromaQueryRequest {
+        +List~float~ query_vector
+        +int top_k
+        +Dict filter
+    }
+    class ChromaQueryResult {
+        +str chunk_id
+        +str text
+        +Dict metadata
+        +float distance
+    }
+    ChunkDocument --> ChunkMetadata
+    ChunkDocumentForHierarchical --> ChunkMetadata
+```
+> So với Hình 3.2 hiện tại: bổ sung trường `tables: List[str]` trong `ChunkDocumentForHierarchical` (giữ HTML bảng để hiển thị trên UI).
 
 ---
 
@@ -382,9 +439,9 @@ xychart-beta
 ```
 > Cột trái: đầu phiên — Cột phải: sau toàn bộ fix. Đặc trưng: precision rất cao (ít báo sai), recall bị giới hạn bởi paraphrase (chủ ý tắt) và một số ca Điều phẳng/đa Khoản.
 
-### 6.3. Kết quả đầy đủ 21 bộ (qwen3-80b)
+### 6.3. Kết quả đầy đủ 21 bộ (qwen3-next-80B, temp=0 — tái lập được)
 
-Khớp item↔groundtruth bằng **vị trí + độ trùng nội dung** (token overlap) — chịu được groundtruth không ghi rõ "Điều N". VB12–13 đầu vào là **PDF**; VB14–21 dùng quy ước `<tên>.docx` (gốc) + `<tên>-sua-doi.docx`. VB15 không có file groundtruth (chỉ "Đúng hết.docx") → loại khỏi trung bình.
+Khớp item↔groundtruth bằng **vị trí + độ trùng nội dung** (token overlap) — chịu được groundtruth không ghi rõ "Điều N". VB12–13 đầu vào là **PDF**; VB14–21 dùng quy ước `<tên>.docx` (gốc) + `<tên>-sua-doi.docx`. VB15 groundtruth ở dạng văn xuôi (.txt) → đã chuyển thành `VB15_gt.xlsx` (7 thay đổi) để chấm tự động. **temp=0** nên kết quả tất định, chạy lại không đổi.
 
 | VB | GT | TP | FP | FN | P | R | F1 |
 |----|----|----|----|----|----|----|----|
@@ -392,30 +449,36 @@ Khớp item↔groundtruth bằng **vị trí + độ trùng nội dung** (token 
 | VB02 | 9 | 6 | 0 | 3 | 1.00 | 0.67 | 0.80 |
 | VB03 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
 | VB04 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
-| VB05 | 8 | 7 | 1 | 1 | 0.88 | 0.88 | 0.88 |
+| VB05 | 8 | 7 | 0 | 1 | 1.00 | 0.88 | 0.93 |
 | VB06 | 8 | 6 | 0 | 2 | 1.00 | 0.75 | 0.86 |
 | VB07 | 9 | 5 | 0 | 4 | 1.00 | 0.56 | 0.71 |
 | VB08 | 5 | 5 | 2 | 0 | 0.71 | 1.00 | 0.83 |
-| VB09 | 8 | 8 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB09 | 8 | 7 | 0 | 1 | 1.00 | 0.88 | 0.93 |
 | VB10 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
 | VB11 | 5 | 5 | 0 | 0 | 1.00 | 1.00 | 1.00 |
 | VB12 (PDF) | 7 | 6 | 1 | 1 | 0.86 | 0.86 | 0.86 |
-| VB13 (PDF) | 8 | 8 | 4 | 0 | 0.67 | 1.00 | 0.80 |
-| VB14 | 6 | 6 | 1 | 0 | 0.86 | 1.00 | 0.92 |
-| VB15 | — | — | — | — | _không có groundtruth_ | | |
+| VB13 (PDF) | 8 | 8 | 3 | 0 | 0.73 | 1.00 | 0.84 |
+| VB14 | 6 | 6 | 2 | 0 | 0.75 | 1.00 | 0.86 |
+| VB15 | 7 | 6 | 0 | 1 | 1.00 | 0.86 | 0.92 |
 | VB16 | 6 | 6 | 6 | 0 | 0.50 | 1.00 | 0.67 |
 | VB17 | 7 | 7 | 1 | 0 | 0.88 | 1.00 | 0.93 |
 | VB18 | 9 | 8 | 0 | 1 | 1.00 | 0.89 | 0.94 |
 | VB19 | 10 | 9 | 2 | 1 | 0.82 | 0.90 | 0.86 |
 | VB20 | 6 | 5 | 1 | 1 | 0.83 | 0.83 | 0.83 |
-| VB21 | 5 | 5 | 1 | 0 | 0.83 | 1.00 | 0.91 |
-| **Macro (20 VB)** | | | | | **0.89** | **0.91** | **0.89** |
-| **Weighted (theo GT)** | | | | | **0.91** | **0.90** | **0.89** |
+| VB21 | 5 | 5 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| **Macro (21 VB)** | | | | | **0.91** | **0.90** | **0.89** |
+| **Weighted (theo GT)** | | | | | **0.92** | **0.89** | **0.89** |
 
 **Nhận xét:**
-- **Precision cao** (Macro 0.89): hệ thống ít báo sai. Các ca FP chủ yếu là **over-detection** — bắt thêm thay đổi mà groundtruth không liệt kê, hoặc nhánh Điều phẳng tách một đoạn viết-lại thành xóa+thêm (vd VB16 `dieu_5`). Với công cụ diff pháp lý, báo dư an toàn hơn bỏ sót.
-- **Recall cao** (Macro 0.91). Các ca recall thấp: VB07 (0.56 — nhiều thay đổi ở Điểm sâu La Mã `i/ii/xiii`), VB02 (0.67 — paraphrase + 1 xóa nguyên khoản).
-- So với bảng tham chiếu ban đầu (Macro P=0.76 R=0.83 F1=0.78), kết quả hiện tại **P=0.89 R=0.91 F1=0.89**.
+- **Precision cao** (Macro 0.91): hệ thống ít báo sai. Các ca FP chủ yếu là **over-detection** — bắt thêm thay đổi mà groundtruth không liệt kê, hoặc nhánh Điều phẳng tách một đoạn viết-lại thành xóa+thêm (vd VB16 `dieu_5`). Với công cụ diff pháp lý, báo dư an toàn hơn bỏ sót.
+- **Recall cao** (Macro 0.90). Các ca recall thấp: VB07 (0.56 — nhiều thay đổi ở Điểm đánh số La Mã `i/ii/xii` mà parser chưa tách), VB02 (0.67 — paraphrase + xóa câu lẫn trong Khoản dài).
+- So với bảng tham chiếu ban đầu (Macro P=0.76 R=0.83 F1=0.78), kết quả hiện tại **P=0.91 R=0.90 F1=0.89**.
+
+> **Lưu ý về tính tái lập:** chạy ở `temperature=0`. Ở `temperature=0.5` các con số dao động ±0.03–0.04 mỗi lần do tính ngẫu nhiên của LLM.
+
+### 6.4. So sánh model & tối ưu tốc độ
+- **Model:** qwen3-next-80B (temp=0) đạt **F1 0.89** ổn định. Các model nhỏ (vd 8B) cho recall tương đương nhưng **over-detect nhiều hơn** → precision và F1 thấp hơn, số liệu kém ổn định.
+- **Tốc độ:** Phase 2 (zoom-in Điều→Khoản→Điểm) được **chạy song song** + **batch embedding** (gom toàn bộ Khoản/Điểm embed 1 lời gọi API thay vì ~46) → mỗi văn bản từ ~112s xuống **~37s** (nhanh ~3×), phần lớn dưới 40s.
 
 ---
 
@@ -457,4 +520,4 @@ sequenceDiagram
 
 ---
 
-*Cập nhật: 2026-06-17 — thêm fix #13–16, đánh giá đầy đủ 21 VB (Macro F1 0.89).*
+*Cập nhật: 2026-06-18 — fix #13–16 + fix đánh số đa cấp; đánh giá 21 VB ở temp=0 (qwen3-next-80B, Macro F1 0.89, tái lập được); tối ưu Phase 2 song song + batch embedding (~3× nhanh hơn).*

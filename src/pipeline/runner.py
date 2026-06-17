@@ -185,18 +185,32 @@ def strip_numbering(text: str) -> str:
     """
     if not text:
         return ""
-    text = str(text).strip()
-    # Regex: Match CHỈ tiền tố:
-    # [0-9]{1,2} = 1-2 chữ số (1, 10, 99) - KHÔNG match 1.614 vì [.] được treat là literal
-    # [a-z] = chữ cái (a, b, c)
-    # Theo sau: optional [.), :, -]
+    text = str(text).strip().lower()
+
+    # Bước 1: tiền tố đánh số NHIỀU CẤP ("2.3.", "3.2.1)") — yêu cầu BẮT BUỘC có dấu
+    # phân tách [.):-] + khoảng trắng theo sau, nên KHÔNG nuốt số tiền "1.614 đồng"
+    # (sau "1.614" là khoảng trắng + chữ, không có dấu chấm). Đây là phần sửa cho
+    # trường hợp Khoản bị đổi số (vd 2.3 -> 2.2) mà nội dung giữ nguyên.
+    stripped = re.sub(
+        r'^[\s]*'
+        r'(?:điều|khoản|mục|chương|điểm|phần|article|section|clause)?[\s]*'
+        r'[0-9]{1,2}(?:\.[0-9]{1,2})+'   # số nhiều cấp: 2.3, 3.2.1
+        r'[\s]*[.):\-]\s+',              # PHẢI có dấu phân tách + khoảng trắng
+        '',
+        text,
+        flags=re.IGNORECASE
+    )
+    if stripped != text:
+        return stripped.strip()
+
+    # Bước 2 (như cũ): tiền tố ĐƠN CẤP - 1-2 chữ số HOẶC 1 chữ cái
     text = re.sub(
         r'^[\s]*'
         r'(?:điều|khoản|mục|chương|điểm|phần|article|section|clause)?[\s]*'
         r'(?:[0-9]{1,2}|[a-z])'  # CHỈ 1-2 chữ số HOẶC 1 chữ (KHÔNG [.\-] giữa để tránh 1.614)
         r'[\s]*[.):\-]*\s*',
         '',
-        text.lower(),
+        text,
         flags=re.IGNORECASE
     )
     return text.strip()
@@ -370,8 +384,46 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         if match.method in {"hungarian_hybrid", "high_confidence_greedy"} and match.vb1_chunk_id and match.vb2_chunk_id
     ]
 
-    from tqdm import tqdm
-    for match in tqdm(reviewable_matches, desc="Phase 2: Lập lịch LLM Tasks"):
+    # ── Tối ưu B: BATCH EMBEDDING ──
+    # Gom toàn bộ Khoản/Điểm con của mọi Điều khớp rồi embed MỘT lần (thay vì mỗi
+    # match_sub_nodes tự gọi API). embed_cache chia sẻ (chỉ đọc trong lúc chạy song song
+    # vì đã phủ hết id → không có ghi tranh chấp giữa các luồng).
+    embed_cache: dict = {}
+    def _collect_descendants(node):
+        out = []
+        for child in node.get("con", []) or []:
+            if isinstance(child, dict):
+                out.append(child)
+                out.extend(_collect_descendants(child))
+        return out
+    if use_api and reviewable_matches:
+        id2text: dict = {}
+        for m in reviewable_matches:
+            for reg, cid in ((registry_vb1, m.vb1_chunk_id), (registry_vb2, m.vb2_chunk_id)):
+                nd = reg.get(cid)
+                if not nd:
+                    continue
+                for sub in _collect_descendants(nd):
+                    sid = str(sub.get("id") or "")
+                    if sid and sid not in id2text:
+                        id2text[sid] = sub.get("noi_dung") or sub.get("tieu_de") or ""
+        if id2text:
+            try:
+                from src.core.api.call_api import call_embed_api
+                ids = list(id2text)
+                vecs = call_embed_api([id2text[i] for i in ids]).get("embeddings", [])
+                for sid, vec in zip(ids, vecs):
+                    embed_cache[sid] = vec
+                logger.info("Batch-embedded %d sub-nodes (Khoản/Điểm) trong 1 lời gọi API", len(embed_cache))
+            except Exception as exc:
+                logger.warning("Batch embedding thất bại (%s) — fallback embed on-the-fly", exc)
+                embed_cache = {}
+
+    # Xử lý SONG SONG việc zoom-in từng Điều (match_sub_nodes gọi embedding API on-the-fly
+    # nếu cache thiếu). Mỗi Điều build danh sách task cục bộ rồi gộp lại; callback vẫn
+    # append change_items lúc thực thi LLM (tuần tự, an toàn).
+    def process_match(match):
+        tasks = []   # cục bộ — shadow tasks ngoài để mọi tasks.append() gom vào đây
         vb1_id = match.vb1_chunk_id
         vb2_id = match.vb2_chunk_id
         
@@ -395,7 +447,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                     "args": (vb1_c, vb2_c, match.method),
                     "callback": cb_dieu_fallback
                 })
-            continue
+            return tasks
 
         node_loai = str(node_dieu_1.get("loai") or "").strip().lower()
 
@@ -466,7 +518,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                     "args": (vb1_c, vb2_c, match.method),
                     "callback": cb_dieu_no_khoan
                 })
-                continue
+                return tasks
 
             # Check intro text of the Điều itself
             dieu_intro_1 = re.sub(r"\s+", " ", str(node_dieu_1.get("noi_dung", ""))).strip().lower()
@@ -492,7 +544,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 
             # Chạy so khớp các Khoản thuộc Điều này (sử dụng On-The-Fly embedding)
             matched_khoan_pairs, unmatched_khoan_1, unmatched_khoan_2 = match_sub_nodes(
-                khoan_nodes_1, khoan_nodes_2, use_api=use_api
+                khoan_nodes_1, khoan_nodes_2, use_api=use_api, embed_cache=embed_cache
             )
 
             # Đăng ký các Khoản thêm mới/xóa bỏ
@@ -577,7 +629,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 
                 # Có Điểm con -> Match các Điểm
                 matched_diem_pairs, unmatched_diem_1, unmatched_diem_2 = match_sub_nodes(
-                    diem_nodes_1, diem_nodes_2, use_api=use_api
+                    diem_nodes_1, diem_nodes_2, use_api=use_api, embed_cache=embed_cache
                 )
                 
                 # Xử lý các Điểm không khớp (them_moi / xoa_bo)
@@ -661,7 +713,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 noi_dung_2_stripped = strip_numbering(noi_dung_2)
                 if noi_dung_1_stripped == noi_dung_2_stripped and len(noi_dung_1_stripped) > 0:
                     # Nội dung giống nhau (sau loại tiền tố), chỉ đánh số khác → bỏ qua hoàn toàn
-                    continue
+                    return tasks
 
             # ✅ PHẢI GỌI LLM nếu không có Điểm con để kiểm tra noi_dung
             if not diem_nodes_1 and not diem_nodes_2:
@@ -689,7 +741,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             else:
                 # Có Điểm con -> Zoom-in thêm một cấp
                     matched_diem_pairs, unmatched_diem_1, unmatched_diem_2 = match_sub_nodes(
-                        diem_nodes_1, diem_nodes_2, use_api=use_api
+                        diem_nodes_1, diem_nodes_2, use_api=use_api, embed_cache=embed_cache
                     )
                     
                     # Xử lý các Điểm không khớp (them_moi / xoa_bo)
@@ -776,6 +828,16 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 "args": (chunk1, chunk2, "progressive_zoom_in"),
                 "callback": cb_matched_khoan
             })
+
+        return tasks
+
+    # Chạy zoom-in của tất cả các Điều SONG SONG (điểm nghẽn là embedding/rerank API
+    # on-the-fly trong match_sub_nodes). Gom toàn bộ task cục bộ vào danh sách `tasks` ngoài.
+    from concurrent.futures import ThreadPoolExecutor as _ZoomPool
+    if reviewable_matches:
+        with _ZoomPool(max_workers=8) as _zoom_pool:
+            for _local_tasks in _zoom_pool.map(process_match, reviewable_matches):
+                tasks.extend(_local_tasks)
 
     unmatched_vb2 = [record.chunk for record in vb2_records if record.chunk.metadata.section_id not in matched_vb2]
     unmatched_vb1 = [record.chunk for record in vb1_records if record.chunk.metadata.section_id not in matched_vb1]
