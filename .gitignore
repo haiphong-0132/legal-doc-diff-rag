@@ -52,6 +52,7 @@ myenv/
 Host code/*
 node_modules/
 
-benchmark/*.docx
-benchmark/*.pdf
-benchmark/*.xlsx
+benchmark/**/*.docx
+benchmark/**/*.xlsx
+benchmark/**/*.pdf
+benchmark/**/*.txt
