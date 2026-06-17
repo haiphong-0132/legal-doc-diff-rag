@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile, BackgroundTasks
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -292,6 +292,53 @@ async def get_results(job_id: str):
 
 
 from fastapi.responses import FileResponse, HTMLResponse, Response
+
+
+@app.get("/api/jobs/{job_id}/report")
+async def export_report(job_id: str, background_tasks: BackgroundTasks, format: str = "pdf"):
+    """Xuất báo cáo so sánh dưới dạng PDF hoặc DOCX."""
+    job = jobs.get(job_id)
+    if not job:
+        raise HTTPException(404, "Job không tồn tại")
+    if job.status != "done":
+        raise HTTPException(409, f"Job chưa hoàn thành (status={job.status})")
+
+    data = await get_results(job_id)
+    
+    from web.report_builder import build_docx_report, build_pdf_report
+    import os
+
+    filename = f"bao_cao_so_sanh_{job_id}.{format}"
+    
+    try:
+        if format == "docx":
+            path = build_docx_report(data)
+            media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        else:
+            path = build_pdf_report(data)
+            if path.suffix == ".html":
+                media_type = "text/html"
+                filename = f"bao_cao_so_sanh_{job_id}.html"
+            else:
+                media_type = "application/pdf"
+    except Exception as exc:
+        raise HTTPException(500, f"Lỗi tạo báo cáo: {exc}")
+
+    def cleanup(file_path: Path):
+        try:
+            if file_path.exists():
+                os.remove(file_path)
+        except Exception as e:
+            pass
+            
+    background_tasks.add_task(cleanup, path)
+    
+    return FileResponse(
+        str(path), 
+        media_type=media_type, 
+        filename=filename,
+        content_disposition_type="attachment"
+    )
 
 
 @app.get("/api/jobs/{job_id}/pdf/{doc}")

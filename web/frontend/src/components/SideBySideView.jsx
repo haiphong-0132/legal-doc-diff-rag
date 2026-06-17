@@ -2,6 +2,9 @@ import { useState, useRef, useCallback } from 'react';
 import ChangeList from './ChangeList';
 import { decodeChunkId } from '../utils/formatId';
 import { API_BASE } from '../api';
+import CloseIcon from '@mui/icons-material/Close';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import DocViewer from './DocViewer';
 
 const MOBILE_TABS = [
   { key: 'vb1', label: 'VB1 — Cũ' },
@@ -72,7 +75,7 @@ function ColDivider({ onMouseDown, active }) {
  * Two draggable vertical dividers, with a full-screen capture overlay so
  * iframes don't swallow mouse events during drag.
  */
-export default function SideBySideView({ jobId, changes, stats }) {
+export default function SideBySideView({ jobId, changes, stats, data }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [draggingDiv, setDraggingDiv] = useState(0); // 0 = none, 1 or 2
   const [mobileTab, setMobileTab] = useState('results');
@@ -120,7 +123,6 @@ export default function SideBySideView({ jobId, changes, stats }) {
   const w2 = p2 - p1;
   // w3 fills the rest via flex
 
-  const pdfUrl = (doc) => `${API_BASE}/jobs/${jobId}/pdf/${doc}`;
   const vb1Total = stats?.so_luong_chunk_vb1 ?? stats?.vb1_total ?? 0;
   const vb2Total = stats?.so_luong_chunk_vb2 ?? stats?.vb2_total ?? 0;
   const elapsed = stats?.elapsed_s;
@@ -136,11 +138,11 @@ export default function SideBySideView({ jobId, changes, stats }) {
           <button
             onClick={() => setSelectedItem(null)}
             className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
-          >✕</button>
+          ><CloseIcon fontSize="small" /></button>
         </div>
-        <p className="text-xs text-gray-500 mb-2">
+        <p className="text-xs text-gray-500 mb-2 flex items-center">
           {selectedItem.kind === 'giong_nhau_ngu_nghia' && selectedItem.vb1_chunk_id && selectedItem.vb2_chunk_id
-            ? `${decodeChunkId(selectedItem.vb1_chunk_id)} ↔ ${decodeChunkId(selectedItem.vb2_chunk_id)}`
+            ? <>{decodeChunkId(selectedItem.vb1_chunk_id)} <CompareArrowsIcon fontSize="inherit" className="mx-1" /> {decodeChunkId(selectedItem.vb2_chunk_id)}</>
             : decodeChunkId(selectedItem.vb1_chunk_id || selectedItem.vb2_chunk_id)}
         </p>
         {selectedItem.kind !== 'giong_nhau_ngu_nghia' && selectedItem.summary && (
@@ -235,10 +237,10 @@ export default function SideBySideView({ jobId, changes, stats }) {
         </div>
         <div className="flex-1 min-h-0">
           {(mobileTab === 'vb1' || mobileTab === 'vb2') && (
-            <iframe
-              src={pdfUrl(mobileTab)}
-              title={mobileTab.toUpperCase()}
-              className="w-full h-full border-0 block"
+            <DocViewer 
+              jobId={jobId} 
+              docId={mobileTab} 
+              path={mobileTab === 'vb1' ? data?.vb1_path : data?.vb2_path} 
             />
           )}
           {mobileTab === 'results' && (
@@ -272,7 +274,11 @@ export default function SideBySideView({ jobId, changes, stats }) {
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">VB1 — Văn bản cũ</span>
           </div>
           <div className="flex-1" style={{ minHeight: 0 }}>
-            <iframe src={pdfUrl('vb1')} title="VB1" className="w-full h-full border-0 block" />
+            <DocViewer 
+              jobId={jobId} 
+              docId="vb1" 
+              path={data?.vb1_path} 
+            />
           </div>
         </div>
 
@@ -287,7 +293,11 @@ export default function SideBySideView({ jobId, changes, stats }) {
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">VB2 — Văn bản mới</span>
           </div>
           <div className="flex-1" style={{ minHeight: 0 }}>
-            <iframe src={pdfUrl('vb2')} title="VB2" className="w-full h-full border-0 block" />
+            <DocViewer 
+              jobId={jobId} 
+              docId="vb2" 
+              path={data?.vb2_path} 
+            />
           </div>
         </div>
 
