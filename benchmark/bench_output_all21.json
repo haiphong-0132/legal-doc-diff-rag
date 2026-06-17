@@ -1,0 +1,2233 @@
+{
+  "VB01": {
+    "stats": {
+      "so_luong_chunk_vb1": 45,
+      "so_luong_chunk_vb2": 45,
+      "giong_nhau_hoan_toan": 36,
+      "sua_doi": 7,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_2",
+        "vb2_id": "dieu_6.khoan_2",
+        "vb1_excerpt": "Điều 6. Bảo đảm thực hiện hợp đồng (nếu có) và bảo lãnh tạm ứng hợp đồng (đối với trường hợp các bên thỏa thuận phải có bảo lãnh tiền tạm ứng)\nKhoản 2:\n2. Nhà thầu tư vấn phải nộp bảo bảo đảm thực hiện hợp đồng có giá trị là ___ [quy định tại ĐKCT].",
+        "vb2_excerpt": "Điều 6. Bảo đảm thực hiện hợp đồng (nếu có) và bảo lãnh tạm ứng hợp đồng (đối với trường hợp các bên thỏa thuận phải có bảo lãnh tiền tạm ứng)\nKhoản 2:\n2. Nhà thầu tư vấn phải nộp bảo bảo đảm thực hiện hợp đồng có giá trị là 10% giá trị hợp đồng.",
+        "summary": "Sửa đổi Khoản 2, Điều 6: Bổ sung cụ thể giá trị bảo đảm thực hiện hợp đồng là 10% giá trị hợp đồng, thay thế cho khoảng trống và viện dẫn trước đó.",
+        "changes": [
+          "Cũ: có giá trị là ___ [quy định tại ĐKCT].\nMới: có giá trị là **10% giá trị hợp đồng**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_13.khoan_1.diem_a",
+        "vb2_id": "dieu_13.khoan_1.diem_a",
+        "vb1_excerpt": "Điều 13. Giá hợp đồng\nKhoản 1: 1. Giá hợp đồng\nĐiểm a:\na) Giá hợp đồng được xác định với số tiền: [quy định tại ĐKCT].",
+        "vb2_excerpt": "Điều 13. Giá hợp đồng\nKhoản 1: 1. Giá hợp đồng\nĐiểm a:\na) Giá hợp đồng được xác định với số tiền: 4.950.000.000 VNĐ (Bốn tỷ chín trăm năm mươi triệu đồng), đã bao gồm thuế VAT.",
+        "summary": "Sửa đổi Điểm a, Khoản 1, Điều 13: Giá hợp đồng được xác định cụ thể là 4.950.000.000 VNĐ (Bốn tỷ chín trăm năm mươi triệu đồng), đã bao gồm thuế VAT, thay vì viện dẫn chung '[quy định tại ĐKCT]'.",
+        "changes": [
+          "Cũ: Giá hợp đồng được xác định với số tiền: **[quy định tại ĐKCT]**.\nMới: Giá hợp đồng được xác định với số tiền: **4.950.000.000 VNĐ (Bốn tỷ chín trăm năm mươi triệu đồng)**, đã bao gồm thuế VAT."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_15",
+        "vb2_id": "dieu_15.khoan_3",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 15. Quyền và nghĩa vụ của Nhà thầu tư vấn\nKhoản 3:\n3. Nhà thầu tư vấn được quyền sử dụng email chính thức để gửi báo cáo, yêu cầu làm rõ, đề nghị xác nhận và các tài liệu giao dịch khác; các tài liệu này có giá trị như văn bản nếu được gửi đúng địa chỉ liên hệ đã được Các Bên xác nhận.",
+        "summary": "Thêm mới Khoản 3, Điều 15, quy định về quyền của Nhà thầu tư vấn sử dụng email chính thức để gửi các tài liệu giao dịch có giá trị như văn bản khi gửi đúng địa chỉ liên hệ đã được các bên xác nhận.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_15.khoan_1.diem_a",
+        "vb2_id": "dieu_15.khoan_1.diem_a",
+        "vb1_excerpt": "Điều 15. Quyền và nghĩa vụ của Nhà thầu tư vấn\nKhoản 1: 1. Quyền của Nhà thầu tư vấn:\nĐiểm a:\na) Yêu cầu Chủ đầu tư cung cấp thông tin, tài liệu liên quan đến nhiệm vụ tư vấn và phương tiện làm việc theo thỏa thuận hợp đồng (nếu có).",
+        "vb2_excerpt": "Điều 15. Quyền và nghĩa vụ của Nhà thầu tư vấn\nKhoản 1: 1. Quyền của Nhà thầu tư vấn:\nĐiểm a:\na) Nhà thầu tư vấn có quyền yêu cầu Chủ đầu tư cung cấp đầy đủ thông tin, tài liệu liên quan đến nhiệm vụ tư vấn và các phương tiện làm việc đã được thỏa thuận trong Hợp đồng (nếu có).",
+        "summary": "Sửa đổi Điểm a, Khoản 1, Điều 15: Bổ sung cụm 'đầy đủ' và thay 'phương tiện làm việc theo thỏa thuận hợp đồng' bằng 'các phương tiện làm việc đã được thỏa thuận trong Hợp đồng', làm rõ phạm vi và nghĩa vụ cung cấp thông tin, tài liệu của Chủ đầu tư.",
+        "changes": [
+          "Cũ: Yêu cầu Chủ đầu tư cung cấp thông tin, tài liệu liên quan đến nhiệm vụ tư vấn và phương tiện làm việc theo thỏa thuận hợp đồng (nếu có).\nMới: Nhà thầu tư vấn có quyền yêu cầu Chủ đầu tư cung cấp **đầy đủ** thông tin, tài liệu liên quan đến nhiệm vụ tư vấn và **các phương tiện làm việc đã được thỏa thuận trong Hợp đồng** (nếu có)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_15.khoan_2.diem_a",
+        "vb2_id": "dieu_15.khoan_2.diem_a",
+        "vb1_excerpt": "Điều 15. Quyền và nghĩa vụ của Nhà thầu tư vấn\nKhoản 2: 2. Nghĩa vụ của Nhà thầu tư vấn:\nĐiểm a:\na) Hoàn thành công việc đúng tiến độ, chất lượng theo thỏa thuận trong hợp đồng.",
+        "vb2_excerpt": "Điều 15. Quyền và nghĩa vụ của Nhà thầu tư vấn\nKhoản 2: 2. Nghĩa vụ của Nhà thầu tư vấn:\nĐiểm a:\na) Nhà thầu tư vấn có nghĩa vụ hoàn thành công việc đúng tiến độ và bảo đảm chất lượng theo các nội dung đã được Các Bên thỏa thuận trong Hợp đồng.",
+        "summary": "Sửa đổi Điểm a, Khoản 2, Điều 15: Thêm cụm 'Nhà thầu tư vấn có nghĩa vụ' và thay 'thỏa thuận trong hợp đồng' bằng 'bảo đảm chất lượng theo các nội dung đã được Các Bên thỏa thuận trong Hợp đồng', làm rõ nghĩa vụ và tăng tính ràng buộc về mặt pháp lý.",
+        "changes": [
+          "Cũ: Hoàn thành công việc đúng tiến độ, chất lượng theo thỏa thuận trong hợp đồng.\nMới: Nhà thầu tư vấn có nghĩa vụ hoàn thành công việc đúng tiến độ và **bảo đảm** chất lượng theo các nội dung đã được Các Bên **thỏa thuận trong Hợp đồng**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_16.khoan_2.diem_d",
+        "vb2_id": "dieu_16.khoan_2.diem_d",
+        "vb1_excerpt": "Điều 16. Quyền và nghĩa vụ của Chủ đầu tư\nKhoản 2: 2. Nghĩa vụ của Chủ đầu tư:\nĐiểm d:\nd) Thanh toán đầy đủ cho Nhà thầu tư vấn theo đúng tiến độ thanh toán đã thỏa thuận trong hợp đồng.",
+        "vb2_excerpt": "Điều 16. Quyền và nghĩa vụ của Chủ đầu tư\nKhoản 2: 2. Nghĩa vụ của Chủ đầu tư:\nĐiểm d:\nd) Chủ đầu tư có trách nhiệm thanh toán đầy đủ và đúng hạn cho Nhà thầu tư vấn theo tiến độ thanh toán đã được thỏa thuận trong Hợp đồng.",
+        "summary": "Sửa đổi Điểm d, Khoản 2, Điều 16: Bổ sung nghĩa vụ 'có trách nhiệm' và cụm 'đúng hạn', đồng thời thay 'đã thỏa thuận trong hợp đồng' thành 'đã được thỏa thuận trong Hợp đồng', làm tăng tính bắt buộc và thay đổi cách diễn đạt về tính chất pháp lý của nghĩa vụ thanh toán.",
+        "changes": [
+          "Cũ: Thanh toán đầy đủ cho Nhà thầu tư vấn theo đúng tiến độ thanh toán đã thỏa thuận trong hợp đồng.\nMới: Chủ đầu tư có trách nhiệm **thanh toán đầy đủ và đúng hạn** cho Nhà thầu tư vấn theo **tiến độ thanh toán đã được thỏa thuận trong Hợp đồng**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_18.khoan_2",
+        "vb2_id": "dieu_18.khoan_2",
+        "vb1_excerpt": "Điều 18. Nhân lực của Nhà thầu tư vấn\nKhoản 2:\n2. Chức danh, công việc thực hiện, trình độ và thời gian dự kiến tham gia thực hiện được quy định trong Phụ lục số. [Nhân lực của Nhà thầu]. Trường hợp thay đổi nhân sự, Nhà thầu tư vấn phải trình bày lý do, đồng thời cung cấp lý lịch của người thay thế",
+        "vb2_excerpt": "Điều 18. Nhân lực của Nhà thầu tư vấn\nKhoản 2:\n2. Chức danh, công việc thực hiện, trình độ và thời gian dự kiến tham gia thực hiện được quy định trong Phụ lục số. [Nhân lực của Nhà thầu]. Trường hợp thay đổi nhân sự, Nhà thầu tư vấn phải trình bày lý do, đồng thời cung cấp lý lịch của người thay thế",
+        "summary": "Sửa đổi Khoản 2, Điều 18: Bổ sung thời hạn cụ thể là 03 ngày để Chủ đầu tư phản hồi về nhân sự thay thế, thay thế cụm 'vòng. ngày' không rõ nghĩa.",
+        "changes": [
+          "Cũ: nếu Chủ đầu tư không có ý kiến về nhân sự thay thế trong vòng. ngày kể từ ngày nhận được đề nghị của Nhà thầu tư vấn thì nhân sự đó coi như được Chủ đầu tư chấp thuận.\nMới: Nếu Chủ đầu tư không có ý kiến về nhân sự thay thế trong vòng **03 ngày** kể từ ngày nhận được đề nghị của Nhà thầu tư vấn thì nhân sự đó coi như được Chủ đầu tư chấp thuận."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_21.khoan_3.diem_a",
+        "vb2_id": "dieu_21.khoan_3.diem_a",
+        "vb1_excerpt": "Điều 21. Rủi ro và bất khả kháng\nKhoản 3: 3. Thông báo về bất khả kháng:\nĐiểm a:\na) Khi một bên gặp tình trạng bất khả kháng thì phải thông báo bằng văn bản cho bên kia trong thời gian sớm nhất, trong thông báo phải nêu rõ các nghĩa vụ, công việc liên quan đến hậu quả của bất khả kháng.",
+        "vb2_excerpt": "Điều 21. Rủi ro và bất khả kháng\nKhoản 3: 3. Thông báo về bất khả kháng:\nĐiểm a:\na) Bên bị ảnh hưởng bởi sự kiện bất khả kháng phải gửi thông báo bằng văn bản cho bên kia trong thời gian sớm nhất, trong đó nêu rõ nghĩa vụ và công việc chịu ảnh hưởng bởi sự kiện này.",
+        "summary": "Sửa đổi Điểm a, Khoản 3, Điều 21: Thay đổi từ 'một bên gặp tình trạng bất khả kháng thì phải thông báo...' thành 'Bên bị ảnh hưởng bởi sự kiện bất khả kháng phải gửi thông báo...', đồng thời thay 'hậu quả của bất khả kháng' thành 'chịu ảnh hưởng bởi sự kiện này', làm thay đổi cách diễn đạt và phạm vi nghĩa vụ thông báo.",
+        "changes": [
+          "Cũ: Khi một bên gặp tình trạng bất khả kháng thì phải thông báo bằng văn bản cho bên kia trong thời gian sớm nhất, trong thông báo phải nêu rõ các nghĩa vụ, công việc liên quan đến hậu quả của bất khả kháng.\nMới: Bên bị ảnh hưởng bởi sự kiện bất khả kháng phải gửi thông báo bằng văn bản cho bên kia trong thời gian sớm nhất, trong đó nêu rõ nghĩa vụ và công việc chịu ảnh hưởng bởi sự kiện này."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_22.khoan_2.diem_c",
+        "vb2_id": "dieu_22",
+        "vb1_excerpt": "Điều 22. Tạm ngừng công việc trong hợp đồng\nKhoản 2: 2. Tạm ngừng công việc bởi Nhà thầu tư vấn\nĐiểm c:\nc) Nếu các chi phí phát sinh là hậu quả của việc tạm ngừng công việc (hoặc do giảm tỷ lệ công việc) theo khoản này, Nhà thầu tư vấn phải thông báo cho Chủ đầu tư để xem xét. Sau khi nhận được thôn",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điểm c Khoản 2 Điều 22, quy định về nghĩa vụ của Nhà thầu tư vấn phải thông báo cho Chủ đầu tư về chi phí phát sinh do tạm ngừng hoặc giảm tỷ lệ công việc, và quy trình xem xét của Chủ đầu tư.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 229.0
+  },
+  "VB02": {
+    "stats": {
+      "so_luong_chunk_vb1": 13,
+      "so_luong_chunk_vb2": 13,
+      "giong_nhau_hoan_toan": 8,
+      "sua_doi": 6,
+      "them_moi": 0,
+      "xoa_bo": 0
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_1.diem_3_1_1",
+        "vb2_id": "dieu_3.khoan_3_1.diem_3_1_1",
+        "vb1_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.1: 3.1. Giá trị Hợp đồng\nĐiểm 3.1.1:\n3.1.1. Đối với nội dung công việc bảo trì, bảo dưỡng khách sạn, giá trị Hợp đồng được tính theo đơn giá như sau:. . 1: Dịch vụ: Bảo dưỡng hệ thống điều hòa trung tâm; Số lượng: 01 gói; Đơn giá(đồ",
+        "vb2_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.1: 3.1. Giá trị Hợp đồng\nĐiểm 3.1.1:\n3.1.1. Đối với nội dung công việc bảo trì, bảo dưỡng khách sạn, giá trị Hợp đồng được tính theo đơn giá như sau:. . 1: Dịch vụ: Bảo dưỡng hệ thống điều hòa trung tâm; Số lượng: 01 gói; Đơn giá(đồ",
+        "summary": "Sửa đổi Điểm 3.1.1, Khoản 3.1, Điều 3: Đơn giá dịch vụ bảo dưỡng hệ thống điều hòa trung tâm tăng từ 18.000.000 đồng lên 20.500.000 đồng; bổ sung hai dịch vụ mới với đơn giá lần lượt là 650.000 đồng và 500.000 đồng.",
+        "changes": [
+          "Cũ: 1: Dịch vụ: Bảo dưỡng hệ thống điều hòa trung tâm; Số lượng: 01 gói; Đơn giá(đồng): **18.000.000**.\nMới: 1: Dịch vụ: Bảo dưỡng hệ thống điều hòa trung tâm; Số lượng: 01 gói; Đơn giá(đồng): **20.500.000**.",
+          "Thêm mới: 4: Dịch vụ: Kiểm tra, bảo dưỡng tủ đông, tủ mát; Số lượng: 08 thiết bị; Đơn giá(đồng): **650.000**.",
+          "Thêm mới: 5: Dịch vụ: Kiểm tra hệ thống thông gió, quạt hút; Số lượng: 06 bộ; Đơn giá(đồng): **500.000**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_2.diem_3_2_2",
+        "vb2_id": "dieu_3.khoan_3_2.diem_3_2_2",
+        "vb1_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.2: 3.2. Thanh toán hợp đồng\nĐiểm 3.2.2:\n3.2.2. Thanh quyết toán công trình. - Thanh toán: Sau khi Bên B hoàn thành khối lượng công việc đối với hạng mục ………. thì Bên B tiến hành gửi cho Bên A hồ sơ thanh toán gồm:. + Biên bản đối ch",
+        "vb2_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.2: 3.2. Thanh toán hợp đồng\nĐiểm 3.2.2:\n3.2.2. Thanh quyết toán công trình. - Thanh toán: Sau khi Bên B hoàn thành khối lượng công việc đối với hạng mục ………. thì Bên B tiến hành gửi cho Bên A hồ sơ thanh toán gồm:. + Biên bản đối ch",
+        "summary": "Sửa đổi Điểm 3.2.2, Khoản 3.2, Điều 3: Thời hạn thanh toán tăng từ 07 ngày lên 15 ngày sau khi nhận hồ sơ, đồng thời bổ sung yêu cầu về biên bản nghiệm thu khối lượng hoàn thành có chữ ký hai bên.",
+        "changes": [
+          "Cũ: - Thanh toán: Sau khi Bên B hoàn thành khối lượng công việc đối với hạng mục ………. thì Bên B tiến hành gửi cho Bên A hồ sơ thanh toán gồm:. + Biên bản đối chiếu công nợ và xác nhận chất lượng dịch vụ theo đúng hợp đồng.. + Đề nghị thanh toán.. + Hóa đơn VAT.. Bên A sẽ thanh toán cho Bên B số tiền là ………. đồng (……….đồng chẵn) chậm nhất sau **07 ngày**, kể từ khi nhận được hồ sơ thanh toán của Bên B.\nMới: - Thanh toán: Sau khi Bên B hoàn thành khối lượng công việc đối với hạng mục ………. thì Bên B tiến hành gửi cho Bên A hồ sơ thanh toán gồm:. + Biên bản đối chiếu công nợ và xác nhận chất lượng dịch vụ theo đúng hợp đồng.. + Đề nghị thanh toán.. + Hóa đơn VAT.. + Biên bản nghiệm thu khối lượng hoàn thành có chữ ký hai bên.. Bên A sẽ thanh toán cho Bên B số tiền là ………. đồng (……….đồng chẵn) chậm nhất sau **15 ngày**, kể từ khi nhận được hồ sơ thanh toán của Bên B."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_3",
+        "vb2_id": "dieu_3.khoan_3_3",
+        "vb1_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.3:\n3.3. Phương thức thanh toán: Tiền mặt hoặc chuyển khoản.",
+        "vb2_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC, TRÌNH TỰ THANH TOÁN.\nKhoản 3.3:\n3.3. Phương thức thanh toán: Chỉ chuyển khoản. Bên A được quyền tạm giữ thanh toán trong trường hợp hồ sơ chưa đầy đủ hoặc có khiếu nại về chất lượng dịch vụ.",
+        "summary": "Sửa đổi Khoản 3.3, Điều 3: Phương thức thanh toán bị thu hẹp từ 'tiền mặt hoặc chuyển khoản' thành 'chỉ chuyển khoản', đồng thời bổ sung quyền tạm giữ thanh toán của Bên A khi hồ sơ chưa đầy đủ hoặc có khiếu nại về chất lượng dịch vụ.",
+        "changes": [
+          "Cũ: Phương thức thanh toán: **Tiền mặt hoặc chuyển khoản**.\nMới: Phương thức thanh toán: **Chỉ chuyển khoản**.",
+          "Cũ: Các viện dẫn: Không có\nMới: Bên A được quyền tạm giữ thanh toán trong trường hợp hồ sơ chưa đầy đủ hoặc có khiếu nại về chất lượng dịch vụ. Các viện dẫn: Không có"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_2",
+        "vb2_id": "dieu_5.khoan_5_2",
+        "vb1_excerpt": "Điều 5. BẢO HÀNH CÔNG TRÌNH\nKhoản 5.2:\n5.2. Thời hạn bảo hành công trình là 6 tháng, được tính từ ngày Bên B bàn giao công trình đưa vào sử dụng cho Bên A.. Đối với các thiết bị, máy móc mà Bên B lắp đặt cho Bên A thì thời gian bảo hành theo đúng với thời hạn bảo hành của nhà sản xuất.",
+        "vb2_excerpt": "Điều 5. BẢO HÀNH CÔNG TRÌNH\nKhoản 5.2:\n5.2. Thời hạn bảo hành công trình là 2 tháng, được tính từ ngày Bên B bàn giao công trình đưa vào sử dụng cho Bên A.. Đối với các thiết bị, máy móc mà Bên B lắp đặt cho Bên A thì thời gian bảo hành theo đúng với thời hạn bảo hành của nhà sản xuất.",
+        "summary": "Sửa đổi Khoản 5.2, Điều 5: Thời hạn bảo hành công trình giảm từ 6 tháng xuống 2 tháng.",
+        "changes": [
+          "Cũ: Thời hạn bảo hành công trình là **6 tháng**, được tính từ ngày Bên B bàn giao công trình đưa vào sử dụng cho Bên A.\nMới: Thời hạn bảo hành công trình là **2 tháng**, được tính từ ngày Bên B bàn giao công trình đưa vào sử dụng cho Bên A."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_3",
+        "vb2_id": "dieu_5.khoan_5_3",
+        "vb1_excerpt": "Điều 5. BẢO HÀNH CÔNG TRÌNH\nKhoản 5.3:\n5.3. Quy trình bảo hành: Trong thời gian bảo hành Bên B phải có mặt tại hiện trường trong thời gian 24h (Hai mươi bốn giờ) kể từ khi Bên B nhận được thông báo của Bên A (bằng điện thoại, mail, văn bản) về việc phát sinh hư hỏng do lỗi thuộc trách nhiệm của Bên ",
+        "vb2_excerpt": "Điều 5. BẢO HÀNH CÔNG TRÌNH\nKhoản 5.3:\n5.3. Quy trình bảo hành: Trong thời gian bảo hành Bên B phải có mặt tại hiện trường trong thời gian 24h (Hai mươi bốn giờ) kể từ khi Bên B nhận được thông báo của Bên A (bằng điện thoại, mail, văn bản) về việc phát sinh hư hỏng do lỗi thuộc trách nhiệm của Bên ",
+        "summary": "Sửa đổi Khoản 5.3, Điều 5: Bổ sung điều kiện loại trừ trách nhiệm bảo hành đối với hư hỏng do sử dụng sai hướng dẫn, can thiệp của bên thứ ba, nguồn điện không ổn định và hao mòn tự nhiên.",
+        "changes": [
+          "Cũ: Phương án bảo hành sẽ được Bên B thực hiện, Bên B không chịu trách nhiệm đối với các phương án bảo hành, sửa chữa của Bên A, bên thứ ba khác khi chưa được sự đồng ý của Bên B.\nMới: Phương án bảo hành sẽ được Bên B thực hiện, Bên B không chịu trách nhiệm đối với các phương án bảo hành, sửa chữa của Bên A, bên thứ ba khác khi chưa được sự đồng ý của Bên B. **Ngoài ra, bên B cũng không có trách nhiệm bảo hành đối với hư hỏng phát sinh do sử dụng sai hướng dẫn, can thiệp của bên thứ ba, nguồn điện không ổn định, hao mòn tự nhiên.**"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_9.khoan_9_1",
+        "vb2_id": "dieu_9.khoan_9_1",
+        "vb1_excerpt": "Điều 9. PHẠT VI PHẠM HỢP ĐỒNG\nKhoản 9.1:\n9.1. Phạt vi phạm đối với Bên A. - Nếu Bên A vi phạm điều khoản thanh toán thì Bên A sẽ chịu phạt 1% (một phần trăm) của tổng số tiền phải thanh toán cho Bên B trên một ngày chậm thanh toán.. - Nếu sau 02 ngày tính từ ngày Bên B thông báo mời nghiệm thu công ",
+        "vb2_excerpt": "Điều 9. PHẠT VI PHẠM HỢP ĐỒNG\nKhoản 9.1:\n9.1. Phạt vi phạm đối với Bên A. - Nếu Bên A vi phạm điều khoản thanh toán thì Bên A sẽ chịu phạt 1% (một phần trăm) của tổng số tiền phải thanh toán cho Bên B trên một ngày chậm thanh toán.. - Nếu sau 02 ngày tính từ ngày Bên B thông báo mời nghiệm thu công ",
+        "summary": "Sửa đổi Khoản 9.1, Điều 9: Mức bồi thường khi Bên A chấm dứt hợp đồng không do lỗi của Bên B giảm từ 08% xuống 03% giá trị hợp đồng bị vi phạm.",
+        "changes": [
+          "Cũ: Bên A phải bồi thường cho Bên B **08%** giá trị Hợp đồng bị vi phạm và bồi thường các thiệt hại liên quan đến việc chấm dứt Hợp đồng.\nMới: Bên A phải bồi thường cho Bên B **03%** giá trị Hợp đồng bị vi phạm và bồi thường các thiệt hại liên quan đến việc chấm dứt Hợp đồng."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 103.4
+  },
+  "VB03": {
+    "stats": {
+      "so_luong_chunk_vb1": 10,
+      "so_luong_chunk_vb2": 10,
+      "giong_nhau_hoan_toan": 4,
+      "sua_doi": 5,
+      "them_moi": 2,
+      "xoa_bo": 2
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_3",
+        "vb2_id": "dieu_1.khoan_3",
+        "vb1_excerpt": "Điều 1. Nghĩa vụ được bảo đảm\nKhoản 3:\n3. Tổng giá trị nghĩa vụ được bảo đảm sẽ giảm theo mức độ giảm giá trị của tài sản thế chấp được xác định lại trong các Biên bản định giá lại hoặc các phụ lục hợp đồng được ký giữa các bên và cũng được sử dụng theo nguyên tắc trên. Tổng mức cho vay trong trường",
+        "vb2_excerpt": "Điều 1. Nghĩa vụ được bảo đảm\nKhoản 3:\n3. Tổng giá trị nghĩa vụ được bảo đảm không phụ thuộc vào việc giảm giá trị của tài sản thế chấp được xác định lại trong các Biên bản định giá lại hoặc các phụ lục hợp đồng được ký giữa các bên và cũng được sử dụng theo nguyên tắc trên. Tổng mức cho vay trong t",
+        "summary": "Sửa đổi Khoản 3, Điều 1: Thay đổi từ việc tổng giá trị nghĩa vụ được bảo đảm 'sẽ giảm' theo giảm giá trị tài sản thế chấp sang 'không phụ thuộc vào việc giảm giá trị', làm thay đổi cơ chế điều chỉnh nghĩa vụ bảo đảm.",
+        "changes": [
+          "Cũ: Tổng giá trị nghĩa vụ được bảo đảm **sẽ giảm** theo mức độ giảm giá trị của tài sản thế chấp được xác định lại trong các Biên bản định giá lại hoặc các phụ lục hợp đồng được ký giữa các bên và cũng được sử dụng theo nguyên tắc trên.\nMới: Tổng giá trị nghĩa vụ được bảo đảm **không phụ thuộc vào việc giảm giá trị** của tài sản thế chấp được xác định lại trong các Biên bản định giá lại hoặc các phụ lục hợp đồng được ký giữa các bên và cũng được sử dụng theo nguyên tắc trên."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_8",
+        "vb2_id": "dieu_4.khoan_8",
+        "vb1_excerpt": "Điều 4. Quyền và nghĩa vụ của Bên thế chấp, Bên có nghĩa vụ thanh toán\nKhoản 8:\n8. Bên thế chấp và Bên có nghĩa vụ thanh toán đối chiếu công nợ hàng tháng và gửi cho NGÂN HÀNG Biên bản đối chiếu công nợ, chậm nhất là vào ngày 05 tháng sau.",
+        "vb2_excerpt": "Điều 4. Quyền và nghĩa vụ của Bên thế chấp, Bên có nghĩa vụ thanh toán\nKhoản 8:\n8. Bên thế chấp và Bên có nghĩa vụ thanh toán đối chiếu công nợ hàng tháng và gửi cho NGÂN HÀNG Biên bản đối chiếu công nợ, chậm nhất là vào ngày 03 tháng sau.",
+        "summary": "Sửa đổi Khoản 8, Điều 4: Thời hạn gửi Biên bản đối chiếu công nợ được rút ngắn từ ngày 05 tháng sau xuống ngày 03 tháng sau.",
+        "changes": [
+          "Cũ: chậm nhất là vào ngày **05** tháng sau.\nMới: chậm nhất là vào ngày **03** tháng sau."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_9",
+        "vb2_id": "dieu_4.khoan_9",
+        "vb1_excerpt": "Điều 4. Quyền và nghĩa vụ của Bên thế chấp, Bên có nghĩa vụ thanh toán\nKhoản 9:\n9. Việc ký Hợp đồng này được hiểu là Bên thế chấp đã uỷ quyền không huỷ ngang, uỷ quyền vô điều kiện và không hạn chế thời gian cho NGÂN HÀNG toàn bộ quyền đòi nợ theo văn bản xác lập quyền đòi nợ (Hợp đồng, giấy tờ, tài",
+        "vb2_excerpt": "Điều 4. Quyền và nghĩa vụ của Bên thế chấp, Bên có nghĩa vụ thanh toán\nKhoản 9:\n9. Việc ký Hợp đồng này được hiểu là Bên thế chấp đã uỷ quyền không huỷ ngang, uỷ quyền vô điều kiện và không hạn chế thời gian cho NGÂN HÀNG toàn bộ quyền đòi nợ theo văn bản xác lập quyền đòi nợ (Hợp đồng, giấy tờ, tài",
+        "summary": "Sửa đổi Khoản 9, Điều 4: Thêm quyền của NGÂN HÀNG được toàn quyền quyết định thời điểm, phương thức và biện pháp thu hồi nợ mà không cần chấp thuận thêm của Bên thế chấp.",
+        "changes": [
+          "Cũ: Các viện dẫn: Điều 2\nMới: NGÂN HÀNG được toàn quyền quyết định thời điểm, phương thức và biện pháp thu hồi nợ mà không cần chấp thuận thêm của Bên thế chấp. Các viện dẫn: Điều 2"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_5.khoan_3",
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "Điều 5. Quyền và nghĩa vụ NGÂN HÀNG\nKhoản 3:\n3. Được quyền chuyển nhượng, giao, bán quyền thu hồi nợ, uỷ quyền cho bên thứ ba thu hồi nợ theo quy định của Hợp đồng này và quy định pháp luật có liên quan.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 3, Điều 5, quy định về quyền của ngân hàng trong việc chuyển nhượng, giao, bán quyền thu hồi nợ và ủy quyền cho bên thứ ba thu hồi nợ theo hợp đồng và pháp luật liên quan.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_2",
+        "vb2_id": "dieu_5.khoan_2",
+        "vb1_excerpt": "Điều 5. Quyền và nghĩa vụ NGÂN HÀNG\nKhoản 2:\n2. Được quyền trực tiếp yêu cầu và nhận số tiền của Bên có nghĩa vụ thanh toán phải thanh toán cho Bên thế chấp ngay sau thời điểm đã quá hạn thanh toán theo các Hợp đồng tín dụng đã và sẽ ký với NGÂN HÀNG.",
+        "vb2_excerpt": "Điều 5. Quyền và nghĩa vụ NGÂN HÀNG\nKhoản 2:\n2. Được quyền trực tiếp yêu cầu và nhận số tiền của Bên có nghĩa vụ thanh toán phải thanh toán cho Bên thế chấp ngay khi bất kỳ khoản nợ nào của Bên thế chấp tại NGÂN HÀNG đến hạn hoặc bị coi là đến hạn trước hạn theo các Hợp đồng tín dụng đã và sẽ ký với",
+        "summary": "Sửa đổi Khoản 2, Điều 5: Điều kiện được quyền yêu cầu thanh toán mở rộng từ 'sau thời điểm đã quá hạn thanh toán' sang 'khi bất kỳ khoản nợ nào đến hạn hoặc bị coi là đến hạn trước hạn'.",
+        "changes": [
+          "Cũ: ngay sau thời điểm đã quá hạn thanh toán theo các Hợp đồng tín dụng đã và sẽ ký với NGÂN HÀNG.\nMới: ngay khi bất kỳ khoản nợ nào của Bên thế chấp tại NGÂN HÀNG **đến hạn hoặc bị coi là đến hạn trước hạn** theo các Hợp đồng tín dụng đã và sẽ ký với NGÂN HÀNG."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_7.khoan_1.diem_e",
+        "vb2_id": "dieu_7",
+        "vb1_excerpt": "Điều 7. Cam kết của các bên\nKhoản 1: 1. Bên thế chấp cam đoan những thông tin về nhân thân và quyền đòi nợ đã ghi trong Hợp đồng này là đúng sự thật và tại thời điểm ký Hợp đồng này, quyền đòi nợ nói trên:\nĐiểm e:\ne) Không có giấy tờ sở hữu nào khác ngoài giấy tờ nêu tại 1 của Hợp đồng này.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điểm e Khoản 1 Điều 7, quy định về việc không có giấy tờ sở hữu nào khác ngoài giấy tờ nêu tại điểm 1 của Hợp đồng này.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7.khoan_2.diem_c",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 7. Cam kết của các bên\nKhoản 2: 2. Các bên cam kết:\nĐiểm c:\nc) Bên có nghĩa vụ thanh toán cam kết không được cấn trừ, bù trừ hoặc viện dẫn khiếu nại đối với Bên thế chấp để từ chối thanh toán cho NGÂN HÀNG, trừ khi được NGÂN HÀNG chấp thuận bằng văn bản.",
+        "summary": "Thêm mới Điểm c Khoản 2 Điều 7, quy định về việc bên có nghĩa vụ thanh toán không được cấn trừ, bù trừ hoặc viện dẫn khiếu nại để từ chối thanh toán cho NGÂN HÀNG, trừ khi được NGÂN HÀNG chấp thuận bằng văn bản.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_8",
+        "vb2_id": "dieu_8.khoan_6.diem_e",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 8. Hiệu lực của Hợp đồng\nKhoản 6: 6. Hợp đồng này chỉ chấm dứt hiệu lực trong các trường hợp sau:\nĐiểm e:\ne) Theo yêu cầu đơn phương của NGÂN HÀNG trong trường hợp Tài sản giảm giá trị hoặc phát sinh tranh chấp liên quan đến quyền đòi nợ mà Bên thế chấp không bổ sung tài sản thay thế trong thời",
+        "summary": "Thêm mới Điểm e Khoản 6 Điều 8, quy định về trường hợp hợp đồng chấm dứt hiệu lực theo yêu cầu đơn phương của NGÂN HÀNG khi tài sản giảm giá trị hoặc phát sinh tranh chấp liên quan đến quyền đòi nợ mà bên thế chấp không bổ sung tài sản thay thế trong thời hạn yêu cầu.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_9.khoan_2",
+        "vb2_id": "dieu_9.khoan_2",
+        "vb1_excerpt": "Điều 9. Điều khoản thi hành\nKhoản 2:\n2. Hợp đồng này gồm được lập thành 5 bản, NGÂN HÀNG giữ 2 bản, các bên còn lại giữ 1 bản; có hiệu lực từ ngày ký cho đến khi NGÂN HÀNG thu được hết nợ của Bên thế chấp hoặc Bên có nghĩa vụ thanh toán.",
+        "vb2_excerpt": "Điều 9. Điều khoản thi hành\nKhoản 2:\n2. Hợp đồng này gồm được lập thành 5 bản, NGÂN HÀNG giữ 2 bản, các bên còn lại giữ 1 bản; có hiệu lực từ ngày ký cho đến khi NGÂN HÀNG xác nhận bằng văn bản đã chấm dứt toàn bộ nghĩa vụ bảo đảm và hoàn tất xóa đăng ký giao dịch bảo đảm (nếu có).",
+        "summary": "Sửa đổi Khoản 2, Điều 9: Điều kiện chấm dứt hiệu lực hợp đồng thay từ 'NGÂN HÀNG thu được hết nợ' thành 'NGÂN HÀNG xác nhận bằng văn bản đã chấm dứt toàn bộ nghĩa vụ bảo đảm và hoàn tất xóa đăng ký giao dịch bảo đảm (nếu có)'",
+        "changes": [
+          "Cũ: có hiệu lực từ ngày ký cho đến khi NGÂN HÀNG thu được hết nợ của Bên thế chấp hoặc Bên có nghĩa vụ thanh toán.\nMới: có hiệu lực từ ngày ký cho đến khi NGÂN HÀNG **xác nhận bằng văn bản đã chấm dứt toàn bộ nghĩa vụ bảo đảm và hoàn tất xóa đăng ký giao dịch bảo đảm (nếu có)**."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 89.9
+  },
+  "VB04": {
+    "stats": {
+      "so_luong_chunk_vb1": 32,
+      "so_luong_chunk_vb2": 32,
+      "giong_nhau_hoan_toan": 25,
+      "sua_doi": 3,
+      "them_moi": 2,
+      "xoa_bo": 4
+    },
+    "items": [
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_1.khoan_9",
+        "vb2_id": "dieu_1",
+        "vb1_excerpt": "Điều 1. Định nghĩa\nKhoản 9:\n9. Lãi suất giao dịch bình quân liên ngân hàng là lãi suất giao dịch bình quân liên ngân hàng kỳ hạn 01 tháng được Ngân hàng Nhà nước Việt Nam công bố tại thời điểm thanh toán..",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 9, Điều 1, quy định về định nghĩa lãi suất giao dịch bình quân liên ngân hàng kỳ hạn 01 tháng được Ngân hàng Nhà nước Việt Nam công bố tại thời điểm thanh toán.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_1.khoan_16",
+        "vb2_id": "dieu_1",
+        "vb1_excerpt": "Điều 1. Định nghĩa\nKhoản 16:\n16. Trường hợp khẩn cấp là tình huống có thể gây gián đoạn dịch vụ cung cấp điện cho khách hàng của Bên mua, bao gồm các trường hợp có thể gây ra hỏng hóc lớn trong hệ thống điện quốc gia, có thể đe dọa đến tính mạng, tài sản hoặc làm ảnh hưởng đến khả năng kỹ thuật của ",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 16, Điều 1, quy định về định nghĩa trường hợp khẩn cấp là tình huống có thể gây gián đoạn dịch vụ cung cấp điện, đe dọa tính mạng, tài sản hoặc ảnh hưởng đến khả năng kỹ thuật của nhà máy điện.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2",
+        "vb2_id": "dieu_2.khoan_2",
+        "vb1_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 2:\n2. Giá mua bán điện. \r. Giá mua bán điện theo Hợp đồng này được áp dụng theo quy định tại Điều 14 Quyết định số 37/2011/QĐ-TTg ngày 29 tháng 6 năm 2011 của Thủ tướng Chính phủ quy định cơ chế hỗ trợ phát triển các dự án điện gió tại Việt Nam tại đ",
+        "vb2_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 2:\n2. Giá mua bán điện. \r. Giá mua bán điện theo Hợp đồng này được áp dụng theo quy định tại Điều 14 Quyết định số 37/2011/QĐ-TTg ngày 29 tháng 6 năm 2011 của Thủ tướng Chính phủ quy định cơ chế hỗ trợ phát triển các dự án điện gió tại Việt Nam tại đ",
+        "summary": "Sửa đổi Khoản 2, Điều 2: Giá mua bán điện giảm từ 1.614 đồng/kWh (7,8 UScents/kWh) xuống 1.530 đồng/kWh (7,4 UScents/kWh); cơ chế điều chỉnh giá thay từ 'biến động tỷ giá đồng/USD' thành 'cơ chế do Bên mua công bố'.",
+        "changes": [
+          "Cũ: là một nghìn sáu trăm mười bốn (**1.614**) đồng/kWh (chưa bao gồm thuế giá trị gia tăng) tương đương **7,8** UScents/kWh.\nMới: là một nghìn năm trăm ba mươi (**1.530**) đồng/kWh (chưa bao gồm thuế giá trị gia tăng) tương đương **7,4** UScents/kWh.",
+          "Cũ: Giá mua điện được điều chỉnh theo biến động của tỷ giá đồng/USD tại thời điểm thanh toán.\nMới: Giá mua điện được điều chỉnh theo cơ chế do Bên mua công bố tại thời điểm thanh toán."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_2.khoan_7",
+        "vb2_id": "dieu_2.khoan_7.diem_d",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 7: 7. Gián đoạn trong hoạt động nhận và mua điện. \r. Bên mua không phải thực hiện nghĩa vụ mua hoặc nhận điện trong các trường hợp sau đây:. \r\nĐiểm d:\nd) Thông báo qua thư điện tử từ địa chỉ liên hệ chính thức của các bên có giá trị như thông báo bằn",
+        "summary": "Thêm mới Điểm d, Khoản 7, Điều 2, quy định về giá trị pháp lý của thông báo qua thư điện tử từ địa chỉ liên hệ chính thức của các bên nếu chứng minh được việc gửi thành công.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_2.khoan_7",
+        "vb2_id": "dieu_2.khoan_7.diem_e",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 7: 7. Gián đoạn trong hoạt động nhận và mua điện. \r. Bên mua không phải thực hiện nghĩa vụ mua hoặc nhận điện trong các trường hợp sau đây:. \r\nĐiểm e:\ne) Trường hợp Bên bán vi phạm nghĩa vụ cung cấp dữ liệu vận hành, dữ liệu đo đếm hoặc các hồ sơ kỹ ",
+        "summary": "Thêm mới Điểm e Khoản 7 Điều 2, quy định về quyền của Bên mua tạm ngừng nhận điện khi Bên bán vi phạm nghĩa vụ cung cấp dữ liệu vận hành, dữ liệu đo đếm hoặc hồ sơ kỹ thuật theo yêu cầu hợp lý.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_8",
+        "vb2_id": "dieu_2.khoan_8",
+        "vb1_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 8:\n8. Gián đoạn trong hoạt động giao và bán điện. \r. Bên bán có thể ngừng hoặc giảm lượng điện bán và giao cho Bên mua trong trường hợp lắp đặt thiết bị, sửa chữa, thay thế, kiểm định, kiểm tra hoặc thực hiện sửa chữa Nhà máy điện mà ảnh hưởng trực t",
+        "vb2_excerpt": "Điều 2. Giao nhận, mua bán điện và vận hành\nKhoản 8:\n8. Gián đoạn trong hoạt động giao và bán điện. \r. Bên bán có thể ngừng hoặc giảm lượng điện bán và giao cho Bên mua trong trường hợp lắp đặt thiết bị, sửa chữa, thay thế, kiểm định, kiểm tra hoặc thực hiện sửa chữa Nhà máy điện mà ảnh hưởng trực t",
+        "summary": "Sửa đổi Khoản 8, Điều 2: Thời gian thông báo trước khi ngừng hoặc giảm giao điện tăng từ mười (10) ngày lên hai mươi (20) ngày.",
+        "changes": [
+          "Cũ: trước cho Bên mua ít nhất **mười (10)** ngày,\nMới: trước cho Bên mua ít nhất **hai mươi (20)** ngày,"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_4",
+        "vb2_id": "dieu_5.khoan_4",
+        "vb1_excerpt": "Điều 5. Phối hợp xử lý trong trường hợp bất khả kháng\nKhoản 4:\n4. Thời hạn của sự kiện bất khả kháng. \r. Trường hợp do sự kiện bất khả kháng mà một bên không thực hiện nghĩa vụ theo Hợp đồng này trong thời hạn một (01) năm, bên kia có quyền đơn phương chấm dứt Hợp đồng sau sáu mươi (60) ngày kể từ n",
+        "vb2_excerpt": "Điều 5. Phối hợp xử lý trong trường hợp bất khả kháng\nKhoản 4:\n4. Thời hạn của sự kiện bất khả kháng. \r. Trường hợp do sự kiện bất khả kháng mà một bên không thực hiện nghĩa vụ theo Hợp đồng này trong thời hạn sáu (06) tháng, bên kia có quyền đơn phương chấm dứt Hợp đồng sau ba mươi (30) ngày kể từ ",
+        "summary": "Sửa đổi Khoản 4, Điều 5: Thời hạn chịu ảnh hưởng của sự kiện bất khả kháng giảm từ một (01) năm xuống sáu (06) tháng; thời hạn chờ trước khi chấm dứt hợp đồng giảm từ sáu mươi (60) ngày xuống ba mươi (30) ngày.",
+        "changes": [
+          "Cũ: trong thời hạn một (01) năm\nMới: trong thời hạn sáu (06) tháng",
+          "Cũ: sau sáu mươi (60) ngày kể từ ngày thông báo bằng văn bản\nMới: sau ba mươi (30) ngày kể từ ngày thông báo bằng văn bản"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_7.khoan_2",
+        "vb2_id": "dieu_7",
+        "vb1_excerpt": "Điều 7. Giải quyết tranh chấp\nKhoản 2:\n2. Giải quyết tranh chấp bằng hòa giải tại Tổng cục Năng lượng. \r. Sau thời hạn được quy định tại khoản 1 Điều này mà tranh chấp không được giải quyết bằng đàm phán giữa các bên, một trong hai bên có quyền gửi văn bản tới Tổng cục Năng lượng đề nghị giải quyết ",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 2 Điều 7, quy định về việc một bên có quyền gửi văn bản đề nghị Tổng cục Năng lượng hòa giải tranh chấp sau thời hạn đàm phán, và Tổng cục Năng lượng có trách nhiệm chủ trì hòa giải, thông báo kết quả cho các bên.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_8.khoan_2",
+        "vb2_id": "dieu_8",
+        "vb1_excerpt": "Điều 8. Uỷ thác, chuyển nhượng và tái cơ cấu\nKhoản 2:\n2. Tái cơ cấu. \r. Trong trường hợp tái cơ cấu ngành điện ảnh hưởng tới các quyền hoặc nghĩa vụ của Bên bán hoặc Bên mua trong Hợp đồng này, thì việc thực hiện Hợp đồng sẽ được chuyển sang cho các đơn vị tiếp nhận. Bên mua có trách nhiệm xác nhận ",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 2, Điều 8, quy định về việc tái cơ cấu ngành điện ảnh hưởng đến hợp đồng mua bán điện, trong đó Bên mua có trách nhiệm xác nhận và bảo đảm các đơn vị tiếp nhận thực hiện nghĩa vụ mua hoặc phân phối điện và các quyền, nghĩa vụ khác theo hợp đồng.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 120.3
+  },
+  "VB05": {
+    "stats": {
+      "so_luong_chunk_vb1": 10,
+      "so_luong_chunk_vb2": 10,
+      "giong_nhau_hoan_toan": 7,
+      "sua_doi": 3,
+      "them_moi": 2,
+      "xoa_bo": 3
+    },
+    "items": [
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_2",
+        "vb2_id": null,
+        "vb1_excerpt": "Stt: ; Từ khóa:.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 2: Câu 'Stt: ; Từ khóa:.' bị thiếu giá trị và không hợp lệ, đã bị xóa khỏi danh sách từ khóa",
+        "changes": [
+          "Xóa bỏ: Stt: ; Từ khóa:."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2",
+        "vb2_id": "dieu_2",
+        "vb1_excerpt": "- Thời hạn: Bên B đảm bảo việc đưa số từ khóa yêu cầu lên Top 5 trong vòng 05 tháng.",
+        "vb2_excerpt": "- Thời hạn: Bên B đảm bảo việc đưa số từ khóa yêu cầu lên Top 3 trong vòng 06 tháng.",
+        "summary": "Sửa đổi Điều 2: Thay đổi từ 'Top 5' thành 'Top 3' và từ '05 tháng' thành '06 tháng'",
+        "changes": [
+          "Cũ: - Thời hạn: Bên B đảm bảo việc đưa số từ khóa yêu cầu lên Top 5 trong vòng 05 tháng.\nMới: - Thời hạn: Bên B đảm bảo việc đưa số từ khóa yêu cầu lên Top 3 trong vòng 06 tháng."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_3",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Trường hợp Bên A bổ sung từ khóa, thay đổi URL đích, thay đổi phạm vi SEO hoặc yêu cầu bổ sung ngoài phạm vi đã thống nhất, Bên B có quyền điều chỉnh phí dịch vụ tương ứng và lập phụ lục bổ sung.",
+        "summary": "Thêm mới Mã đoạn: Điều 3: Quy định mới về quyền điều chỉnh phí và lập phụ lục bổ sung khi Bên A thay đổi phạm vi dịch vụ.",
+        "changes": [
+          "Thêm mới: Trường hợp Bên A bổ sung từ khóa, thay đổi URL đích, thay đổi phạm vi SEO hoặc yêu cầu bổ sung ngoài phạm vi đã thống nhất, Bên B có quyền điều chỉnh phí dịch vụ tương ứng và lập phụ lục bổ sung."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_3",
+        "vb2_id": null,
+        "vb1_excerpt": "5: Từ khóa: 6; Top Cam kết: 7, 8; Phí đẩy (theo hợp đồng): 9, 10.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Mã đoạn: Điều 3: Dòng mô tả không rõ ràng về từ khóa 6, Top Cam kết 7,8 và phí đẩy 9,10 (không có giá trị pháp lý rõ ràng và không được sử dụng trong phần còn lại của văn bản).",
+        "changes": [
+          "Xóa bỏ: 5: Từ khóa: 6; Top Cam kết: 7, 8; Phí đẩy (theo hợp đồng): 9, 10."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3",
+        "vb2_id": "dieu_3",
+        "vb1_excerpt": "1: Từ khóa: Luật sư; Top: 5; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.",
+        "vb2_excerpt": "1: Từ khóa: Luật sư; Top: **3**; Chi phí đẩy: **4.000.000**; Chi phí duy trì: **2.000.000**; Số tháng duy trì: 06; Thành tiền: **16.000.000**.",
+        "summary": "Sửa đổi Mã đoạn: Điều 3: Cập nhật Top từ 5 xuống 3, chi phí đẩy tăng từ 3.000.000 lên 4.000.000, chi phí duy trì tăng từ 1.500.000 lên 2.000.000, thành tiền tăng từ 12.000.000 lên 16.000.000. Sửa đổi Mã đoạn: Điều 3: Cập nhật Top từ 5 xuống 3. Sửa đổi Mã đoạn: Điều 3: Cập nhật Top từ 5 xuống 3. Sửa đổi Mã đoạn: Điều 3: Cập nhật Top từ 5 xuống 3. Sửa đổi Mã đoạn: Điều 3: Cập nhật Top từ 5 xuống 3. Sửa đổi Mã đoạn: Điều 3: Tỷ lệ thanh toán tại Cột 7 giảm từ 80% xuống 70%, Cột 8 giảm từ 40% xuống 30%, Cột 9 giảm từ 20% xuống 10%. Sửa đổi Mã đoạn: Điều 3: Tỷ lệ thanh toán tại Cột 7 giảm từ 80% xuống 70%, Cột 8 giảm từ 40% xuống 30%, Cột 9 giảm từ 20% xuống 10%.",
+        "changes": [
+          "Cũ: 1: Từ khóa: Luật sư; Top: 5; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.\nMới: 1: Từ khóa: Luật sư; Top: **3**; Chi phí đẩy: **4.000.000**; Chi phí duy trì: **2.000.000**; Số tháng duy trì: 06; Thành tiền: **16.000.000**.",
+          "Cũ: 2: Từ khóa: Tư vấn pháp luật; Top: 5; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.\nMới: 2: Từ khóa: Tư vấn pháp luật; Top: **3**; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.",
+          "Cũ: 3: Từ khóa: Tổng đài tư vấn; Top: 5; Chi phí đẩy: 2.500.000; Chi phí duy trì: 1.250.000; Số tháng duy trì: 06; Thành tiền: 10.000.000.\nMới: 3: Từ khóa: Tổng đài tư vấn; Top: **3**; Chi phí đẩy: 2.500.000; Chi phí duy trì: 1.250.000; Số tháng duy trì: 06; Thành tiền: 10.000.000.",
+          "Cũ: 4: Từ khóa: Luật sư riêng; Top: 5; Chi phí đẩy: 1.500.000; Chi phí duy trì: 750.000; Số tháng duy trì: 06; Thành tiền: 6.000.000.\nMới: 4: Từ khóa: Luật sư riêng; Top: **3**; Chi phí đẩy: 1.500.000; Chi phí duy trì: 750.000; Số tháng duy trì: 06; Thành tiền: 6.000.000.",
+          "Cũ: 5: Từ khóa: Dịch vụ luật sư; Top: 5; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.\nMới: 5: Từ khóa: Dịch vụ luật sư; Top: **3**; Chi phí đẩy: 3.000.000; Chi phí duy trì: 1.500.000; Số tháng duy trì: 06; Thành tiền: 12.000.000.",
+          "Cũ: 3: Từ khóa: Tư vấn luật; Top Cam kết: 5; Phí đẩy (theo hợp đồng): 7.000.000; Phí duy trì (theo hợp đồng): 3.000.000; Thanh toán dựa trên kết quả thực tế của vị trí từ khóa: 100%; Cột 7: 80%; Cột 8: 40%; Cột 9: 20%.\nMới: 3: Từ khóa: Tư vấn luật; Top Cam kết: 5; Phí đẩy (theo hợp đồng): 7.000.000; Phí duy trì (theo hợp đồng): 3.000.000; Thanh toán dựa trên kết quả thực tế của vị trí từ khóa: 100%; Cột 7: **70%**; Cột 8: **30%**; Cột 9: **10%**.",
+          "Cũ: 4: Từ khóa: Dịch vụ pháp luật; Top Cam kết: 5; Phí đẩy (theo hợp đồng): 7.000.000; Phí duy trì (theo hợp đồng): 3.000.000; Thanh toán dựa trên kết quả thực tế của vị trí từ khóa: 100%; Cột 7: 80%; Cột 8: 40%; Cột 9: 20%.\nMới: 4: Từ khóa: Dịch vụ pháp luật; Top Cam kết: 5; Phí đẩy (theo hợp đồng): 7.000.000; Phí duy trì (theo hợp đồng): 3.000.000; Thanh toán dựa trên kết quả thực tế của vị trí từ khóa: 100%; Cột 7: **70%**; Cột 8: **30%**; Cột 9: **10%**."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_4",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Nếu Bên A chậm thanh toán quá 10 ngày làm việc, Bên B có quyền tạm ngừng triển khai dịch vụ cho đến khi Bên A thanh toán đầy đủ mà không bị coi là vi phạm tiến độ.",
+        "summary": "Thêm mới Điều 4: Quyền tạm ngừng dịch vụ của Bên B nếu Bên A chậm thanh toán quá 10 ngày làm việc.",
+        "changes": [
+          "Thêm mới: Nếu Bên A chậm thanh toán quá 10 ngày làm việc, Bên B có quyền tạm ngừng triển khai dịch vụ cho đến khi Bên A thanh toán đầy đủ mà không bị coi là vi phạm tiến độ."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_4",
+        "vb2_id": null,
+        "vb1_excerpt": "Đặt text link dưới chân trang, bằng mã code: <a href=\"http://sunlaw.com.vn/\" target=\"_blank\" title=\"SEO by Sunlaw - Tư vấn SEO SEM\">SEO by Sunlaw</a> trong suốt thời gian có hiệu lực của Hợp đồng này và sau khi kết thúc Hợp đồng nhưng các từ khóa trên chưa rơi ra khỏi Top 5.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 4: Nghĩa vụ đặt text link SEO by Sunlaw ở chân trang website trong và sau thời gian hợp đồng.",
+        "changes": [
+          "Xóa bỏ: Đặt text link dưới chân trang, bằng mã code: <a href=\"http://sunlaw.com.vn/\" target=\"_blank\" title=\"SEO by Sunlaw - Tư vấn SEO SEM\">SEO by Sunlaw</a> trong suốt thời gian có hiệu lực của Hợp đồng này và sau khi kết thúc Hợp đồng nhưng các từ khóa trên chưa rơi ra khỏi Top 5."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4",
+        "vb2_id": "dieu_4",
+        "vb1_excerpt": "Trong trường hợp Bên A không thanh toán đúng thời hạn, mỗi ngày chậm thanh toán Bên A sẽ phải chịu 1% giá trị khoản thanh toán chậm.",
+        "vb2_excerpt": "Trong trường hợp Bên A không thanh toán đúng thời hạn, mỗi ngày chậm thanh toán Bên A sẽ phải chịu **0.05%** giá trị khoản thanh toán chậm.",
+        "summary": "Sửa đổi Điều 4: Tỷ lệ phạt chậm thanh toán giảm từ 1% xuống 0.05% mỗi ngày.",
+        "changes": [
+          "Cũ: Trong trường hợp Bên A không thanh toán đúng thời hạn, mỗi ngày chậm thanh toán Bên A sẽ phải chịu 1% giá trị khoản thanh toán chậm.\nMới: Trong trường hợp Bên A không thanh toán đúng thời hạn, mỗi ngày chậm thanh toán Bên A sẽ phải chịu **0.05%** giá trị khoản thanh toán chậm."
+        ],
+        "method": "high_confidence_greedy"
+      }
+    ],
+    "elapsed": 93.4
+  },
+  "VB06": {
+    "stats": {
+      "so_luong_chunk_vb1": 11,
+      "so_luong_chunk_vb2": 11,
+      "giong_nhau_hoan_toan": 7,
+      "sua_doi": 5,
+      "them_moi": 1,
+      "xoa_bo": 0
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_3",
+        "vb2_id": "dieu_2.khoan_2_3",
+        "vb1_excerpt": "Điều 2. THỜI HẠN THUÊ\nKhoản 2.3:\n2.3. Bên Thuê được quyền (nhưng không phải nghĩa vụ) ưu tiên gia hạn thêm Thời Hạn Thuê bằng cách gửi thông báo bằng văn bản cho Bên Cho Thuê. Thời hạn báo trước là sáu mưới ngày trước ngày hết hạn. Theo đó, Bên Cho Thuê sẽ xem xét, quyết định và phản hồi lại Bên Thu",
+        "vb2_excerpt": "Điều 2. THỜI HẠN THUÊ\nKhoản 2.3:\n2.3. Bên Thuê được quyền (nhưng không phải nghĩa vụ) ưu tiên gia hạn thêm Thời Hạn Thuê bằng cách gửi thông báo bằng văn bản cho Bên Cho Thuê. Thời hạn báo trước là chín mươi ngày trước ngày hết hạn. Theo đó, Bên Cho Thuê sẽ xem xét, quyết định và phản hồi lại Bên Th",
+        "summary": "Sửa đổi Khoản 2.3, Điều 2: Thời hạn báo trước gia hạn thuê tăng từ sáu mươi ngày lên chín mươi ngày; thời hạn phản hồi của Bên Cho Thuê giảm từ 10 (mười) ngày xuống 5 (năm) ngày.",
+        "changes": [
+          "Cũ: Thời hạn báo trước là **sáu mươi** ngày trước ngày hết hạn.\nMới: Thời hạn báo trước là **chín mươi** ngày trước ngày hết hạn.",
+          "Cũ: phản hồi lại Bên Thuê trong thời hạn **10 (mười)** ngày.\nMới: phản hồi lại Bên Thuê trong thời hạn **5 (năm)** ngày."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_3",
+        "vb2_id": "dieu_3.khoan_3_4",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 3. TIỀN THUÊ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 3.4:\n3.4. Trong trường hợp chỉ số giá tiêu dùng (CPI) hoặc chi phí vận hành tòa nhà tăng từ 10% trở lên so với thời điểm ký Hợp Đồng, Bên Cho Thuê có quyền đề nghị điều chỉnh Tiền Thuê; nếu Các Bên không thống nhất được trong vòng 15 ngày thì Bên Cho",
+        "summary": "Thêm mới Khoản 3.4, Điều 3, quy định về quyền của Bên Cho Thuê đề nghị điều chỉnh tiền thuê khi CPI hoặc chi phí vận hành tăng từ 10% trở lên, và quyền chấm dứt hợp đồng nếu không thống nhất trong 15 ngày sau khi thông báo trước 30 ngày.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_3",
+        "vb2_id": "dieu_3.khoan_3_3",
+        "vb1_excerpt": "Điều 3. TIỀN THUÊ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 3.3:\n3.3. Thời hạn thanh toán: Tiền Thuê được thanh toán trong thời hạn từ ngày 01 đến ngày 05 hàng tháng. Đối với tiền thuê tháng đầu tiên, Bên Thuê tiến hành thanh toán ngay khi ký Biên Bản Bàn Giao Phần Diện Tích Thuê. Trường hợp tháng thuê đầu ti",
+        "vb2_excerpt": "Điều 3. TIỀN THUÊ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 3.3:\n3.3. Thời hạn thanh toán: Tiền Thuê được thanh toán trong thời hạn từ ngày 01 đến ngày 03 hàng tháng. Đối với tiền thuê tháng đầu tiên, Bên Thuê tiến hành thanh toán ngay khi ký Biên Bản Bàn Giao Phần Diện Tích Thuê. Trường hợp tháng thuê đầu ti",
+        "summary": "Sửa đổi Khoản 3.3, Điều 3: Thời hạn thanh toán tiền thuê hàng tháng được rút ngắn từ ngày 05 xuống ngày 03 hàng tháng.",
+        "changes": [
+          "Cũ: từ ngày 01 đến ngày **05** hàng tháng.\nMới: từ ngày 01 đến ngày **03** hàng tháng."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_2.diem_i",
+        "vb2_id": "dieu_5.khoan_5_2.diem_i",
+        "vb1_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN CHO THUÊ\nKhoản 5.2: 5.2. Nghĩa vụ của Bên Cho Thuê\nĐiểm i:\ni. Bên Cho Thuê cam kết mình có quyền cho thuê Phần Diện Tích Thuê một cách hợp pháp. Đồng thời, bảo đảm Phần Diện Tích Thuê không thuộc các trường hợp bị cấm cho thuê theo quy định pháp luật hoặc đang bị tr",
+        "vb2_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN CHO THUÊ\nKhoản 5.2: 5.2. Nghĩa vụ của Bên Cho Thuê\nĐiểm i:\ni. Bên Cho Thuê cam kết mình có quyền cho thuê Phần Diện Tích Thuê một cách hợp pháp. Đồng thời, bảo đảm Phần Diện Tích Thuê không thuộc các trường hợp bị cấm cho thuê theo quy định pháp luật hoặc đang bị tr",
+        "summary": "Sửa đổi Điểm i, Khoản 5.2, Điều 5: Thay thế nghĩa vụ sửa chữa chủ động của Bên Cho Thuê (có thời hạn 05 ngày làm việc để phản hồi và phải thanh toán chi phí) bằng nghĩa vụ thông báo trước 05 ngày để được phép sửa chữa, đồng thời chuyển trách nhiệm chi phí sang Bên Thuê nếu gây cản trở, làm thay đổi bản chất nghĩa vụ và phân bổ rủi ro.",
+        "changes": [
+          "Cũ: Nhanh chóng sửa chữa các hư hỏng liên quan đến phần xây dựng của căn phòng như: tường, mái, nền móng, rò rỉ, thấm dột v.v được cung cấp bởi Bên Cho Thuê sau khi Bên Thuê thông báo bằng văn bản hay bằng điện thoại ngoại trừ các hư hỏng khác do Bên Thuê gây ra sẽ do Bên Thuê tự sửa chữa. Trường hợp Bên Cho Thuê không phản hồi lại cho Bên Thuê trong vòng **05 (năm) ngày làm việc** kể từ ngày Bên Thuê thông báo, Bên Thuê được quyền tự sửa chữa và Bên Cho Thuê sẽ thanh toán chi phí sửa chữa thực tế cho bên Thuê.\nMới: Nếu cần thiết cho việc duy tu bảo trì cho mục đích an toàn của căn phòng theo quy định về xây dựng. Bên Cho Thuê phải thông báo trước **05 (năm) ngày** cho Bên Thuê bằng văn bản và Bên Thuê cho phép Bên Cho Thuê hay người đại diện hay ủy quyền tiến hành sửa chữa và bảo trì trong thời hạn hợp lí. Nếu Bên Thuê gây cản trở việc sửa chữa, từ đó gây nguy hiểm đến an toàn của căn phòng thì Bên Thuê phải chịu chi phí do hậu quả phát sinh."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_2.diem_v",
+        "vb2_id": "dieu_5.khoan_5_2.diem_v",
+        "vb1_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN CHO THUÊ\nKhoản 5.2: 5.2. Nghĩa vụ của Bên Cho Thuê\nĐiểm v:\nv. Nếu cần thiết cho việc duy tu bảo trì cho mục đích an toàn của căn phòng theo quy định về xây dựng. Bên Cho Thuê phải thông báo trước 05 (năm) ngày cho Bên Thuê bằng văn bản và Bên Thuê cho phép Bên Cho T",
+        "vb2_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN CHO THUÊ\nKhoản 5.2: 5.2. Nghĩa vụ của Bên Cho Thuê\nĐiểm v:\nv. Bảo đảm Thời Hạn Thuê cho Bên Thuê theo quy định tại Hợp Đồng này.. vi. Bên Cho Thuê không được phép chuyển nhượng Hợp Đồng này cho bất kỳ bên thứ ba nào trừ khi bên thứ ba đó đồng ý kế thừa toàn bộ quyền",
+        "summary": "Sửa đổi Điểm v, Khoản 5.2, Điều 5: Xóa nghĩa vụ thông báo trước 05 ngày để sửa chữa bảo trì; chuyển đổi thứ tự và nội dung các điểm vi đến ix: nghĩa vụ bảo đảm thời hạn thuê trở thành điểm v, nghĩa vụ không chuyển nhượng trở thành điểm vi, nghĩa vụ về chuyển giao tài sản trở thành điểm vii, và nghĩa vụ đảm bảo điều kiện thực hiện hợp đồng trở thành điểm viii, trong khi điểm ix giữ nguyên nhưng bị trùng lặp nội dung với điểm viii mới.",
+        "changes": [
+          "Cũ: v. Nếu cần thiết cho việc duy tu bảo trì cho mục đích an toàn của căn phòng theo quy định về xây dựng. Bên Cho Thuê phải thông báo trước **05 (năm) ngày** cho Bên Thuê bằng văn bản và Bên Thuê cho phép Bên Cho Thuê hay người đại diện hay ủy quyền tiến hành sửa chữa và bảo trì trong thời hạn hợp lí. Nếu Bên Thuê gây cản trở việc sửa chữa, từ đó gây nguy hiểm đến an toàn của căn phòng thì Bên Thuê phải chịu chi phí do hậu quả phát sinh.\nMới: v. Bảo đảm Thời Hạn Thuê cho Bên Thuê theo quy định tại Hợp Đồng này..",
+          "Cũ: vi. Bảo đảm Thời Hạn Thuê cho Bên Thuê theo quy định tại Hợp Đồng này..\nMới: vi. Bên Cho Thuê không được phép chuyển nhượng Hợp Đồng này cho bất kỳ bên thứ ba nào trừ khi bên thứ ba đó đồng ý kế thừa toàn bộ quyền, nghĩa vụ, trách nhiệm, cam kết của Bên Cho Thuê theo Hợp Đồng này..",
+          "Cũ: vii. Bên Cho Thuê không được phép chuyển nhượng Hợp Đồng này cho bất kỳ bên thứ ba nào trừ khi bên thứ ba đó đồng ý kế thừa toàn bộ quyền, nghĩa vụ, trách nhiệm, cam kết của Bên Cho Thuê theo Hợp Đồng này..\nMới: vii. Trong trường hợp Bên Cho Thuê giao hoặc bán Phần Diện Tích Thuê này trước ngày hết hạn của Hợp Đồng này, Bên Cho Thuê thỏa thuận và cam kết rằng chủ sở hữu mới sẽ bị ràng buộc và tiếp tục các điều khoản và điều kiện của Hợp Đồng thay thế cho Bên Cho Thuê..",
+          "Cũ: viii. Trong trường hợp Bên Cho Thuê giao hoặc bán Phần Diện Tích Thuê này trước ngày hết hạn của Hợp Đồng này, Bên Cho Thuê thỏa thuận và cam kết rằng chủ sở hữu mới sẽ bị ràng buộc và tiếp tục các điều khoản và điều kiện của Hợp Đồng thay thế cho Bên Cho Thuê..\nMới: viii. Đảm bảo các điều kiện thực hiện Hợp Đồng:. - Ngay khi Bên Thuê thanh toán đầy đủ Tiền thuê và tất cả các khoản tiền phải trả khác, Bên Cho Thuê theo các điều khoản của Hợp Đồng này sẽ nghiêm chỉnh thực hiện đúng mọi thỏa thuận, để cho phép Bên Thuê sử dụng Phần Diện Tích Thuê trong Thời Hạn Thuê mà không bị Bên Cho Thuê làm gián đoạn;. - Bên Cho Thuê không được gây cản trở hoặc có bất kỳ hành vi gì bất hợp lý nhằm hạn chế việc thực hiện mục đích thuê đúng pháp luật của Bên Thuê và/hoặc khách hàng của Bên Thuê."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_2.diem_x",
+        "vb2_id": "dieu_6.khoan_6_2.diem_x",
+        "vb1_excerpt": "Điều 6. QUYỀN VÀ NGHĨA VỤ CỦA BÊN THUÊ\nKhoản 6.2: 6.2. Nghĩa vụ của Bên Thuê\nĐiểm x:\nx. Bên Thuê chịu trách nhiệm bồi thường những vấn đề sau:. - Những tổn thất, thiệt hại hay thương tích cho người hoặc tài sản trực tiếp hoặc gián tiếp do lỗi của Bên Thuê trong việc sử dụng hoặc tình trạng không đảm",
+        "vb2_excerpt": "Điều 6. QUYỀN VÀ NGHĨA VỤ CỦA BÊN THUÊ\nKhoản 6.2: 6.2. Nghĩa vụ của Bên Thuê\nĐiểm x:\nx. Bên Thuê không được quyền cấn trừ bất kỳ khoản tiền nào mà Bên Cho Thuê có thể phải thanh toán hoặc hoàn trả cho Bên Thuê vào nghĩa vụ thanh toán Tiền Thuê, trừ khi có chấp thuận trước bằng văn bản của Bên Cho Th",
+        "summary": "Sửa đổi Điểm x, Khoản 6.2, Điều 6: Thêm nghĩa vụ mới cấm Bên Thuê cấn trừ khoản tiền phải thanh toán cho Bên Cho Thuê, trừ khi có chấp thuận bằng văn bản, trước khi giữ nguyên nội dung bồi thường thiệt hại.",
+        "changes": [
+          "Cũ: Điểm x: x. Bên Thuê chịu trách nhiệm bồi thường những vấn đề sau:.\nMới: Điểm x: x. Bên Thuê **không được quyền cấn trừ bất kỳ khoản tiền nào mà Bên Cho Thuê có thể phải thanh toán hoặc hoàn trả cho Bên Thuê vào nghĩa vụ thanh toán Tiền Thuê, trừ khi có chấp thuận trước bằng văn bản của Bên Cho Thuê.**\n\nxi. Bên Thuê chịu trách nhiệm bồi thường những vấn đề sau:."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 100.5
+  },
+  "VB07": {
+    "stats": {
+      "so_luong_chunk_vb1": 14,
+      "so_luong_chunk_vb2": 14,
+      "giong_nhau_hoan_toan": 8,
+      "sua_doi": 5,
+      "them_moi": 0,
+      "xoa_bo": 0
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_1",
+        "vb2_id": "modau_1",
+        "vb1_excerpt": "HỢP ĐỒNG DỊCH VỤ QUẢN LÝ TÒA NHÀ. Số: 01/2….-QLVH. Giữa. Chủ Đầu Tư: ………………….. Và. Đơn Vị Quản Lý: Công ty cổ phần …….. Hợp Đồng Dịch Vụ Quản Lý Tòa nhà này (gọi tắt là “Hợp Đồng”) được lập và có hiệu lực từ ngày __ tháng __ năm 20__ giữa Các Bên dưới đây:. CHỦ ĐẦU TƯ: Ông. Mã số thuế: _____________",
+        "vb2_excerpt": "HỢP ĐỒNG DỊCH VỤ QUẢN LÝ TÒA NHÀ. Số: 01/2….-QLVH. Giữa. Chủ Đầu Tư: ………………….. Và. Đơn Vị Quản Lý: Công ty cổ phần …….. Hợp Đồng Dịch Vụ Quản Lý Tòa nhà này (gọi tắt là “Hợp Đồng”) được lập và có hiệu lực từ ngày __ tháng __ năm 20__ giữa Các Bên dưới đây:. CHỦ ĐẦU TƯ: Ông. Mã số thuế: _____________",
+        "summary": "Sửa đổi Mở đầu 1: (1) Thời gian thông báo gia hạn tăng từ 30 lên 60 ngày, thời gian phản hồi giảm từ 07 xuống 05 ngày; (2) Xóa quy định tự động gia hạn khi Bên A không phản hồi, thay bằng quy định coi là không đồng ý gia hạn; (3) Xóa điều khoản về tiếp tục thực hiện dịch vụ trong tranh chấp; (4) Bổ sung nội dung mới về quản lý vận hành hệ thống kỹ thuật và sửa chữa đơn giản thiết bị.",
+        "changes": [
+          "Cũ: gửi thông báo bằng văn bản cho Bên A trước ít nhất **30 (ba mươi)** ngày. Theo đó, Bên A sẽ xem xét, quyết định và phản hồi lại Bên B trong thời hạn **07 (bảy)** ngày.\nMới: gửi thông báo bằng văn bản cho Bên A trước ít nhất **60 (sáu mươi)** ngày. Theo đó, Bên A sẽ xem xét, quyết định và phản hồi lại Bên B trong thời hạn **05 (năm)** ngày.",
+          "Cũ: Trường hợp Bên A nhận được văn bản đề xuất gia hạn của Bên B mà Bên A không phản hồi bằng văn bản thì Hợp Đồng sẽ được tự động gia hạn bằng với thời hạn theo Bên B đề xuất và Phí Dịch Vụ sẽ được điều chỉnh tăng theo tình hình thực tế của thị trường.\nMới: Trường hợp Bên A nhận được văn bản đề xuất gia hạn của Bên B mà Bên A không phản hồi bằng văn bản thì Hợp Đồng sẽ được xem là **không đồng ý gia hạn**.",
+          "Xóa bỏ: Trong thời gian giải quyết tranh chấp (nếu có), Bên B sẽ tiếp tục thực hiện Dịch Vụ cho đến khi tranh chấp được giải quyết xong và vẫn được hưởng Phí Dịch Vụ, các khoản phát sinh (nếu có) theo Hợp Đồng này.",
+          "Thêm mới: Quản lý vận hành các hệ thống kỹ thuật tòa nhà; bố trí lịch làm việc của nhân viên kỹ thuật làm việc tại Tòa nhà; giám sát công việc hàng ngày của nhân viên kỹ thuật bao gồm các hạng mục phải kiểm tra cũng như những công việc sửa chữa khác;.\nThực hiện việc sửa chữa đơn giản các thiết bị Tòa nhà: thay bóng đèn, công tắc tại khu vực chung."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_2",
+        "vb2_id": "modau_2",
+        "vb1_excerpt": "Quản lý vận hành các hệ thống kỹ thuật tòa nhà; bố trí lịch làm việc của nhân viên kỹ thuật làm việc tại Tòa nhà; giám sát công việc hàng ngày của nhân viên kỹ thuật bao gồm các hạng mục phải kiểm tra cũng như những công việc sửa chữa khác;. Thực hiện việc sửa chữa đơn giản các thiết bị Tòa nhà: tha",
+        "vb2_excerpt": "Bên B chỉ chịu chi phí nhân lực và vật tư đối với các sửa chữa thông thường có giá trị dưới 5.000.000 VNĐ/lần; trên mức này Bên A chịu; Bên A chịu trách nhiệm về phần thiết bị thay thế thuộc phạm vi quỹ bảo trì; trường hợp khi có các sự cố hỏng hóc kỹ thuật lớn phát sinh, Bên B sẽ điều đồng nhân lực",
+        "summary": "Sửa đổi Mở đầu 2: (1) Phân chia chi phí sửa chữa: Bên B chịu cả nhân lực và vật tư cho sửa chữa dưới 5.000.000 VNĐ/lần, trên mức này Bên A chịu; (2) Phí dịch vụ hàng tháng giảm từ 20.000.000 VNĐ/tháng xuống 18.000.000 VNĐ/tháng; (3) Phí dịch vụ đã bao gồm 10% thuế GTGT thay vì chưa bao gồm; (4) Thêm điều kiện phê duyệt hợp đồng nhà thầu phụ từ 20.000.000 VNĐ/tháng trở lên; (5) Thêm quyền điều chỉnh phí dịch vụ từ năm thứ hai trở đi với điều kiện thông báo trước 30 ngày và có văn bản chấp thuận của Bên A.",
+        "changes": [
+          "Cũ: Bên B chỉ chịu chi phí nhân lực sửa chữa; Bên A chịu trách nhiệm về phần vật tư, thiết bị thay thế thuộc phạm vi quỹ bảo trì;\nMới: Bên B chỉ chịu chi phí nhân lực và **vật tư** đối với các sửa chữa thông thường có giá trị dưới **5.000.000 VNĐ/lần**; trên mức này Bên A chịu; Bên A chịu trách nhiệm về phần **thiết bị thay thế** thuộc phạm vi quỹ bảo trì;",
+          "Cũ: Phí Dịch Vụ hàng tháng là: **20,000,000** VNĐ/tháng.\nMới: Phí Dịch Vụ hàng tháng là: **18,000,000** VNĐ/tháng.",
+          "Cũ: Phí Dịch Vụ trên **chưa bao gồm** 10% thuế giá trị gia tăng, quỹ lương cho các vị trí bảo vệ, lễ tân, nhân viên vệ sinh và các khoản chi phí liên quan đến các công việc đảm bảo cho công tác quản lý và vận hành Tòa nhà một cách thuận lợi, an toàn, đáp ứng kịp thời nhu cầu của khách thuê các căn hộ trong Tòa nhà (bao gồm nhưng không giới hạn: Thay thế, sửa chữa, bảo dưỡng các thiết bị trong Tòa nhà; Chi phí kiểm định, bảo trì các hệ thống, Chi phí bảo hiểm tòa nhà, …).\nMới: Phí Dịch Vụ trên **bao gồm cả** 10% thuế giá trị gia tăng, quỹ lương cho các vị trí bảo vệ, lễ tân, nhân viên vệ sinh và các khoản chi phí liên quan đến các công việc đảm bảo cho công tác quản lý và vận hành Tòa nhà một cách thuận lợi, an toàn, đáp ứng kịp thời nhu cầu của khách thuê các căn hộ trong Tòa nhà (bao gồm nhưng không giới hạn: Thay thế, sửa chữa, bảo dưỡng các thiết bị trong Tòa nhà; Chi phí kiểm định, bảo trì các hệ thống, Chi phí bảo hiểm tòa nhà, …).",
+          "Cũ: Các viện dẫn: Không có\nMới: Kể từ năm thứ hai trở đi tính từ ngày ký kết Hợp Đồng này, Bên B có quyền xem xét điều chỉnh Phí Dịch Vụ trên cơ sở biến động của giá thị trường bằng cách gửi thông báo bằng văn bản trước ít nhất **30 (ba mươi) ngày**, việc điều chỉnh Phí Dịch Vụ chỉ có hiệu lực khi Bên A chấp thuận bằng văn bản. Các viện dẫn: Không có",
+          "Cũ: Các viện dẫn: Không có\nMới: Mọi hợp đồng với nhà thầu phụ có giá trị từ **20.000.000 VNĐ/tháng** trở lên phải được Bên A phê duyệt bằng văn bản trước khi ký kết.. Các viện dẫn: Không có"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_3",
+        "vb2_id": "modau_3",
+        "vb1_excerpt": "Kể từ năm thứ hai trở đi tính từ ngày ký kết Hợp Đồng này, Bên B có quyền xem xét điều chỉnh Phí Dịch Vụ trên cơ sở biến động của giá thị trường bằng cách gửi thông báo bằng văn bản trước ít nhất 30 (ba mươi) ngày, việc điều chỉnh Phí Dịch Vụ sẽ tự động có hiệu lực sau khi hết thời hạn báo trước này",
+        "vb2_excerpt": "Dựa vào doanh số tiền thuê, Bên B sẽ được hưởng phí dịch vụ và thêm một khoản hoa hồng như sau (tham khảo bảng minh họa ở phụ lục 5). Doanh số đạt dưới 80% công suất: Bên B chỉ được nhận 50% phí dịch vụ quản lý. Doanh số đạt được từ 80% đến 85% công suất: Bên B được nhận 100% phí dịch vụ quản lý. Do",
+        "summary": "Sửa đổi Mở đầu 3: Xóa bỏ quy định về quyền điều chỉnh Phí Dịch Vụ của Bên B sau năm thứ hai; sửa đổi lỗi chính tả 'thực hiền' → vẫn giữ nguyên (không thay đổi nghĩa); bổ sung các quyền mới của Bên B: được thể hiện logo/thương hiệu, đề nghị thanh toán đúng hạn, yêu cầu bản vẽ kỹ thuật, được hỗ trợ, ban hành quy chế quản lý, đơn phương chấm dứt hợp đồng, và được quyền thu giữ tiền đặt cọc từ khách thuê (không quá 1,5 tháng tiền thuê).",
+        "changes": [
+          "Xóa bỏ: Kể từ năm thứ hai trở đi tính từ ngày ký kết Hợp Đồng này, Bên B có quyền xem xét điều chỉnh Phí Dịch Vụ trên cơ sở biến động của giá thị trường bằng cách gửi thông báo bằng văn bản trước ít nhất 30 (ba mươi) ngày, việc điều chỉnh Phí Dịch Vụ sẽ tự động có hiệu lực sau khi hết thời hạn báo trước này.",
+          "Thêm mới: Được thể hiện logo/thương hiệu trên các văn bản của Bên B trong việc quản lý vận hành, chăm sóc khách hàng và được treo bảng hiệu của Bên B tại Tòa nhà.",
+          "Thêm mới: Đề nghị Bên A thanh toán đúng thời hạn Phí Dịch Vụ, Phí dự phòng.",
+          "Thêm mới: Yêu cầu Bên B cung cấp đầy đủ bản vẽ kỹ thuật, hồ sơ liên quan đến việc thực hiện Dịch Vụ.",
+          "Thêm mới: Được Bên A hỗ trợ trong quá trình thực hiện Hợp Đồng.",
+          "Thêm mới: Ban hành các quy chế quản lý Tòa nhà nhằm đảm bảo an toàn theo quy định của pháp luật và Hợp Đồng này.",
+          "Thêm mới: Đơn phương chấm dứt Hợp Đồng theo quy định tại Hợp Đồng này.",
+          "Thêm mới: Được quyền thu giữ và sử dụng khoản tiền đặt cọc từ Khách thuê căn hộ (không quá 1,5 tháng tiền thuê) trong suốt thời gian quản lý Tòa nhà."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_4",
+        "vb2_id": "modau_4",
+        "vb1_excerpt": "Được thể hiện logo/thương hiệu trên các văn bản của Bên B trong việc quản lý vận hành, chăm sóc khách hàng và được treo bảng hiệu của Bên B tại Tòa nhà.. Đề nghị Bên A thanh toán đúng thời hạn Phí Dịch Vụ, Phí dự phòng.. Yêu cầu Bên B cung cấp đầy đủ bản vẽ kỹ thuật, hồ sơ liên quan đến việc thực hi",
+        "vb2_excerpt": "Đồng thời, xử lý khoản tiền đặt cọc khi Khách thuê chấm dứt hợp đồng thuê. Trường hợp Bên B giữ lại khoản tiền đặt cọc do Khách thuê chấm dứt hợp đồng thuê trái pháp luật, Bên B có trách nhiệm nộp lại cho Bên A khoản tiền đặt cọc này.. Thu các khoản chi phí theo quy định của Hợp Đồng này dưới sự ủy ",
+        "summary": "Sửa đổi Mở đầu 4: Xóa bỏ các nội dung về quyền được thể hiện logo/thương hiệu, đề nghị thanh toán phí, yêu cầu bản vẽ kỹ thuật, hỗ trợ thực hiện hợp đồng, ban hành quy chế, đơn phương chấm dứt hợp đồng và quyền thu giữ tiền đặt cọc; đồng thời bổ sung mục mới 'Trách nhiệm báo cáo quản lý' với các yêu cầu báo cáo hàng tháng và hàng năm; xóa bỏ mục 'Trách nhiệm bồi thường các vấn đề liên quan đến an ninh'.",
+        "changes": [
+          "Xóa bỏ: Được thể hiện logo/thương hiệu trên các văn bản của Bên B trong việc quản lý vận hành, chăm sóc khách hàng và được treo bảng hiệu của Bên B tại Tòa nhà.. Đề nghị Bên A thanh toán đúng thời hạn Phí Dịch Vụ, Phí dự phòng.. Yêu cầu Bên B cung cấp đầy đủ bản vẽ kỹ thuật, hồ sơ liên quan đến việc thực hiện Dịch Vụ. Được Bên A hỗ trợ trong quá trình thực hiện Hợp Đồng.. Ban hành các quy chế quản lý Tòa nhà nhằm đảm bảo an toàn theo quy định của pháp luật và Hợp Đồng này.. Đơn phương chấm dứt Hợp Đồng theo quy định tại Hợp Đồng này.. Được quyền thu giữ và sử dụng khoản tiền đặt cọc từ Khách thuê căn hộ (không quá 1,5 tháng tiền thuê) trong suốt thời gian quản lý Tòa nhà.",
+          "Xóa bỏ: Trách nhiệm bồi thường các vấn đề liên quan đến an ninh:."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_5",
+        "vb2_id": "modau_5",
+        "vb1_excerpt": "Trách nhiệm báo cáo quản lý:. Báo cáo hoạt động hàng tháng và định kỳ 01 tháng một lần về: các hoạt động đã thực hiện trong tháng; tình hình thu chi trong tháng; các chi phí phát sinh mà Bên A phải thanh toán (nếu có); tình hình cơ sở vật chất, trang thiết bị và báo cáo hư hỏng (nếu có); kế hoạch ho",
+        "vb2_excerpt": "Việc xác định lỗi làm cơ sở để Các Bên yêu cầu bồi thường thiệt hại sẽ do Các Bên cùng nhất trí hoặc do các cơ quan chức năng có thẩm quyền quyết định chính thức bằng văn bản, ngoại trừ thiệt hại là hậu quả của những việc sau đây:. Do Sự Kiện Bất Khả Kháng. Hủy hoại, trộm cắp, mưu toan trộm cắp hay ",
+        "summary": "Sửa đổi Mở đầu 5: Bổ sung điều kiện cho quyền đơn phương chấm dứt hợp đồng khi bên vi phạm không khắc phục vi phạm trong vòng **mười (10) ngày làm việc**, hoặc vi phạm không thể khắc phục, hoặc tái diễn, kèm theo nghĩa vụ bồi hoàn chi phí và quyền chấm dứt hợp đồng.",
+        "changes": [
+          "Cũ: Các viện dẫn: Không có\nMới: Các viện dẫn: Không có. Trong trường hợp một bên không khắc phục vi phạm và/hoặc không hoàn thành việc khắc phục vi phạm trong vòng **mười (10) ngày làm việc** kể từ khi nhận được văn bản thông báo về vi phạm của Bên kia; hoặc vi phạm đó là không thể khắc phục được; hoặc vi phạm đó vẫn tái diễn, Bên bị vi phạm sẽ được quyền:. Buộc Bên vi phạm khắc phục vi phạm hoặc tự mình/ thuê đơn vị khác khắc phục vi phạm. Bên vi phạm có nghĩa vụ bồi hoàn cho Bên bị vi phạm toàn bộ các chi phí sửa chữa, khắc phục trên cơ sở chứng từ hợp lệ; và/hoặc,. Đơn phương chấm dứt thực hiện Hợp Đồng."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 117.7
+  },
+  "VB08": {
+    "stats": {
+      "so_luong_chunk_vb1": 10,
+      "so_luong_chunk_vb2": 10,
+      "giong_nhau_hoan_toan": 6,
+      "sua_doi": 6,
+      "them_moi": 1,
+      "xoa_bo": 0
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_2",
+        "vb2_id": "dieu_1.khoan_2",
+        "vb1_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản 2:\n2. Chủng loại tài sản mua bán:Dell.",
+        "vb2_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản 2:\n2. Chủng loại tài sản mua bán: Asus.",
+        "summary": "Sửa đổi Khoản 2, Điều 1: Chủng loại tài sản mua bán thay đổi từ Dell sang Asus.",
+        "changes": [
+          "Cũ: Chủng loại tài sản mua bán: **Dell**.\nMới: Chủng loại tài sản mua bán: **Asus**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_3",
+        "vb2_id": "dieu_1.khoan_3",
+        "vb1_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản 3:\n3. Số lượng tài sản mua bán: 5.",
+        "vb2_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản 3:\n3. Số lượng tài sản mua bán: 7.",
+        "summary": "Sửa đổi Khoản 3, Điều 1: Số lượng tài sản mua bán tăng từ 5 lên 7.",
+        "changes": [
+          "Cũ: Số lượng tài sản mua bán: **5**.\nMới: Số lượng tài sản mua bán: **7**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_1",
+        "vb2_id": "dieu_2.khoan_1",
+        "vb1_excerpt": "Điều 2. Giá và phương thức thanh toán\nKhoản 1:\n1. Giá mua bán tài sản nêu tại Điều 1 của hợp đồng này là: 100000000 đồng (Bằng chữ: … đồng)..",
+        "vb2_excerpt": "Điều 2. Giá và phương thức thanh toán\nKhoản 1:\n1. Giá mua bán tài sản nêu tại Điều 1 của hợp đồng này là: 11000000 đồng (Bằng chữ: … đồng)..",
+        "summary": "Sửa đổi Khoản 1, Điều 2: Giá mua bán tài sản giảm từ 100000000 đồng xuống 11000000 đồng.",
+        "changes": [
+          "Cũ: là: **100000000** đồng (Bằng chữ: … đồng).\nMới: là: **11000000** đồng (Bằng chữ: … đồng)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_3",
+        "vb2_id": "dieu_2.khoan_3",
+        "vb1_excerpt": "Điều 2. Giá và phương thức thanh toán\nKhoản 3:\n3. Thời hạn thanh toán:. \r. Đợt 1: Bên B thanh toán tiền mua tài sản cho bên A trước ngày 20/ 04/ 2026 với số tiền là: … đồng (Bằng chữ: … đồng).. \r. Đợt 2: Bên B thanh toán tiền mua tài sản cho bên A trước ngày 15/ 06/ 2026 với số tiền là: … đồng (Bằng",
+        "vb2_excerpt": "Điều 2. Giá và phương thức thanh toán\nKhoản 3:\n3. Thời hạn thanh toán:. \r. Đợt 1: Bên B thanh toán tiền mua tài sản cho bên A trước ngày 20/ 04/ 2026 với số tiền là: … đồng (Bằng chữ: … đồng).. \r. Đợt 2: Bên B thanh toán tiền mua tài sản cho bên A trước ngày 30/ 05/ 2026 với số tiền là: … đồng (Bằng",
+        "summary": "Sửa đổi Khoản 3, Điều 2: Ngày thanh toán đợt 2 được điều chỉnh từ ngày 15/06/2026 sang ngày 30/05/2026.",
+        "changes": [
+          "Cũ: trước ngày 15/ 06/ 2026\nMới: trước ngày **30/ 05/ 2026**"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_1",
+        "vb2_id": "dieu_4.khoan_1",
+        "vb1_excerpt": "Điều 4. Quyền, nghĩa vụ và trách nhiệm của các bên\nKhoản 1:\n1. Quyền, nghĩa vụ và trách nhiệm của bên A:. \r. - Giao tài sản theo quy định tại Điều 1 của hợp đồng này, kèm theo giấy tờ về quyền sử dụng, quyền sở hữu tài sản (nếu có) cho bên B theo quy định tại Điều 3 hợp đồng này.. \r. - Thực hiện thủ",
+        "vb2_excerpt": "Điều 4. Quyền, nghĩa vụ và trách nhiệm của các bên\nKhoản 1:\n1. Quyền, nghĩa vụ và trách nhiệm của bên A:. \r. - Giao tài sản theo quy định tại Điều 1 của hợp đồng này, kèm theo giấy tờ về quyền sử dụng, quyền sở hữu tài sản (nếu có) cho bên B theo quy định tại Điều 3 hợp đồng này.. \r. - Thực hiện thủ",
+        "summary": "Sửa đổi Khoản 1, Điều 4: Thời hạn bảo hành tài sản giảm từ 6 tháng xuống còn 3 tháng.",
+        "changes": [
+          "Cũ: Bảo hành đối với tài sản mua bán trong thời hạn bảo hành là **6 tháng**, kể từ ngày bên B nhận được tài sản;\nMới: Bảo hành đối với tài sản mua bán trong thời hạn bảo hành là **3 tháng**, kể từ ngày bên B nhận được tài sản;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_2",
+        "vb2_id": "dieu_4.khoan_2",
+        "vb1_excerpt": "Điều 4. Quyền, nghĩa vụ và trách nhiệm của các bên\nKhoản 2:\n2. Quyền, nghĩa vụ và trách nhiệm của bên B:. \r. - Thanh toán tiền mua tài sản cho bên A theo đúng quy định tại Điều 3 hợp đồng này;. \r. - Thực hiện thủ tục đăng ký quyền sử dụng, quyền sở hữu tài sản và nộp các khoản thuế, phí, lệ phí theo",
+        "vb2_excerpt": "Điều 4. Quyền, nghĩa vụ và trách nhiệm của các bên\nKhoản 2:\n2. Quyền, nghĩa vụ và trách nhiệm của bên B:. \r. - Thanh toán tiền mua tài sản cho bên A theo đúng quy định tại Điều 3 hợp đồng này;. \r. - Thực hiện thủ tục đăng ký quyền sử dụng, quyền sở hữu tài sản và nộp các khoản thuế, phí, lệ phí theo",
+        "summary": "Sửa đổi Khoản 2, Điều 4: Thay đổi từ việc bên B được yêu cầu sửa chữa tài sản không phải trả tiền và lấy lại toàn bộ tiền, sang phải trả tiền khi sửa chữa và chỉ được lấy lại 80% tiền trong thời hạn bảo hành.",
+        "changes": [
+          "Cũ: Yêu cầu bên A sửa chữa tài sản **không phải trả tiền** đối với tài sản có khuyết tật hoặc trả lại tài sản và **lấy lại tiền** trong thời hạn bảo hành;\nMới: Yêu cầu bên A sửa chữa tài sản và **phải trả tiền** đối với tài sản có khuyết tật hoặc trả lại tài sản và **lấy lại 80% tiền** trong thời hạn bảo hành;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_9",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Bên A(Ký, ghi rõ họ tên): Bên B(Ký, ghi rõ họ tên)",
+        "summary": "Thêm mới Điều 9: bổ sung phần ký tên của hai bên",
+        "changes": [
+          "Thêm mới: Bên A(Ký, ghi rõ họ tên): Bên B(Ký, ghi rõ họ tên)"
+        ],
+        "method": "high_confidence_greedy"
+      }
+    ],
+    "elapsed": 42.4
+  },
+  "VB09": {
+    "stats": {
+      "so_luong_chunk_vb1": 12,
+      "so_luong_chunk_vb2": 12,
+      "giong_nhau_hoan_toan": 6,
+      "sua_doi": 5,
+      "them_moi": 1,
+      "xoa_bo": 2
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_1_1",
+        "vb2_id": "dieu_1.khoan_1_1",
+        "vb1_excerpt": "Điều 1. NỘI DUNG NHƯỢNG QUYỀN THƯƠNG MẠI\nKhoản 1.1:\n1.1. Bên A bằng hợp đồng này cho phép bên B được quyền tiến hành mở 01 cơ sở kinh doanh (sau đây gọi tắt là “Cửa hàng”) để kinh doanh. mang thương hiệu. theo hệ thống, thiết kế mà Bên A đã xây dựng, thiết lập, vận hành và Bên B được quyền gắn nhãn ",
+        "vb2_excerpt": "Điều 1. NỘI DUNG NHƯỢNG QUYỀN THƯƠNG MẠI\nKhoản 1.1:\n1.1. Bên A bằng hợp đồng này cho phép bên B được quyền tiến hành mở 01 cơ sở kinh doanh (sau đây gọi tắt là “Cửa hàng”) để kinh doanh. mang thương hiệu. theo hệ thống, thiết kế mà Bên A đã xây dựng, thiết lập, vận hành và Bên B được quyền gắn nhãn ",
+        "summary": "Sửa đổi Khoản 1.1, Điều 1: Bỏ cụm từ \"và đang\" trong nội dung quyền sử dụng quảng cáo, thu hẹp phạm vi sử dụng từ \"đã và đang sử dụng\" thành \"đã sử dụng\".",
+        "changes": [
+          "Cũ: Được sử dụng các nội dung trong các băng zôn, biển hiệu quảng cáo của Bên A đã và đang sử dụng để quảng cáo cho Hệ thống khi bên B được cơ quan nhà nước có thẩm quyền cho phép theo quy định của Luật Quảng Cáo.\nMới: Được sử dụng các nội dung trong các băng zôn, biển hiệu quảng cáo của Bên A đã sử dụng để quảng cáo cho Hệ thống khi bên B được cơ quan nhà nước có thẩm quyền cho phép theo quy định của Luật Quảng Cáo."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_2.khoan_2_2",
+        "vb2_id": "dieu_2",
+        "vb1_excerpt": "Điều 2. PHẠM VI NHƯỢNG QUYỀN THƯƠNG MẠI\nKhoản 2.2:\n2.2. Hình thức nhượng quyền: Không độc quyền.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 2.2, Điều 2, quy định về hình thức nhượng quyền không độc quyền.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_3.khoan_3_2.diem_3_2_3",
+        "vb2_id": "dieu_3",
+        "vb1_excerpt": "Điều 3. QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 3.2: 3.2. Bên A có các nghĩa vụ sau đây:. \r\nĐiểm 3.2.3:\n3.2.3. Đào tạo ban đầu và cung cấp trợ giúp kỹ thuật thường xuyên cho bên B để điều hành hoạt động theo đúng hệ thống bên A đã xây dựng..",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điểm 3.2.3 Khoản 3.2 Điều 3, quy định về nghĩa vụ của Bên A trong việc đào tạo ban đầu và cung cấp trợ giúp kỹ thuật thường xuyên cho Bên B để điều hành hoạt động theo đúng hệ thống do Bên A xây dựng.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_1.diem_4_1_1",
+        "vb2_id": "dieu_4.khoan_4_1.diem_4_1_1",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.1: 4.1. Bên B có những quyền sau đây:. \r\nĐiểm 4.1.1:\n4.1.1. Được yêu cầu bên A cung cấp đầy đủ các thông tin, trợ giúp kỹ thuật có liên quan đến Hệ thống thương hiệu. để có thể hoạt động..",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.1: 4.1. Bên B có những quyền sau đây:. \r\nĐiểm 4.1.1:\n4.1.1. Bên B có quyền yêu cầu Bên A cung cấp đầy đủ thông tin cần thiết và hỗ trợ về mặt kỹ thuật liên quan đến hệ thống thương hiệu. nhằm đảm bảo hoạt động kinh doanh của Bên B được triển khai hiệu quả và đ",
+        "summary": "Sửa đổi Điểm 4.1.1, Khoản 4.1, Điều 4: Mở rộng quyền của Bên B từ việc 'được yêu cầu cung cấp thông tin, trợ giúp kỹ thuật' để 'có thể hoạt động' thành 'có quyền yêu cầu cung cấp thông tin cần thiết và hỗ trợ kỹ thuật' nhằm 'đảm bảo hoạt động kinh doanh được triển khai hiệu quả và đúng tiêu chuẩn', đồng thời thay đổi cách diễn đạt và bổ sung mục đích rõ ràng hơn.",
+        "changes": [
+          "Cũ: Được yêu cầu bên A cung cấp đầy đủ các thông tin, trợ giúp kỹ thuật có liên quan đến Hệ thống thương hiệu. để có thể hoạt động.\nMới: Bên B có quyền yêu cầu Bên A cung cấp đầy đủ **thông tin cần thiết và hỗ trợ về mặt kỹ thuật** liên quan đến **hệ thống thương hiệu**. **nhằm đảm bảo hoạt động kinh doanh của Bên B được triển khai hiệu quả và đúng tiêu chuẩn**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_2.diem_4_2_4",
+        "vb2_id": "dieu_4.khoan_4_2.diem_4_2_4",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.2: 4.2. Bên B có các nghĩa vụ như sau:. \r\nĐiểm 4.2.4:\n4.2.4. Giữ bí mật về bí mật kinh doanh, công thức.của sản phẩm.mang thương hiệu.của Bên A kể từ ngày ký hợp đồng và có trách nhiệm bảo mật thông tin ngay cả sau khi hợp đồng nhượng quyền thương mại kết thúc",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.2: 4.2. Bên B có các nghĩa vụ như sau:. \r\nĐiểm 4.2.4:\n4.2.4. Bên B có trách nhiệm giữ bí mật đối với các thông tin thuộc bí mật kinh doanh, bao gồm công thức. của sản phẩm mang thương hiệu. của Bên A, kể từ thời điểm ký kết hợp đồng và tiếp tục duy trì nghĩa v",
+        "summary": "Sửa đổi Điểm 4.2.4, Khoản 4.2, Điều 4: Thay đổi cách diễn đạt nghĩa vụ bảo mật, bổ sung chủ thể 'Bên B có trách nhiệm', thay 'ngày ký hợp đồng' bằng 'thời điểm ký kết hợp đồng', và thay 'kết thúc hoặc chấm dứt' bằng 'đã hết hiệu lực hoặc bị chấm dứt' — tuy nhiên, về mặt pháp lý, các thay đổi này không làm thay đổi bản chất nghĩa vụ bảo mật, nhưng có sự điều chỉnh về phạm vi và cách diễn đạt khiến nội dung không còn đồng nhất về mặt ngôn ngữ pháp lý, cần xem xét tính nhất quán.",
+        "changes": [
+          "Cũ: Giữ bí mật về bí mật kinh doanh, công thức.của sản phẩm.mang thương hiệu.của Bên A kể từ ngày ký hợp đồng và có trách nhiệm bảo mật thông tin ngay cả sau khi hợp đồng nhượng quyền thương mại kết thúc hoặc chấm dứt;\nMới: Bên B có trách nhiệm giữ bí mật đối với các thông tin thuộc bí mật kinh doanh, bao gồm công thức. của sản phẩm mang thương hiệu. của Bên A, kể từ **thời điểm ký kết hợp đồng** và tiếp tục duy trì nghĩa vụ bảo mật ngay cả khi hợp đồng nhượng quyền **đã hết hiệu lực hoặc bị chấm dứt**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_2.diem_4_2_6",
+        "vb2_id": "dieu_4.khoan_4_2.diem_4_2_6",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.2: 4.2. Bên B có các nghĩa vụ như sau:. \r\nĐiểm 4.2.6:\n4.2.6. Điều hành hoạt động phù hợp với hệ thống nhượng quyền thương mại, cùng bên A xây dựng và bảo vệ uy tín, hình ảnh thương hiệu dịch vụ..",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA B\nKhoản 4.2: 4.2. Bên B có các nghĩa vụ như sau:. \r\nĐiểm 4.2.6:\n4.2.6. Bên B phải vận hành hoạt động kinh doanh phù hợp với các tiêu chuẩn của hệ thống nhượng quyền, đồng thời phối hợp với Bên A trong việc xây dựng, duy trì và bảo vệ uy tín cũng như hình ảnh thương hiệu",
+        "summary": "Sửa đổi Điểm 4.2.6, Khoản 4.2, Điều 4: Thay đổi từ 'Điều hành hoạt động phù hợp với hệ thống nhượng quyền thương mại, cùng bên A xây dựng và bảo vệ...' sang 'Bên B phải vận hành hoạt động kinh doanh phù hợp với các tiêu chuẩn của hệ thống nhượng quyền, đồng thời phối hợp với Bên A trong việc xây dựng, duy trì và bảo vệ uy tín cũng như hình ảnh thương hiệu dịch vụ.' — bổ sung nghĩa vụ bắt buộc ('phải'), mở rộng phạm vi hành động ('vận hành hoạt động kinh doanh', 'duy trì'), và làm rõ đối tác ('Bên A' thay vì 'bên A').",
+        "changes": [
+          "Cũ: Điều hành hoạt động phù hợp với hệ thống nhượng quyền thương mại, cùng bên A xây dựng và bảo vệ uy tín, hình ảnh thương hiệu dịch vụ.\nMới: Bên B phải **vận hành hoạt động kinh doanh** phù hợp với **các tiêu chuẩn của hệ thống nhượng quyền**, đồng thời **phối hợp với Bên A trong việc xây dựng, duy trì và bảo vệ uy tín cũng như hình ảnh thương hiệu dịch vụ**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5.khoan_5_5",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. PHÂN ĐỊNH QUYỀN, TRÁCH NHIỆM TRONG VIỆC QUẢN LÝ, ĐIỀU HÀNH, TÀI CHÍNH CỦA CỬA HÀNG.\nKhoản 5.5:\n5.5. Bên A có quyền kiểm tra, đối chiếu số liệu kinh doanh, chứng từ kế toán và dữ liệu trên hệ thống phần mềm bán hàng của Cửa hàng nhằm đảm bảo tính minh bạch và tuân thủ các tiêu chuẩn của Hệ th",
+        "summary": "Thêm mới Khoản 5.5, Điều 5, quy định về quyền của Bên A trong việc kiểm tra, đối chiếu số liệu kinh doanh và dữ liệu phần mềm bán hàng, cũng như trách nhiệm của Bên B trong việc cung cấp thông tin và tạo điều kiện giám sát.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_1.diem_6_1_2",
+        "vb2_id": "dieu_6.khoan_6_1.diem_6_1_2",
+        "vb1_excerpt": "Điều 6. GIÁ CẢ, PHÍ NHƯỢNG QUYỀN ĐỊNH KỲ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 6.1: 6.1. Phí nhượng quyền bao gồm 02 khoản: phí nhượng quyền ban đầu và phí nhượng quyền hàng tháng.. \r\nĐiểm 6.1.2:\n6.1.2. Phí nhượng quyền hàng tháng được tính bằng: 5% tổng doanh thu tháng liền kề trước đó của Cửa hàng của B",
+        "vb2_excerpt": "Điều 6. GIÁ CẢ, PHÍ NHƯỢNG QUYỀN ĐỊNH KỲ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 6.1: 6.1. Phí nhượng quyền bao gồm 02 khoản: phí nhượng quyền ban đầu và phí nhượng quyền hàng tháng.. \r\nĐiểm 6.1.2:\n6.1.2. Phí nhượng quyền hàng tháng được tính bằng: 6% tổng doanh thu tháng liền kề trước đó của Cửa hàng của B",
+        "summary": "Sửa đổi Điểm 6.1.2, Khoản 6.1, Điều 6: Tỷ lệ phí nhượng quyền hàng tháng trong 3 năm đầu tiên tăng từ **5%** lên **6%**.",
+        "changes": [
+          "Cũ: 5% tổng doanh thu tháng liền kề trước đó của Cửa hàng của Bên B trong 3 năm đầu tiên, **3%** trong 2 năm tiếp theo và 0% sau 5 năm kể từ ngày Cửa hàng chính thức đi vào hoạt động.\nMới: 6% tổng doanh thu tháng liền kề trước đó của Cửa hàng của Bên B trong 3 năm đầu tiên, **3%** trong 2 năm tiếp theo và 0% sau 5 năm kể từ ngày Cửa hàng chính thức đi vào hoạt động."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 145.9
+  },
+  "VB10": {
+    "stats": {
+      "so_luong_chunk_vb1": 15,
+      "so_luong_chunk_vb2": 15,
+      "giong_nhau_hoan_toan": 8,
+      "sua_doi": 7,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_2",
+        "vb2_id": "dieu_2.khoan_2_2",
+        "vb1_excerpt": "Điều 2. NỘI DUNG THỎA THUẬN\nKhoản 2.2:\n2.2. Bên B chuẩn bị đầy đủ các máy móc, thiết bị và phương tiện vận chuyển, phương tiện thi công khác, chuẩn bị đầy đủ nhân lực và vật tư để hoàn thành công trình theo đúng bản vẽ thiết kế, đúng kỹ thuật, mỹ thuật, tiêu chuẩn xây dựng theo quy định hiện hành củ",
+        "vb2_excerpt": "Điều 2. NỘI DUNG THỎA THUẬN\nKhoản 2.2:\n2.2. Bên B có trách nhiệm chuẩn bị đầy đủ máy móc, thiết bị thi công, phương tiện vận chuyển cùng các nguồn lực cần thiết, bao gồm nhân công và vật tư, nhằm đảm bảo việc thi công công trình được thực hiện đúng theo bản vẽ thiết kế đã được phê duyệt, đáp ứng yêu",
+        "summary": "Sửa đổi Khoản 2.2, Điều 2: Thay 'chuẩn bị đầy đủ' bằng 'có trách nhiệm chuẩn bị đầy đủ'; thêm 'đã được phê duyệt' sau 'bản vẽ thiết kế'; thay 'nhân lực' bằng 'nhân công'; thay 'nhà nước' bằng 'Nhà nước' và thay đổi cấu trúc câu để nhấn mạnh mục đích 'nhằm đảm bảo việc thi công...'.",
+        "changes": [
+          "Cũ: Bên B chuẩn bị đầy đủ các máy móc, thiết bị và phương tiện vận chuyển, phương tiện thi công khác, chuẩn bị đầy đủ nhân lực và vật tư để hoàn thành công trình theo đúng bản vẽ thiết kế, đúng kỹ thuật, mỹ thuật, tiêu chuẩn xây dựng theo quy định hiện hành của nhà nước.\nMới: Bên B có trách nhiệm chuẩn bị đầy đủ máy móc, thiết bị thi công, phương tiện vận chuyển cùng các nguồn lực cần thiết, bao gồm nhân công và vật tư, nhằm đảm bảo việc thi công công trình được thực hiện đúng theo bản vẽ thiết kế đã được **phê duyệt**, đáp ứng yêu cầu về kỹ thuật, mỹ thuật và tuân thủ các tiêu chuẩn xây dựng hiện hành của **Nhà nước**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_1",
+        "vb2_id": "dieu_3.khoan_3_1",
+        "vb1_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC THANH TOÁN VÀ TIẾN ĐỘ THỰC HIỆN\nKhoản 3.1:\n3.1. Hình thức khoán gọn:. \r. Bên A và Bên B ký kết hợp đồng giao nhận thầu xây lắp theo hình thức khoán gọn toàn bộ công trình theo báo giá đính kèm hợp đồng này, bao gồm các chi phí vận chuyển, thiết bị thi công, chi ",
+        "vb2_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC THANH TOÁN VÀ TIẾN ĐỘ THỰC HIỆN\nKhoản 3.1:\n3.1. Hình thức khoán gọn:. \r. Bên A và Bên B ký kết hợp đồng giao nhận thầu xây lắp theo hình thức khoán gọn toàn bộ công trình theo báo giá đính kèm hợp đồng này, bao gồm các chi phí vận chuyển, thiết bị thi công, chi ",
+        "summary": "Sửa đổi Khoản 3.1, Điều 3: Thay đổi từ 'không thay đổi' sang 'có thể thay đổi' về tính cố định của giá trị hợp đồng khoán gọn, làm thay đổi nghĩa pháp lý về mức độ linh hoạt điều chỉnh giá trị hợp đồng.",
+        "changes": [
+          "Cũ: Giá trị hợp đồng là giá trị khoán gọn và sẽ **không thay đổi** trong suốt thời gian thực hiện hợp đồng với điều kiện Bên B chỉ thi công theo đúng thiết kế hồ sơ kỹ thuật công trình theo thống nhất giữa hai bên trước khi khởi công.\nMới: Giá trị hợp đồng là giá trị khoán gọn và sẽ **có thể thay đổi** trong suốt thời gian thực hiện hợp đồng với điều kiện Bên B chỉ thi công theo đúng thiết kế hồ sơ kỹ thuật công trình theo thống nhất giữa hai bên trước khi khởi công."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_3",
+        "vb2_id": "dieu_3.khoan_3_3",
+        "vb1_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC THANH TOÁN VÀ TIẾN ĐỘ THỰC HIỆN\nKhoản 3.3:\n3.3. Phương thức thanh toán: Bên A sẽ thanh toán cho Bên B bằng tiền mặt hoặc chuyển khoản theo từng giai đoạn được quy định tại điều 4 [Phương thức thanh toán] của bảng báo giá số.-.-./.-. ký ngày././.. \r. - Hồ sơ than",
+        "vb2_excerpt": "Điều 3. GIÁ TRỊ HỢP ĐỒNG, PHƯƠNG THỨC THANH TOÁN VÀ TIẾN ĐỘ THỰC HIỆN\nKhoản 3.3:\n3.3. Phương thức thanh toán: Bên A sẽ thanh toán cho Bên B bằng tiền mặt hoặc chuyển khoản theo từng giai đoạn được quy định tại điều 4 [Phương thức thanh toán] của bảng báo giá số.-.-./.-. ký ngày././.. \r. - Hồ sơ than",
+        "summary": "Sửa đổi Khoản 3.3, Điều 3: Bỏ quyền tạm ngưng thi công công trình của Bên B khi Bên A chậm thanh toán quá 03 ngày mà không có cam kết cụ thể.",
+        "changes": [
+          "Cũ: thì Bên B có quyền tạm ngưng thi công công trình.\nMới: thì Bên B **không có quyền** tạm ngưng thi công công trình."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_1",
+        "vb2_id": "dieu_4.khoan_4_1",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 4.1:\n4.1. Quyền và nghĩa vụ của Bên A. \r. - Bên A có trách nhiệm chuẩn bị và bàn giao mặt bằng thi công đúng thời hạn, bàn giao nguồn, vị trí đấu nối và thanh toán tiền điện, nước phục vụ thi công trong suốt thời gian thi công.. \r. - Bên A cung cấp đầy đủ ",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 4.1:\n4.1. Quyền và nghĩa vụ của Bên A. \r. - Bên A có thể chuẩn bị và bàn giao mặt bằng thi công đúng thời hạn, bàn giao nguồn, vị trí đấu nối và thanh toán tiền điện, nước phục vụ thi công trong suốt thời gian thi công.. \r. - Bên A cung cấp đầy đủ thông ti",
+        "summary": "Sửa đổi Khoản 4.1, Điều 4: Thay đổi từ 'có trách nhiệm' sang 'có thể' trong nghĩa vụ chuẩn bị và bàn giao mặt bằng thi công, làm thay đổi tính bắt buộc của nghĩa vụ.",
+        "changes": [
+          "Cũ: Bên A có **trách nhiệm** chuẩn bị và bàn giao mặt bằng thi công đúng thời hạn, bàn giao nguồn, vị trí đấu nối và thanh toán tiền điện, nước phục vụ thi công trong suốt thời gian thi công.\nMới: Bên A có **thể** chuẩn bị và bàn giao mặt bằng thi công đúng thời hạn, bàn giao nguồn, vị trí đấu nối và thanh toán tiền điện, nước phục vụ thi công trong suốt thời gian thi công."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_2",
+        "vb2_id": "dieu_4.khoan_4_2",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 4.2:\n4.2. Quyền và Nghĩa vụ của Bên B. \r. - Trong quá trình thi công không được gây ảnh hưởng đến những nhà lân cận, nếu có sự cố xảy ra do lỗi của Bên B thì Bên B phải chịu trách nhiệm khắc phục hoặc bồi thường thiệt hại.. \r. - Cử người có chuyên môn, có ",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 4.2:\n4.2. Quyền và Nghĩa vụ của Bên B. \r. - Trong quá trình thi công không được gây ảnh hưởng đến những nhà lân cận, nếu có sự cố xảy ra do lỗi của Bên B thì Bên B phải chịu trách nhiệm khắc phục hoặc bồi thường thiệt hại.. \r. - Cử người có chuyên môn, có ",
+        "summary": "Sửa đổi Khoản 4.2, Điều 4: Thay đổi cách diễn đạt về trách nhiệm tổ chức thi công và điều kiện thay đổi thiết kế kiến trúc, bổ sung cụm 'Bên B có trách nhiệm', thay 'quy phạm kỹ thuật - mỹ thuật' bằng 'quy chuẩn kỹ thuật và yêu cầu mỹ thuật', thêm 'hồ sơ thiết kế đã được phê duyệt', và thay 'phải được sự đồng ý' bằng 'chỉ được thực hiện khi có sự chấp thuận' — làm rõ hơn nghĩa vụ và điều kiện, nhưng không thay đổi bản chất yêu cầu sự đồng ý của Bên A.",
+        "changes": [
+          "Cũ: - Tổ chức thi công bảo đảm chất lượng tốt, đúng quy phạm kỹ thuật - mỹ thuật cho công trình đẹp và đúng thiết kế. Mọi sự thay đổi về thiết kế kiến trúc phải được sự đồng ý của Bên A.\nMới: - Bên B có trách nhiệm tổ chức thi công công trình bảo đảm chất lượng, tuân thủ các quy chuẩn kỹ thuật và yêu cầu mỹ thuật theo đúng hồ sơ thiết kế đã được phê duyệt. Mọi điều chỉnh liên quan đến thiết kế kiến trúc chỉ được thực hiện khi có sự chấp thuận của Bên A."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_5.khoan_5_4",
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "Điều 5. NGHIỆM THU CÔNG TRÌNH\nKhoản 5.4:\n5.4. Nếu Bên A không có mặt theo yêu cầu của Bên B để nghiệm thu công trình như đã nêu tại Điều 5.1 thì công trình sẽ đương nhiên được coi là đã được Bên A nghiệm thu. Các bên sẽ làm thủ tục bàn giao và thanh - quyết toán công trình theo Điều 6 dưới đây..",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 5.4, Điều 5, quy định về việc công trình đương nhiên được coi là đã nghiệm thu nếu Bên A không có mặt theo yêu cầu của Bên B, đồng thời tiến hành thủ tục bàn giao và thanh - quyết toán theo Điều 6.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6.khoan_6_3",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 6. BÀN GIAO VÀ THANH LÝ HỢP ĐỒNG\nKhoản 6.3:\n6.3. Việc thanh lý Hợp đồng được lập thành biên bản có chữ ký của đại diện hợp pháp của hai bên. Sau khi ký biên bản thanh lý, các bên xác nhận đã hoàn thành toàn bộ quyền và nghĩa vụ theo Hợp đồng này, trừ các nghĩa vụ về bảo hành công trình và các n",
+        "summary": "Thêm mới Khoản 6.3 Điều 6, quy định về việc lập biên bản thanh lý hợp đồng có chữ ký của hai bên, xác nhận hoàn thành quyền và nghĩa vụ, ngoại trừ nghĩa vụ bảo hành và các nghĩa vụ còn hiệu lực theo thỏa thuận hoặc pháp luật.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_7.khoan_7_3",
+        "vb2_id": "dieu_7.khoan_7_3",
+        "vb1_excerpt": "Điều 7. BẢO HÀNH CÔNG TRÌNH\nKhoản 7.3:\n7.3. Trong vòng 03 năm tiếp theo khi thời hạn bảo hành kết thúc, nếu có các vấn đề về kỹ thuật nghiêm trọng như lún, nghiêng, nứt … xảy ra tại công trình, công ty Bảo Sơn cam kết tiếp tục phối hợp xác định nguyên nhân và phối hợp với chủ đầu tư để khắc phục sự ",
+        "vb2_excerpt": "Điều 7. BẢO HÀNH CÔNG TRÌNH\nKhoản 7.3:\n7.3. Trong vòng 0 năm tiếp theo khi thời hạn bảo hành kết thúc, nếu có các vấn đề về kỹ thuật nghiêm trọng như lún, nghiêng, nứt … xảy ra tại công trình, công ty Bảo Sơn cam kết tiếp tục phối hợp xác định nguyên nhân và phối hợp với chủ đầu tư để khắc phục sự c",
+        "summary": "Sửa đổi Khoản 7.3, Điều 7: Thời hạn sau bảo hành được thay đổi từ 03 năm thành 0 năm, làm mất đi nghĩa vụ phối hợp khắc phục sự cố sau thời hạn bảo hành.",
+        "changes": [
+          "Cũ: Trong vòng **03 năm** tiếp theo khi thời hạn bảo hành kết thúc, nếu có các vấn đề về kỹ thuật nghiêm trọng như lún, nghiêng, nứt … xảy ra tại công trình, công ty Bảo Sơn cam kết tiếp tục phối hợp xác định nguyên nhân và phối hợp với chủ đầu tư để khắc phục sự cố.\nMới: Trong vòng **0 năm** tiếp theo khi thời hạn bảo hành kết thúc, nếu có các vấn đề về kỹ thuật nghiêm trọng như lún, nghiêng, nứt … xảy ra tại công trình, công ty Bảo Sơn cam kết tiếp tục phối hợp xác định nguyên nhân và phối hợp với chủ đầu tư để khắc phục sự cố."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_8.khoan_8_6",
+        "vb2_id": "dieu_8.khoan_8_6",
+        "vb1_excerpt": "Điều 8. NHẬT KÝ, PHẠT VI PHẠM HỢP ĐỒNG\nKhoản 8.6:\n8.6. Mức phạt vi phạm nghĩa vụ thanh toán được áp dụng theo mức lãi suất tín dụng quá hạn của Ngân hàng Nhà nước Việt Nam tại thời điểm vi phạm, tính từ ngày hết thời hạn thanh toán. Trường hợp này không giới hạn mức phạt tối đa..",
+        "vb2_excerpt": "Điều 8. NHẬT KÝ, PHẠT VI PHẠM HỢP ĐỒNG\nKhoản 8.6:\n8.6. Mức phạt vi phạm nghĩa vụ thanh toán được áp dụng theo mức lãi suất tín dụng quá hạn của Ngân hàng Nhà nước Việt Nam tại thời điểm vi phạm, tính từ ngày hết thời hạn thanh toán. Trường hợp này có giới hạn mức phạt tối đa..",
+        "summary": "Sửa đổi Khoản 8.6, Điều 8: Thay đổi từ 'không giới hạn mức phạt tối đa' thành 'có giới hạn mức phạt tối đa', làm thay đổi nghĩa pháp lý về giới hạn mức phạt vi phạm nghĩa vụ thanh toán.",
+        "changes": [
+          "Cũ: Trường hợp này **không giới hạn** mức phạt tối đa.\nMới: Trường hợp này **có giới hạn** mức phạt tối đa."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 232.7
+  },
+  "VB11": {
+    "stats": {
+      "so_luong_chunk_vb1": 10,
+      "so_luong_chunk_vb2": 10,
+      "giong_nhau_hoan_toan": 6,
+      "sua_doi": 3,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_1.diem_c",
+        "vb2_id": "dieu_4.khoan_4_1.diem_c",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.1: 4.1. Nghĩa vụ\nĐiểm c:\nc) Bảo dưỡng, sửa chữa nhà theo định kỳ hoặc theo thỏa thuận; nếu bên A không bảo dưỡng, sửa chữa nhà mà gây thiệt hại cho bên B, thì phải bồi thường;",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.1: 4.1. Nghĩa vụ\nĐiểm c:\nc) Bên A có trách nhiệm thực hiện việc bảo trì và sửa chữa nhà theo định kỳ hoặc theo thỏa thuận giữa các bên; trong trường hợp Bên A không thực hiện nghĩa vụ này dẫn đến thiệt hại cho Bên B, thì Bên A phải chịu trách nhiệm bồi thư",
+        "summary": "Sửa đổi Điểm c, Khoản 4.1, Điều 4: Thay đổi từ 'bảo dưỡng, sửa chữa' thành 'bảo trì và sửa chữa'; bổ sung 'bên A có trách nhiệm thực hiện việc' và thay 'phải bồi thường' thành 'phải chịu trách nhiệm bồi thường', làm rõ trách nhiệm và thay đổi cách diễn đạt nghĩa vụ pháp lý.",
+        "changes": [
+          "Cũ: Bảo dưỡng, sửa chữa nhà theo định kỳ hoặc theo thỏa thuận; nếu bên A không bảo dưỡng, sửa chữa nhà mà gây thiệt hại cho bên B, thì phải bồi thường;\nMới: bên A có trách nhiệm thực hiện việc **bảo trì và sửa chữa** nhà theo định kỳ hoặc theo thỏa thuận giữa các bên; trong trường hợp Bên A không thực hiện nghĩa vụ này dẫn đến thiệt hại cho Bên B, thì Bên A **phải chịu trách nhiệm bồi thường**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_2.diem_c",
+        "vb2_id": "dieu_4.khoan_4_2.diem_c",
+        "vb1_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.2: 4.2. Quyền lợi\nĐiểm c:\nc) Đơn phương chấm dứt thực hiện hợp đồng thuê nhà nhưng phải báo cho bên B biết trước ít nhất 30 ngày nếu không có thỏa thuận khác và yêu cầu bồi thường thiệt hại nếu bên B có một trong các hành vi sau đây:. - Không trả tiền thuê",
+        "vb2_excerpt": "Điều 4. QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.2: 4.2. Quyền lợi\nĐiểm c:\nc) Đơn phương chấm dứt thực hiện hợp đồng thuê nhà nhưng phải báo cho bên B biết trước ít nhất 30 ngày nếu không có thỏa thuận khác và yêu cầu bồi thường thiệt hại nếu bên B có một trong các hành vi sau đây:. - Không trả tiền thuê",
+        "summary": "Sửa đổi Điểm c, Khoản 4.2, Điều 4: Thời hạn không trả tiền thuê nhà để bên A được đơn phương chấm dứt hợp đồng giảm từ ba tháng xuống hai tháng.",
+        "changes": [
+          "Cũ: Không trả tiền thuê nhà liên tiếp trong **ba tháng** trở lên mà không có lý do chính đáng;\nMới: Không trả tiền thuê nhà liên tiếp trong **hai tháng** trở lên mà không có lý do chính đáng;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5.khoan_5_1.diem_i",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN B:\nKhoản 5.1: 5.1. Nghĩa vụ\nĐiểm i:\ni) Được ưu tiên gia hạn hợp đồng thuê nhà khi hết thời hạn thuê nếu bên B có nhu cầu tiếp tục thuê và thực hiện đầy đủ nghĩa vụ theo hợp đồng.",
+        "summary": "Thêm mới Điểm i Khoản 5.1 Điều 5, quy định về quyền được ưu tiên gia hạn hợp đồng thuê nhà của bên B khi hết thời hạn thuê, nếu có nhu cầu tiếp tục thuê và thực hiện đầy đủ nghĩa vụ theo hợp đồng.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_2.diem_b",
+        "vb2_id": "dieu_5.khoan_5_2.diem_b",
+        "vb1_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN B:\nKhoản 5.2: 5.2. Quyền lợi\nĐiểm b:\nb) Được cho thuê lại nhà đang thuê, nếu được bên cho thuê đồng ý bằng văn bản;",
+        "vb2_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN B:\nKhoản 5.2: 5.2. Quyền lợi\nĐiểm b:\nb) Được cho thuê lại một phần nhà đang thuê, nếu được bên cho thuê đồng ý bằng văn bản;",
+        "summary": "Sửa đổi Điểm b, Khoản 5.2, Điều 5: Quyền cho thuê lại nhà đang thuê bị giới hạn chỉ được cho thuê lại **một phần** nhà đang thuê, thay vì toàn bộ nhà.",
+        "changes": [
+          "Cũ: Được cho thuê lại **nhà đang thuê**, nếu được bên cho thuê đồng ý bằng văn bản;\nMới: Được cho thuê lại **một phần nhà đang thuê**, nếu được bên cho thuê đồng ý bằng văn bản;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_7.khoan_b",
+        "vb2_id": "dieu_7",
+        "vb1_excerpt": "Điều 7. CÁC THỎA THUẬN KHÁC\nKhoản b:\nb) Tài sản thuê bị phá huỷ và hoàn toàn không thể sử dụng được;",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản b, Điều 7, quy định về trường hợp tài sản thuê bị phá hủy và hoàn toàn không thể sử dụng được.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 53.9
+  },
+  "VB12": {
+    "stats": {
+      "so_luong_chunk_vb1": 12,
+      "so_luong_chunk_vb2": 12,
+      "giong_nhau_hoan_toan": 7,
+      "sua_doi": 5,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_2.khoan_2_2",
+        "vb2_id": "dieu_2",
+        "vb1_excerpt": "Điều 2. Phạm vi ủy quyền\nKhoản 2.2:\n2.2 Thỏa thuận với bên mua nhà về các điều khoản trong nội dung của hợp đồng mua bán nhà;.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 2.2, Điều 2, quy định về việc thỏa thuận với bên mua nhà về các điều khoản trong nội dung của hợp đồng mua bán nhà.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_1",
+        "vb2_id": "dieu_2.khoan_2_1",
+        "vb1_excerpt": "Điều 2. Phạm vi ủy quyền\nKhoản 2.1:\n2.1 Tạo điều kiện cho người mua nhà tìm hiểu các thông tin về căn nhà;. \r. Trang 1.",
+        "vb2_excerpt": "Điều 2. Phạm vi ủy quyền\nKhoản 2.1:\n2.1 Bên B thay mặt Bên A trao đổi và thống nhất với bên mua về các điều khoản, điều kiện. \r. được quy định trong hợp đồng mua bán nhà. 2.2 Thỏa thuận với bên mua nhà về các điều khoản trong nội dung của hợp đồng mua bán nhà;.",
+        "summary": "Sửa đổi Khoản 2.1, Điều 2: Nội dung thay đổi từ việc 'tạo điều kiện cho người mua nhà tìm hiểu thông tin' sang 'bên B thay mặt bên A trao đổi và thống nhất với bên mua về các điều khoản, điều kiện được quy định trong hợp đồng mua bán nhà', làm thay đổi phạm vi quyền hạn và nghĩa vụ của bên ủy quyền.",
+        "changes": [
+          "Cũ: 2.1 Tạo điều kiện cho người mua nhà tìm hiểu các thông tin về căn nhà;.\nMới: 2.1 Bên B thay mặt Bên A trao đổi và thống nhất với bên mua về các điều khoản, điều kiện. . được quy định trong hợp đồng mua bán nhà."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_4",
+        "vb2_id": "dieu_2.khoan_2_4",
+        "vb1_excerpt": "Điều 2. Phạm vi ủy quyền\nKhoản 2.4:\n2.4 Cùng bên mua thực hiện các thỏa thuận trong hợp đồng mua bán nhà và hỗ trợ bên mua hoàn thành các thủ tục pháp lý để chuyển quyền sở hữu nhà ở sang cho Bên mua theo quy định pháp luật..",
+        "vb2_excerpt": "Điều 2. Phạm vi ủy quyền\nKhoản 2.4:\n2.4 Bên B phối hợp với bên mua trong việc thực hiện các nội dung đã thỏa thuận trong hợp đồng. \r. mua bán nhà, đồng thời hỗ trợ bên mua hoàn tất các thủ tục pháp lý cần thiết để chuyển quyền sở hữu nhà ở theo quy định của pháp luật..",
+        "summary": "Sửa đổi Khoản 2.4, Điều 2: Thay đổi chủ thể thực hiện từ 'Cùng bên mua' thành 'Bên B phối hợp với bên mua'; thay đổi cách diễn đạt từ 'thỏa thuận trong hợp đồng mua bán nhà' sang 'nội dung đã thỏa thuận trong hợp đồng. . mua bán nhà' (có lỗi chính tả và cấu trúc câu); thay 'hoàn thành' thành 'hoàn tất', thêm 'cần thiết' và 'của' trước 'pháp luật'.",
+        "changes": [
+          "Cũ: Cùng bên mua thực hiện các thỏa thuận trong hợp đồng mua bán nhà và hỗ trợ bên mua hoàn thành các thủ tục pháp lý để chuyển quyền sở hữu nhà ở sang cho Bên mua theo quy định pháp luật.\nMới: Bên B phối hợp với bên mua trong việc thực hiện các nội dung đã thỏa thuận trong hợp đồng. . mua bán nhà, đồng thời hỗ trợ bên mua hoàn tất các thủ tục pháp lý cần thiết để chuyển quyền sở hữu nhà ở theo quy định của pháp luật."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_1.diem_5_1_3",
+        "vb2_id": "dieu_5.khoan_5_1.diem_5_1_3",
+        "vb1_excerpt": "Điều 5. Quyền và nghĩa vụ của Bên ủy quyền\nKhoản 5.1: 5.1 Quyền của Bên ủy quyền:. \r\nĐiểm 5.1.3:\n5.1.3 Được bồi thường thiệt hại khi Bên được ủy quyền vi phạm nghĩa vụ trong hợp đồng;.",
+        "vb2_excerpt": "Điều 5. Quyền và nghĩa vụ của Bên ủy quyền\nKhoản 5.1: 5.1 Quyền của Bên ủy quyền:. \r\nĐiểm 5.1.3:\n5.1.3 Được quyền chấm dứt hợp đồng ủy quyền nếu Bên được ủy quyền vi phạm nghĩa vụ. \r. trong hợp đồng..",
+        "summary": "Sửa đổi Điểm 5.1.3, Khoản 5.1, Điều 5: Quyền của Bên ủy quyền thay từ 'được bồi thường thiệt hại khi Bên được ủy quyền vi phạm nghĩa vụ trong hợp đồng' thành 'được quyền chấm dứt hợp đồng ủy quyền nếu Bên được ủy quyền vi phạm nghĩa vụ... trong hợp đồng', làm thay đổi bản chất quyền từ bồi thường thiệt hại sang chấm dứt hợp đồng.",
+        "changes": [
+          "Cũ: Được bồi thường thiệt hại khi Bên được ủy quyền vi phạm nghĩa vụ trong hợp đồng;\nMới: Được quyền chấm dứt hợp đồng ủy quyền nếu Bên được ủy quyền vi phạm nghĩa vụ. . trong hợp đồng.."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_1.diem_5_1_4",
+        "vb2_id": "dieu_5.khoan_5_1.diem_5_1_4",
+        "vb1_excerpt": "Điều 5. Quyền và nghĩa vụ của Bên ủy quyền\nKhoản 5.1: 5.1 Quyền của Bên ủy quyền:. \r\nĐiểm 5.1.4:\n5.1.4 Được quyền chấm dứt hợp đồng ủy quyền nếu Bên được ủy quyền vi phạm nghĩa vụ. \r. trong hợp đồng..",
+        "vb2_excerpt": "Điều 5. Quyền và nghĩa vụ của Bên ủy quyền\nKhoản 5.1: 5.1 Quyền của Bên ủy quyền:. \r\nĐiểm 5.1.4:\n5.1.4 êu cầu Bên được ủy quyền bảo mật thông tin liên quan đến giao dịch và chỉ sử. \r. dụng thông tin trong phạm vi thực hiện công việc được ủy quyền..",
+        "summary": "Sửa đổi Điểm 5.1.4, Khoản 5.1, Điều 5: Nội dung thay đổi từ quyền chấm dứt hợp đồng khi vi phạm nghĩa vụ sang yêu cầu bên được ủy quyền bảo mật thông tin và chỉ sử dụng trong phạm vi công việc được ủy quyền.",
+        "changes": [
+          "Cũ: Được quyền chấm dứt hợp đồng ủy quyền nếu Bên được ủy quyền vi phạm nghĩa vụ. . trong hợp đồng.\nMới: êu cầu Bên được ủy quyền bảo mật thông tin liên quan đến giao dịch và chỉ sử. . dụng thông tin trong phạm vi thực hiện công việc được ủy quyền."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5.khoan_5_2.diem_5_2_7",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. Quyền và nghĩa vụ của Bên ủy quyền\nKhoản 5.2: 5.2 Nghĩa vụ của Bên ủy quyền:. \r. Trang 2. \r\nĐiểm 5.2.7:\n5.2.7 Thông báo kịp thời cho Bên được ủy quyền về việc thay đổi, bổ sung hoặc chấm dứt. \r. phạm vi ủy quyền (nếu có) trong quá trình thực hiện hợp đồng..",
+        "summary": "Thêm mới Điểm 5.2.7, Khoản 5.2, Điều 5, quy định về nghĩa vụ của Bên ủy quyền phải thông báo kịp thời cho Bên được ủy quyền về việc thay đổi, bổ sung hoặc chấm dứt phạm vi ủy quyền trong quá trình thực hiện hợp đồng.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_9.khoan_9_2.diem_9_2_2",
+        "vb2_id": "dieu_9.khoan_9_2.diem_9_2_2",
+        "vb1_excerpt": "Điều 9. Hiệu lực và chấm dứt Hợp đồng\nKhoản 9.2: 9.2 Hợp Đồng này sẽ chấm dứt trước thời hạn trong những trường hợp sau:. \r\nĐiểm 9.2.2:\n9.2.2 Nếu bất cứ vi phạm Hợp đồng nào không được khắc phục trong thời hạn […] ngày. \r. kể từ ngày nhận được yêu cầu khắc phục từ Bên không vi phạm. Trong trường hợp",
+        "vb2_excerpt": "Điều 9. Hiệu lực và chấm dứt Hợp đồng\nKhoản 9.2: 9.2 Hợp Đồng này sẽ chấm dứt trước thời hạn trong những trường hợp sau:. \r\nĐiểm 9.2.2:\n9.2.2 Nếu bất cứ vi phạm nghiêm trọng Hợp đồng nào không được khắc phục trong thời. \r. hạn […] ngày kể từ ngày nhận được yêu cầu khắc phục từ Bên không vi phạm. Tro",
+        "summary": "Sửa đổi Điểm 9.2.2, Khoản 9.2, Điều 9: Thêm từ '**nghiêm trọng**' vào điều kiện chấm dứt hợp đồng, làm thay đổi phạm vi áp dụng từ mọi vi phạm thành chỉ vi phạm nghiêm trọng; đồng thời loại bỏ dấu chấm thừa sau 'thời hạn [...] ngày' và điều chỉnh khoảng trắng, nhưng không làm thay đổi ý nghĩa pháp lý của câu sau 'kể từ ngày...'.",
+        "changes": [
+          "Cũ: Nếu bất cứ vi phạm Hợp đồng nào không được khắc phục trong thời hạn […] ngày. . kể từ ngày nhận được yêu cầu khắc phục từ Bên không vi phạm.\nMới: Nếu bất cứ vi phạm **nghiêm trọng** Hợp đồng nào không được khắc phục trong thời. . hạn […] ngày **kể từ ngày nhận được yêu cầu khắc phục từ Bên không vi phạm.**"
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 54.0
+  },
+  "VB13": {
+    "stats": {
+      "so_luong_chunk_vb1": 16,
+      "so_luong_chunk_vb2": 15,
+      "giong_nhau_hoan_toan": 10,
+      "sua_doi": 4,
+      "them_moi": 6,
+      "xoa_bo": 2
+    },
+    "items": [
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6.khoan_6_1",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 6. Quyền, nghĩa vụ của thành viên hợp tác\nKhoản 6.1:\n6.1. Có quyền nhận phần lợi nhuận và các khoản thu phát sinh từ hoạt động hợp tác theo thỏa thuận giữa. \r. các bên..",
+        "summary": "Thêm mới Khoản 6.1, Điều 6, quy định về quyền của thành viên hợp tác trong việc nhận phần lợi nhuận và các khoản thu phát sinh từ hoạt động hợp tác theo thỏa thuận giữa các bên.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6.khoan_6_5",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 6. Quyền, nghĩa vụ của thành viên hợp tác\nKhoản 6.5:\n6.5. Việc định đoạt tài sản là quyền sử dụng đất, nhà, xưởng sản xuất, tư liệu sản xuất khác phải có thỏa thuận bằng văn bản của tất cả các thành viên..",
+        "summary": "Thêm mới Khoản 6.5, Điều 6, quy định về việc định đoạt tài sản là quyền sử dụng đất, nhà, xưởng sản xuất, tư liệu sản xuất khác phải có thỏa thuận bằng văn bản của tất cả các thành viên.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6.khoan_6_6",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 6. Quyền, nghĩa vụ của thành viên hợp tác\nKhoản 6.6:\n6.6. Không được phân chia tài sản chung trước khi chấm dứt hợp đồng hợp tác..",
+        "summary": "Thêm mới Khoản 6.6, Điều 6, quy định về cấm phân chia tài sản chung trước khi chấm dứt hợp đồng hợp tác.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_1",
+        "vb2_id": "dieu_6.khoan_6_2",
+        "vb1_excerpt": "Điều 6. Quyền, nghĩa vụ của thành viên hợp tác\nKhoản 6.1:\n6.1. Được hưởng hoa lợi, lợi tức thu được từ hoạt động hợp tác. 6.2. Tham gia quyết định các vấn đề liên quan đến thực hiện hợp đồng hợp tác, giám sát hoạt động hợp tác. 6.3. Bồi thường thiệt hại cho các thành viên hợp tác khác do lỗi của mìn",
+        "vb2_excerpt": "Điều 6. Quyền, nghĩa vụ của thành viên hợp tác\nKhoản 6.2:\n6.2. Tham gia quyết định các vấn đề liên quan đến thực hiện hợp đồng hợp tác, giám sát hoạt động hợp tác. 6.3. Bồi thường thiệt hại cho các thành viên hợp tác khác do lỗi của mình gây ra. 6.4. Các thành viên hợp tác cùng chịu trách nhiệm dân ",
+        "summary": "LLM khong tra ve ket qua hop le.",
+        "changes": [],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7.khoan_7_1",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 7. Quyền, nghĩa vụ của người đại diện\nKhoản 7.1:\n7.1. Trường hợp các thành viên hợp tác cử người đại diện thì người này là người đại diện trong xác lập, thực hiện giao dịch dân sự..",
+        "summary": "Thêm mới Khoản 7.1, Điều 7, quy định về việc người được các thành viên hợp tác cử đại diện là người đại diện trong xác lập và thực hiện giao dịch dân sự.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7.khoan_7_4",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 7. Quyền, nghĩa vụ của người đại diện\nKhoản 7.4:\n7.4. Người đại diện chỉ được xác lập và thực hiện các giao dịch dân sự trong phạm vi quyền hạn đã được. \r. các thành viên hợp tác thỏa thuận hoặc ủy quyền; mọi giao dịch vượt quá phạm vi đại diện phải được sự. \r. chấp thuận bằng văn bản của các t",
+        "summary": "Thêm mới Khoản 7.4, Điều 7, quy định về giới hạn phạm vi quyền hạn của người đại diện trong việc xác lập và thực hiện giao dịch dân sự, yêu cầu sự chấp thuận bằng văn bản của các thành viên hợp tác đối với giao dịch vượt quá phạm vi đại diện, trừ trường hợp pháp luật có quy định khác.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_8",
+        "vb2_id": "dieu_8.khoan_8_4",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 8. Điều kiện tham gia và rút khởi hợp đồng hợp tác\nKhoản 8.4:\n8.4. Việc rút khỏi hợp đồng hợp tác không thuộc trường hợp được quy định tại Điều này thì thành viên. \r. rút khỏi hợp đồng được xác định là bên vi phạm hợp đồng và có thể thực hiện trách nhiệm dân sự theo. \r. hợp đồng này và quy định",
+        "summary": "Thêm mới Khoản 8.4, Điều 8, quy định về việc rút khỏi hợp đồng hợp tác không thuộc trường hợp được phép sẽ bị coi là vi phạm hợp đồng và phải chịu trách nhiệm dân sự theo hợp đồng và pháp luật.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_8.khoan_8_1",
+        "vb2_id": "dieu_8.khoan_8_1",
+        "vb1_excerpt": "Điều 8. Điều kiện tham gia và rút khởi hợp đồng hợp tác\nKhoản 8.1:\n8.1. Điều kiện tham gia: Cá nhân, pháp nhân muốn trở thành thành viên mới của hợp đồng phải được sự đồng ý ít nhất của 75% tổng số thành viên hợp tác. 8.2. Thành viên có quyền rút khỏi hợp đồng hợp tác trong trường hợp sau đây: 8.3. ",
+        "vb2_excerpt": "Điều 8. Điều kiện tham gia và rút khởi hợp đồng hợp tác\nKhoản 8.1:\n8.1. Điều kiện tham gia: Cá nhân, pháp nhân muốn trở thành thành viên mới của hợp đồng phải được sự đồng ý ít nhất của 51% tổng số thành viên hợp tác. 8.2. Theo thoả thuận của các thành viên hợp tác (Các thành viên hợp tác thoả thuận",
+        "summary": "Sửa đổi Khoản 8.1, Điều 8: Tỷ lệ đồng ý cần thiết để tham gia hợp đồng giảm từ 75% xuống 51%; đồng thời điều chỉnh lại cấu trúc và bổ sung nội dung chi tiết về quyền và nghĩa vụ khi rút khỏi hợp đồng, bao gồm quyền nhận lại tài sản, nghĩa vụ thanh toán, và quy định về chia tài sản bằng hiện vật.",
+        "changes": [
+          "Cũ: phải được sự đồng ý ít nhất của **75%** tổng số thành viên hợp tác.\nMới: phải được sự đồng ý ít nhất của **51%** tổng số thành viên hợp tác.",
+          "Cũ: 8.2. Thành viên có quyền rút khỏi hợp đồng hợp tác trong trường hợp sau đây: 8.3. Theo thoả thuận của các thành viên hợp tác (Các thành viên hợp tác thoả thuận cụ thể các.\nMới: 8.2. Theo thoả thuận của các thành viên hợp tác (Các thành viên hợp tác thoả thuận cụ thể các điều kiện rút khỏi hợp đồng hợp tác và ghi vào trong hợp đồng hợp này). 8.3. Thành viên rút khỏi hợp đồng hợp tác có quyền yêu cầu nhận lại tài sản đã đóng góp, được chia phần tài sản trong khối tài sản chung và phải thanh toán các nghĩa vụ theo thỏa thuận. Trường hợp việc phân chia tài sản bằng hiện vật làm ảnh hưởng đến hoạt động hợp tác thì tài sản được tính giá trị thành tiền để chia. Việc rút khỏi hợp đồng hợp tác không làm chấm dứt quyền, nghĩa vụ của người này được xác lập, thực hiện trước thời điểm rút khỏi hợp đồng hợp tác."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_12.khoan_12_1.diem_b",
+        "vb2_id": "dieu_12",
+        "vb1_excerpt": "Điều 12. Cam đoan của các bên\nKhoản 12.1: 12.1. Bên A cam đoan:. \r\nĐiểm b:\nb) Thửa đất cho thuê thuộc trường hợp được cho thuê theo quy định của pháp luật; c) Tại thời điểm giao kết hợp đồng này: Thửa đất cho thuê không có tranh chấp; Thửa đất cho. \r. thuê không bị kê biên để bảo đảm thi hành án; d)",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điểm b Khoản 12.1 Điều 12, quy định về việc thửa đất cho thuê phải thuộc trường hợp được cho thuê theo quy định của pháp luật.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_12.khoan_12_1.diem_a",
+        "vb2_id": "dieu_12.khoan_12_1.diem_a",
+        "vb1_excerpt": "Điều 12. Cam đoan của các bên\nKhoản 12.1: 12.1. Bên A cam đoan:. \r\nĐiểm a:\na) Thông tin về nhân thân, thửa đất ghi trong hợp đồng này là đúng sự thật;.",
+        "vb2_excerpt": "Điều 12. Cam đoan của các bên\nKhoản 12.1: 12.1. Bên A cam đoan:. \r\nĐiểm a:\na) Thông tin về nhân thân, thửa đất ghi trong hợp đồng này là đúng sự thật; b) Thửa đất cho thuê thuộc trường hợp được cho thuê theo quy định của pháp luật; c) Tại thời điểm giao kết hợp đồng này: Thửa đất cho thuê không có t",
+        "summary": "Sửa đổi Điểm a, Khoản 12.1, Điều 12: Bổ sung các cam đoan mới về tính hợp pháp của thửa đất cho thuê, không tranh chấp, không bị kê biên, tính tự nguyện trong ký kết và nghĩa vụ thực hiện đầy đủ hợp đồng.",
+        "changes": [
+          "Cũ: a) Thông tin về nhân thân, thửa đất ghi trong hợp đồng này là đúng sự thật;\nMới: a) Thông tin về nhân thân, thửa đất ghi trong hợp đồng này là đúng sự thật; b) Thửa đất cho thuê thuộc trường hợp được cho thuê theo quy định của pháp luật; c) Tại thời điểm giao kết hợp đồng này: Thửa đất cho thuê không có tranh chấp; Thửa đất cho. . thuê không bị kê biên để bảo đảm thi hành án; d) Việc ký kết hợp đồng này được thực hiện trên cơ sở tự nguyện, không chịu bất kỳ sự gian dối hay. . ép buộc nào. e) Thực hiện đúng và đầy đủ các thỏa thuận ghi trong hợp đồng này."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_13.khoan_13_1",
+        "vb2_id": "dieu_13.khoan_13_1",
+        "vb1_excerpt": "Điều 13. Điều kiện chấm dứt hợp tác\nKhoản 13.1:\n13.1. Hợp đồng hợp tác chấm dứt trong trường hợp sau đây: Theo thỏa thuận của các thành viên hợp tác; Hết thời hạn ghi trong hợp đồng hợp tác; Mục đích hợp tác đã đạt được; Theo quyết định của cơ quan nhà nước có thẩm quyền; Trường hợp khác theo quy đị",
+        "vb2_excerpt": "Điều 13. Điều kiện chấm dứt hợp tác\nKhoản 13.1:\n13.1. Hợp đồng hợp tác chấm dứt trong trường hợp sau đây: Theo thỏa thuận của các thành viên. \r. hợp tác; Hết thời hạn ghi trong hợp đồng hợp tác; Mục đích hợp tác đã đạt được; Theo quyết định của cơ quan nhà nước có thẩm quyền; Trường hợp khác theo qu",
+        "summary": "Sửa đổi Khoản 13.1, Điều 13: Thêm dấu chấm thừa trong cụm 'các thành viên. . hợp tác' và có lỗi đánh máy 'thanh. . toán' được sửa thành 'thanh toán', làm thay đổi tính chính xác về mặt hình thức văn bản, tuy nhiên không làm thay đổi nghĩa pháp lý; nhưng do có sự can thiệp vào cấu trúc câu và lỗi chính tả ảnh hưởng đến tính pháp lý của văn bản, cần được điều chỉnh.",
+        "changes": [
+          "Cũ: Theo thỏa thuận của các thành viên hợp tác;\nMới: Theo thỏa thuận của các thành viên. . hợp tác;",
+          "Cũ: phải được thanh. . toán;\nMới: phải được thanh toán;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_ki",
+        "vb2_id": null,
+        "vb1_excerpt": "Điều ki. ện rút khỏi hợp đồng hợp tác và ghi vào trong hợp đồng hợp này). 8.4. Có lý do chính đáng và được sự đồng ý của ít nhất 75% tổng số thành viên hợp tác. 8.5. Thành viên rút khỏi hợp đồng hợp tác có quyền yêu cầu nhận lại tài sản đã đóng góp, được chia phần tài sản trong khối tài sản chung và",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều ki, quy định về điều kiện rút khỏi hợp đồng hợp tác, bao gồm quyền yêu cầu nhận lại tài sản đã đóng góp, chia phần tài sản chung, thanh toán nghĩa vụ, và hậu quả pháp lý khi rút khỏi không thuộc trường hợp được quy định.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 342.4
+  },
+  "VB14": {
+    "stats": {
+      "so_luong_chunk_vb1": 34,
+      "so_luong_chunk_vb2": 33,
+      "giong_nhau_hoan_toan": 28,
+      "sua_doi": 5,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_1",
+        "vb2_id": "dieu_5.khoan_1",
+        "vb1_excerpt": "Điều 5. Thời giờ làm việc và nghỉ ngơi\nKhoản 1:\n1. Thời giờ làm việc:. - Thời gian làm việc trong tuần:. + Số giờ: 40 giờ/tuần. + Số ngày: 05 ngày. + Ngày cụ thể: Từ thứ Hai đến thứ Sáu. - Thời gian làm việc trong ngày:. + Số giờ: 08 giờ/ngày. + Sáng: Từ 8:30 đến 12:00. + Chiều: Từ 13:00 đến 17:30",
+        "vb2_excerpt": "Điều 5. Thời giờ làm việc và nghỉ ngơi\nKhoản 1:\n1. Thời giờ làm việc:. - Thời gian làm việc trong tuần:. + Số giờ: 44 giờ/tuần. + Số ngày: 05.5 ngày. + Ngày cụ thể: Từ thứ Hai đến thứ Bảy. - Thời gian làm việc trong ngày:. + Số giờ: 08 giờ/ngày. + Sáng: Từ 8:00 đến 12:00. + Chiều: Từ 13:00 đến 17:00",
+        "summary": "Sửa đổi Khoản 1, Điều 5: Thời gian làm việc trong tuần tăng từ 40 giờ lên 44 giờ/tuần, số ngày làm việc từ 05 ngày lên 05.5 ngày, ngày làm việc kéo dài từ thứ Hai đến thứ Sáu thành thứ Hai đến thứ Bảy; giờ làm việc sáng bắt đầu từ 8:00 (trước là 8:30), giờ làm việc chiều kết thúc lúc 17:00 (trước là 17:30).",
+        "changes": [
+          "Cũ: Số giờ: **40** giờ/tuần.\nMới: Số giờ: **44** giờ/tuần.",
+          "Cũ: Số ngày: **05** ngày.\nMới: Số ngày: **05.5** ngày.",
+          "Cũ: Ngày cụ thể: Từ thứ Hai đến thứ **Sáu**.\nMới: Ngày cụ thể: Từ thứ Hai đến thứ **Bảy**.",
+          "Cũ: Sáng: Từ **8:30** đến 12:00.\nMới: Sáng: Từ **8:00** đến 12:00.",
+          "Cũ: Chiều: Từ 13:00 đến **17:30**.\nMới: Chiều: Từ 13:00 đến **17:00**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_6",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "+ Ngày Kỷ niệm thành lập Công ty: 01 ngày (15/10 dương lịch)..",
+        "summary": "Thêm mới Mã đoạn: Điều 6: Thêm ngày lễ mới là Ngày Kỷ niệm thành lập Công ty vào ngày 15/10 dương lịch",
+        "changes": [
+          "Thêm mới: + Ngày Kỷ niệm thành lập Công ty: 01 ngày (15/10 dương lịch).."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6",
+        "vb1_excerpt": "Người lao động được nghỉ làm việc, hưởng nguyên lương 10 ngày lễ trong năm, cụ thể:.",
+        "vb2_excerpt": "Người lao động được nghỉ làm việc, hưởng nguyên lương **11** ngày lễ trong năm, cụ thể:.",
+        "summary": "Sửa đổi Mã đoạn: Điều 6: Số ngày lễ được nghỉ tăng từ 10 lên 11 ngày",
+        "changes": [
+          "Cũ: Người lao động được nghỉ làm việc, hưởng nguyên lương 10 ngày lễ trong năm, cụ thể:.\nMới: Người lao động được nghỉ làm việc, hưởng nguyên lương **11** ngày lễ trong năm, cụ thể:."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_12.khoan_3",
+        "vb2_id": "dieu_12.khoan_3",
+        "vb1_excerpt": "Điều 12. Làm thêm giờ, làm việc trong ngày nghỉ, ngày lễ có hưởng lương\nKhoản 3:\n3. Tiền lương làm thêm giờ, làm việc trong ngày nghỉ, ngày lễ có hưởng lương:. - Trong ngày làm việc bình thường (Từ thứ 2 đến thứ 6): Người lao động được thanh toán 150% tiền lương thực trả của công việc đang làm.. - T",
+        "vb2_excerpt": "Điều 12. Làm thêm giờ, làm việc trong ngày nghỉ, ngày lễ có hưởng lương\nKhoản 3:\n3. Tiền lương làm thêm giờ, làm việc trong ngày nghỉ, ngày lễ có hưởng lương:. - Trong ngày làm việc bình thường (Từ thứ 2 đến thứ 6): Người lao động được thanh toán 150% tiền lương thực trả của công việc đang làm.. - T",
+        "summary": "Sửa đổi Khoản 3, Điều 12: Tỷ lệ tiền lương làm việc trong ngày nghỉ lễ giảm từ 400% xuống 300%.",
+        "changes": [
+          "Cũ: Trong ngày nghỉ lễ: Người lao động được thanh toán **400%** tiền lương thực trả của công việc đang làm.\nMới: Trong ngày nghỉ lễ: Người lao động được thanh toán **300%** tiền lương thực trả của công việc đang làm."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_14",
+        "vb2_id": "dieu_14",
+        "vb1_excerpt": "Đi trễ, về sớm và ra ngoài vì mục đích cá nhân",
+        "vb2_excerpt": "Quản lý việc đi muộn, về sớm và ra ngoài trong giờ hành chính",
+        "summary": "Sửa đổi Mã đoạn: Điều 14: Tiêu đề điều chỉnh từ mô tả hành vi sang mô tả quy trình quản lý Sửa đổi Mã đoạn: Điều 14: Thay 'đến trễ' → 'đến công ty muộn'; 'bị bệnh' → 'ốm đau'; 'bất cứ lý do nào khác' → 'bất kỳ nguyên nhân khách quan nào khác' Sửa đổi Mã đoạn: Điều 14: Thay 'phải thông báo ngay cho...' → 'bắt buộc phải liên hệ ngay với...'; thêm 'trực tiếp'; thay 'thông báo lý do...' → 'trình bày rõ lý do' Sửa đổi Mã đoạn: Điều 14: Thay 'Người lao động' → 'Cán bộ nhân viên'; 'phải được...chấp thuận trước nếu muốn...' → 'chỉ được phép...khi đã có sự phê duyệt trước từ...'; 'mục đích cá nhân' → 'giải quyết việc cá nhân'; 'giờ làm việc' → 'khung giờ làm việc' Sửa đổi Mã đoạn: Điều 14: Thay cấu trúc câu; 'không tự mình thông báo hoặc thông báo trước' → 'không thể tự mình xin phép trước'; 'người quản lý trực tiếp hoặc Giám đốc' → 'cấp trên'; 'những hình thức trao đổi khác' → 'tin nhắn'; 'càng sớm càng tốt' → 'trong thời gian sớm nhất có thể' Sửa đổi Mã đoạn: Điều 14: Thay 'nếu vắng mặt mà không thông báo hoặc không được chấp thuận trước' → 'Mọi trường hợp vắng mặt không tuân thủ quy trình thông báo và phê duyệt'; 'nghỉ không có lý do chính đáng' → 'nghỉ việc vô kỷ luật'; 'bị xử lý kỷ luật theo quy định' → 'bị áp dụng các hình thức xử lý kỷ luật tương ứng'",
+        "changes": [
+          "Cũ: Đi trễ, về sớm và ra ngoài vì mục đích cá nhân\nMới: Quản lý việc đi muộn, về sớm và ra ngoài trong giờ hành chính",
+          "Cũ: đến trễ hoặc vắng mặt không báo trước vì bị bệnh hoặc bất cứ lý do nào khác\nMới: đến công ty muộn hoặc vắng mặt không báo trước do ốm đau hoặc bất kỳ nguyên nhân khách quan nào khác",
+          "Cũ: người lao động phải thông báo ngay cho người quản lý hoặc giám đốc qua điện thoại và thông báo lý do đến trễ hoặc vắng mặt.\nMới: bắt buộc phải liên hệ ngay với người quản lý trực tiếp hoặc giám đốc thông qua điện thoại để trình bày rõ lý do.",
+          "Cũ: Người lao động phải được Giám đốc hoặc người quản lý trực tiếp chấp thuận trước nếu muốn về sớm hoặc ra ngoài vì mục đích cá nhân trong giờ làm việc.\nMới: Cán bộ nhân viên chỉ được phép về sớm hoặc ra ngoài giải quyết việc cá nhân trong khung giờ làm việc khi đã có sự phê duyệt trước từ Giám đốc hoặc người quản lý trực tiếp.",
+          "Cũ: nếu người lao động không tự mình thông báo hoặc thông báo trước thì người lao động phải thông báo cho người quản lý trực tiếp hoặc Giám đốc qua điện thoại hoặc những hình thức trao đổi khác càng sớm càng tốt.\nMới: trong các tình huống khẩn cấp mà không thể tự mình xin phép trước, người lao động có trách nhiệm tìm mọi cách liên lạc với cấp trên (qua điện thoại hoặc tin nhắn) trong thời gian sớm nhất có thể.",
+          "Cũ: nếu vắng mặt mà không thông báo hoặc không được chấp thuận trước theo quy định tại Điều này sẽ được xem là nghỉ không có lý do chính đáng và bị xử lý kỷ luật theo quy định.\nMới: Mọi trường hợp vắng mặt không tuân thủ quy trình thông báo và phê duyệt tại Điều này đều bị coi là nghỉ việc vô kỷ luật và sẽ bị áp dụng các hình thức xử lý kỷ luật tương ứng."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_24_2.khoan_1",
+        "vb2_id": "dieu_24_2.khoan_1",
+        "vb1_excerpt": "Điều 24. Hình thức xử lý khi vi phạm kỷ luật lao động\nKhoản 1:\n1. Hình thức khiển trách bằng văn bản. Đối với các trường hợp vi phạm kỷ luật lần đầu, không gây ra hậu quả nghiêm trọng ảnh hưởng đến hoạt động sản xuất kinh doanh của công ty thì bị xử lý theo hình thức khiển trách:. - Vi phạm Điều 5, ",
+        "vb2_excerpt": "Điều 24. Hình thức xử lý khi vi phạm kỷ luật lao động\nKhoản 1:\n1. Hình thức khiển trách bằng văn bản. Đối với các trường hợp vi phạm kỷ luật lần đầu, không gây ra hậu quả nghiêm trọng ảnh hưởng đến hoạt động sản xuất kinh doanh của công ty thì bị xử lý theo hình thức khiển trách:. - Vi phạm Điều 5, ",
+        "summary": "Sửa đổi Khoản 1, Điều 24.2: Mức giá trị hành vi vi phạm không nghiêm trọng để bị khiển trách bằng văn bản giảm từ 5.000.000 đồng xuống 2.000.000 đồng.",
+        "changes": [
+          "Cũ: giá trị dưới **5.000.000 đồng**).\nMới: giá trị dưới **2.000.000 đồng**)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_11",
+        "vb2_id": null,
+        "vb1_excerpt": "Điều 11. Nghỉ việc riêng không hưởng lương\n- Người lao động được nghỉ không hưởng lương 01 ngày và phải thông báo với người quản lý trực tiếp hoặc Giám đốc khi ông nội, bà nội, ông ngoại, bà ngoại, anh, chị, em ruột chết; bố hoặc mẹ kết hôn; anh, chị, em ruột kết hôn.. - Ngoài ra, người lao động có ",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 11, quy định về quyền nghỉ việc riêng không hưởng lương trong các trường hợp gia đình có người mất hoặc kết hôn, cũng như điều kiện xin nghỉ không hưởng lương theo thỏa thuận với người sử dụng lao động.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 90.0
+  },
+  "VB15": {
+    "stats": {
+      "so_luong_chunk_vb1": 9,
+      "so_luong_chunk_vb2": 9,
+      "giong_nhau_hoan_toan": 4,
+      "sua_doi": 4,
+      "them_moi": 3,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "modau_1",
+        "vb2_id": "modau_1",
+        "vb1_excerpt": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM. Độc lập - Tự do - Hạnh phúc. -. Hà Nội, ngày 12 tháng 04 năm 2026. HỢP ĐỒNG MUA BÁN PHẦN MỀM. (Số: 01/2026/HĐMB-ALPHABETA). - Căn cứ Bộ luật dân sự năm 2015;. - Căn cứ Luật công nghệ thông tin năm 2006, sửa đổi, bổ sung năm ;. - Căn cứ Luật Sở hữu trí tuệ năm 2005",
+        "vb2_excerpt": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM. Độc lập - Tự do - Hạnh phúc. -. Hà Nội, ngày 12 tháng 04 năm 2026. HỢP ĐỒNG MUA BÁN PHẦN MỀM. (Số: 01/2026/HĐMB-ALPHABETA). - Căn cứ Bộ luật dân sự năm 2015;. - Căn cứ Luật công nghệ thông tin năm 2006, sửa đổi, bổ sung năm ;. - Căn cứ Luật Sở hữu trí tuệ năm 2005",
+        "summary": "Sửa đổi Mở đầu 1: Giá mua bán phần mềm tăng từ 500.000.000 VNĐ lên 650.000.000 VNĐ.",
+        "changes": [
+          "Cũ: với giá **500.000.000** VNĐ (Bằng chữ: Năm trăm triệu Việt Nam Đồng).\nMới: với giá **650.000.000** VNĐ (Bằng chữ: Sáu trăm năm mươi triệu Việt Nam Đồng)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1",
+        "vb2_id": "dieu_1",
+        "vb1_excerpt": "Phần mềm quản lý thông tin nhân viên, chấm công, và tính lương tự động..",
+        "vb2_excerpt": "Phần mềm quản lý thông tin nhân viên, chấm công, và tính lương tự động. Bổ sung thêm Module đánh giá KPI đa chiều..",
+        "summary": "Sửa đổi Điều 1: Thêm mới tính năng Module đánh giá KPI đa chiều vào mô tả phần mềm Sửa đổi Điều 1: Tăng giá bán từ 500.000.000 VNĐ lên 650.000.000 VNĐ",
+        "changes": [
+          "Cũ: Phần mềm quản lý thông tin nhân viên, chấm công, và tính lương tự động..\nMới: Phần mềm quản lý thông tin nhân viên, chấm công, và tính lương tự động. Bổ sung thêm Module đánh giá KPI đa chiều..",
+          "Cũ: Với giá là 500.000.000 VNĐ (Bằng chữ: Năm trăm triệu Việt Nam Đồng).\nMới: Với giá là 650.000.000 VNĐ (Bằng chữ: Sáu trăm năm mươi triệu Việt Nam Đồng)."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_2",
+        "vb2_id": null,
+        "vb1_excerpt": "Số tiền đã xác định theo nội dung trên sẽ được Bên B gửi tới Tài khoản số 123456789 - Chi nhánh Cầu Giấy - Ngân hàng Vietcombank của Bên A có biên lai xác nhận.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 2: Quy định chi tiết tài khoản nhận thanh toán của Bên A (số tài khoản, chi nhánh, ngân hàng, biên lai)",
+        "changes": [
+          "Xóa bỏ: Số tiền đã xác định theo nội dung trên sẽ được Bên B gửi tới Tài khoản số 123456789 - Chi nhánh Cầu Giấy - Ngân hàng Vietcombank của Bên A có biên lai xác nhận."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_2",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "- Đợt 2. Thanh toán số tiền là 250.000.000 VNĐ (bằng chữ: Hai trăm năm mươi triệu Việt Nam đồng) sau khi Bên A hoàn tất cài đặt phần mềm lên hệ thống máy chủ của Bên B..",
+        "summary": "Thêm mới Điều 2: Bổ sung điều kiện cài đặt lên hệ thống máy chủ của Bên B cho đợt 2",
+        "changes": [
+          "Thêm mới: - Đợt 2. Thanh toán số tiền là 250.000.000 VNĐ (bằng chữ: Hai trăm năm mươi triệu Việt Nam đồng) sau khi Bên A hoàn tất cài đặt phần mềm lên hệ thống máy chủ của Bên B.."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_2.the_1",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "- Đợt 3. Thanh toán toàn bộ số tiền còn lại, tức là 200.000.000 VNĐ (bằng chữ: Hai trăm triệu Việt Nam đồng) khi hoàn tất nghiệm thu và vận hành thử nghiệm không có lỗi có biên bản kèm theo.",
+        "summary": "Thêm mới Điều 2: Bổ sung đợt thanh toán thứ 3 với điều kiện 'nghiệm thu và vận hành thử nghiệm không có lỗi'",
+        "changes": [
+          "Thêm mới: - Đợt 3. Thanh toán toàn bộ số tiền còn lại, tức là 200.000.000 VNĐ (bằng chữ: Hai trăm triệu Việt Nam đồng) khi hoàn tất nghiệm thu và vận hành thử nghiệm không có lỗi có biên bản kèm theo."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2",
+        "vb2_id": "dieu_2",
+        "vb1_excerpt": "giá là 500.000.000 VNĐ (Bằng chữ: Năm trăm triệu Việt Nam Đồng).. Số tiền trên đã bao gồm: 10% Thuế giá trị gia tăng (50.000.000 VNĐ (Bằng chữ: Năm mươi triệu Việt Nam Đồng) thuế giá trị gia tăng).",
+        "vb2_excerpt": "giá là **650.000.000 VNĐ** (Bằng chữ: **Sáu trăm năm mươi triệu Việt Nam Đồng**).. Số tiền trên đã bao gồm: 10% Thuế giá trị gia tăng (**65.000.000 VNĐ** (Bằng chữ: **Sáu mươi lăm triệu Việt Nam Đồng**) thuế giá trị gia tăng)..",
+        "summary": "Sửa đổi Điều 2: Tăng tổng giá hợp đồng từ 500.000.000 VNĐ lên 650.000.000 VNĐ và thuế GTGT từ 50.000.000 VNĐ lên 65.000.000 VNĐ Sửa đổi Điều 2: Thay thế 'Các chi phí nâng cấp tính năng ngoài phạm vi Điều 1' bằng 'Phí bảo trì phần mềm sau năm đầu tiên' Sửa đổi Điều 2: Tăng số đợt thanh toán từ 02 lên 03 đợt Sửa đổi Điều 2: Đợt 2 thay đổi từ 300.000.000 VNĐ sang 250.000.000 VNĐ và bổ sung điều kiện 'lên hệ thống máy chủ của Bên B' Sửa đổi Điều 2: Đợt 3 mới bổ sung số tiền 200.000.000 VNĐ và điều kiện 'vận hành thử nghiệm không có lỗi'",
+        "changes": [
+          "Cũ: giá là 500.000.000 VNĐ (Bằng chữ: Năm trăm triệu Việt Nam Đồng).. Số tiền trên đã bao gồm: 10% Thuế giá trị gia tăng (50.000.000 VNĐ (Bằng chữ: Năm mươi triệu Việt Nam Đồng) thuế giá trị gia tăng).\nMới: giá là **650.000.000 VNĐ** (Bằng chữ: **Sáu trăm năm mươi triệu Việt Nam Đồng**).. Số tiền trên đã bao gồm: 10% Thuế giá trị gia tăng (**65.000.000 VNĐ** (Bằng chữ: **Sáu mươi lăm triệu Việt Nam Đồng**) thuế giá trị gia tăng)..",
+          "Cũ: Và chưa bao gồm: Các chi phí nâng cấp tính năng ngoài phạm vi Điều 1.\nMới: Và chưa bao gồm: **Phí bảo trì phần mềm sau năm đầu tiên**.",
+          "Cũ: Toàn bộ số tiền đã xác định ở trên sẽ được Bên B thanh toán cho Bên A qua 02 đợt\nMới: Toàn bộ số tiền đã xác định ở trên sẽ được Bên B thanh toán cho Bên A qua **03 đợt**",
+          "Cũ: - Đợt 2. Thanh toán toàn bộ số tiền còn lại, tức là 300.000.000 VNĐ (bằng chữ: Ba trăm triệu Việt Nam đồng) khi hoàn tất cài đặt và nghiệm thu phần mềm có biên bản kèm theo.\nMới: - Đợt 2. Thanh toán số tiền là **250.000.000 VNĐ** (bằng chữ: **Hai trăm năm mươi triệu Việt Nam đồng**) sau khi Bên A hoàn tất cài đặt phần mềm lên hệ thống máy chủ của Bên B..",
+          "Cũ: - Đợt 2. Thanh toán toàn bộ số tiền còn lại, tức là 300.000.000 VNĐ (bằng chữ: Ba trăm triệu Việt Nam đồng) khi hoàn tất cài đặt và nghiệm thu phần mềm có biên bản kèm theo.\nMới: - Đợt 3. Thanh toán toàn bộ số tiền còn lại, tức là **200.000.000 VNĐ** (bằng chữ: **Hai trăm triệu Việt Nam đồng**) khi hoàn tất nghiệm thu và vận hành thử nghiệm không có lỗi có biên bản kèm theo."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5.khoan_3",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. Cam kết của các bên\nKhoản 3:\n3. Điều khoản bảo mật thông tin. Hai bên cam kết bảo mật tuyệt đối mọi thông tin về tài liệu, dữ liệu nội bộ, mã nguồn phần mềm và các thông tin liên quan đến hoạt động kinh doanh của nhau trong suốt quá trình thực hiện Hợp đồng và kéo dài ít nhất 03 năm kể từ ng",
+        "summary": "Thêm mới Khoản 3, Điều 5, quy định về nghĩa vụ bảo mật thông tin của hai bên trong suốt quá trình thực hiện hợp đồng và ít nhất 03 năm sau khi hợp đồng chấm dứt, cùng với trách nhiệm bồi thường thiệt hại do rò rỉ thông tin gây ra.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6",
+        "vb1_excerpt": "-Phạt vi phạm bên vi phạm một số tiền là: 40.000.000 VNĐ (Bằng chữ: Bốn mươi triệu Việt Nam Đồng)..",
+        "vb2_excerpt": "-Phạt vi phạm bên vi phạm số tiền tương đương 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm theo đúng quy định của Luật Thương mại 2005..",
+        "summary": "Sửa đổi Điều 6: Thay đổi mức phạt cố định 40.000.000 VNĐ thành mức phạt tương đương 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm theo Luật Thương mại 2005. Sửa đổi Điều 6: Thay đổi cơ quan giải quyết tranh chấp từ Tòa án có thẩm quyền thành Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) theo quy tắc tố tụng của trung tâm.",
+        "changes": [
+          "Cũ: -Phạt vi phạm bên vi phạm một số tiền là: 40.000.000 VNĐ (Bằng chữ: Bốn mươi triệu Việt Nam Đồng)..\nMới: -Phạt vi phạm bên vi phạm số tiền tương đương 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm theo đúng quy định của Luật Thương mại 2005..",
+          "Cũ: -Trong trường hợp phát sinh tranh chấp, các bên đồng ý ưu tiên giải quyết thông qua trao đổi, thương lượng. Nếu sau 03 lần tổ chức trao đổi, thương lượng mà hai bên không thỏa thuận giải quyết được tranh chấp, một bên hoặc cả hai bên có quyền đưa tranh chấp ra Tòa án có thẩm quyền để giải quyết theo quy định của pháp luật tố tụng dân sự.\nMới: -Trong trường hợp phát sinh tranh chấp, các bên đồng ý ưu tiên giải quyết thông qua trao đổi, thương lượng. Nếu sau 03 lần tổ chức trao đổi, thương lượng mà hai bên không thỏa thuận giải quyết được tranh chấp, một bên hoặc cả hai bên có quyền đưa tranh chấp ra Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) để giải quyết theo quy tắc tố tụng của trung tâm này."
+        ],
+        "method": "high_confidence_greedy"
+      }
+    ],
+    "elapsed": 74.6
+  },
+  "VB16": {
+    "stats": {
+      "so_luong_chunk_vb1": 20,
+      "so_luong_chunk_vb2": 20,
+      "giong_nhau_hoan_toan": 14,
+      "sua_doi": 5,
+      "them_moi": 3,
+      "xoa_bo": 4
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3",
+        "vb2_id": "dieu_3",
+        "vb1_excerpt": "Tổng giá trị hợp đồng là: 500,000 USD CIF Hải Phòng (Bằng chữ: Năm trăm ngàn Đô la Mỹ), trong đó:.",
+        "vb2_excerpt": "Tổng giá trị hợp đồng là: **550,000 USD** CIF Hải Phòng (Bằng chữ: Năm trăm ngàn Đô la Mỹ), trong đó:.",
+        "summary": "Sửa đổi Điều 3: Tổng giá trị hợp đồng tăng từ 500,000 USD lên 550,000 USD Sửa đổi Điều 3: Giá trị thiết bị tăng từ 480,000 USD lên 530,000 USD",
+        "changes": [
+          "Cũ: Tổng giá trị hợp đồng là: 500,000 USD CIF Hải Phòng (Bằng chữ: Năm trăm ngàn Đô la Mỹ), trong đó:.\nMới: Tổng giá trị hợp đồng là: **550,000 USD** CIF Hải Phòng (Bằng chữ: Năm trăm ngàn Đô la Mỹ), trong đó:.",
+          "Cũ: Giá trị (vật tư) thiết bị: 480,000 USD.\nMới: Giá trị (vật tư) thiết bị: **530,000 USD**."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4",
+        "vb2_id": "dieu_4",
+        "vb1_excerpt": "- Thời gian giao hàng: 30 ngày kể từ ngày bên bán nhận được L/C.",
+        "vb2_excerpt": "- Thời gian giao hàng: **45** ngày kể từ ngày bên bán nhận được L/C.",
+        "summary": "Sửa đổi Điều 4: Thời gian giao hàng tăng từ 30 ngày lên 45 ngày Sửa đổi Điều 4: Giao hàng từng phần thay đổi từ được phép sang không được phép",
+        "changes": [
+          "Cũ: - Thời gian giao hàng: 30 ngày kể từ ngày bên bán nhận được L/C.\nMới: - Thời gian giao hàng: **45** ngày kể từ ngày bên bán nhận được L/C.",
+          "Cũ: - Giao hàng từng phần: Được phép.\nMới: - Giao hàng từng phần: **Không được phép**."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_5",
+        "vb2_id": null,
+        "vb1_excerpt": "- Thanh toán đặt cọc: Không có. Toàn bộ giá trị hợp đồng được thanh toán bằng một thư tín dụng trả ngay, không hủy ngang cho bên bán.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 5: quy định về việc không có đặt cọc và thanh toán toàn bộ bằng L/C",
+        "changes": [
+          "Xóa bỏ: - Thanh toán đặt cọc: Không có. Toàn bộ giá trị hợp đồng được thanh toán bằng một thư tín dụng trả ngay, không hủy ngang cho bên bán."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "- Thanh toán đợt 1 (Đặt cọc): Bên mua thanh toán trước 30% giá trị hợp đồng bằng phương thức chuyển khoản điện toán (T/T) trong vòng 07 ngày làm việc kể từ ngày ký hợp đồng.",
+        "summary": "Thêm mới Điều 5: quy định thanh toán đợt 1 (đặt cọc) 30% bằng T/T trong 7 ngày làm việc sau ký hợp đồng",
+        "changes": [
+          "Thêm mới: - Thanh toán đợt 1 (Đặt cọc): Bên mua thanh toán trước 30% giá trị hợp đồng bằng phương thức chuyển khoản điện toán (T/T) trong vòng 07 ngày làm việc kể từ ngày ký hợp đồng."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_5.the_1",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "- Thanh toán đợt 2: 70% giá trị hợp đồng còn lại được thanh toán bằng một thư tín dụng trả ngay, không hủy ngang cho bên bán.",
+        "summary": "Thêm mới Điều 5: quy định thanh toán đợt 2 là 70% giá trị hợp đồng bằng L/C",
+        "changes": [
+          "Thêm mới: - Thanh toán đợt 2: 70% giá trị hợp đồng còn lại được thanh toán bằng một thư tín dụng trả ngay, không hủy ngang cho bên bán."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_5.xoa_1",
+        "vb2_id": null,
+        "vb1_excerpt": "Các viện dẫn: Điều 10, Điều 7",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 5: viện dẫn đến Điều 10 (đã bị xóa khỏi nội dung và không còn liên quan)",
+        "changes": [
+          "Xóa bỏ: Các viện dẫn: Điều 10, Điều 7"
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "L/C bao gồm tổng giá trị của hợp đồng được mở trong vòng 7 ngày kể từ ngày bên Mua nhận được Bảo lãnh thực hiện hợp đồng được quy định tại điều 10 trong hợp đồng này.",
+        "vb2_excerpt": "L/C bao gồm **70% giá trị của hợp đồng** được mở trong vòng 7 ngày kể từ ngày bên Mua nhận được Bảo lãnh thực hiện hợp đồng.",
+        "summary": "Sửa đổi Điều 5: thay đổi tỷ lệ L/C từ tổng giá trị hợp đồng sang **70% giá trị hợp đồng**, đồng thời **xóa viện dẫn đến Điều 10**",
+        "changes": [
+          "Cũ: L/C bao gồm tổng giá trị của hợp đồng được mở trong vòng 7 ngày kể từ ngày bên Mua nhận được Bảo lãnh thực hiện hợp đồng được quy định tại điều 10 trong hợp đồng này.\nMới: L/C bao gồm **70% giá trị của hợp đồng** được mở trong vòng 7 ngày kể từ ngày bên Mua nhận được Bảo lãnh thực hiện hợp đồng."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_8.khoan_8_2",
+        "vb2_id": "dieu_8",
+        "vb1_excerpt": "Điều 8. Kiểm tra hàng hóa\nKhoản 8.2:\n8.2 Kiểm tra lần hai do Vinacontrol thực hiện, chi phí kiểm tra do bên mua chịu.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 8.2, Điều 8, quy định về việc kiểm tra lần hai do Vinacontrol thực hiện và chi phí do bên mua chịu.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_8.khoan_8_3",
+        "vb2_id": "dieu_8",
+        "vb1_excerpt": "Điều 8. Kiểm tra hàng hóa\nKhoản 8.3:\n8.3 Sự khác biệt giữa kết quả kiểm tra lần đầu và kết quả kiểm tra lần 2 thì kết quả kiểm tra lần 2 có tính quyết định. Trong trường hợp có sự khác biệt về số lượng hoặc chất lượng (chi tiết của phụ tùng), Bên mua có quyền đòi bên bán:. + Gửi ngay lập tức hàng hó",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 8.3, Điều 8, quy định về việc kết quả kiểm tra lần hai có tính quyết định khi có sự khác biệt với lần đầu, quyền của bên mua yêu cầu thay thế hàng hóa, thời hạn giải quyết khiếu nại và quyền từ chối nhận hàng nếu sự khác biệt không thể khắc phục.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_8.khoan_8_1",
+        "vb2_id": "dieu_8.khoan_8_1",
+        "vb1_excerpt": "Điều 8. Kiểm tra hàng hóa\nKhoản 8.1:\n8.1 Bên bán phải kiểm tra hàng hóa trước khi giao hàng (Kiểm tra lần 1). Toàn bộ chi phí do Bên bán chịu.",
+        "vb2_excerpt": "Điều 8. Kiểm tra hàng hóa\nKhoản 8.1:\n8.1 Bên bán phải kiểm tra hàng hóa trước khi giao hàng tại cảng xuất phát. Toàn bộ chi phí do Bên bán chịu.. Trong trường hợp có sự khác biệt về số lượng hoặc chất lượng (chi tiết của phụ tùng) khi nhận hàng, Bên mua có quyền đòi bên bán:. - Gửi ngay lập tức hàng",
+        "summary": "Sửa đổi Khoản 8.1, Điều 8: Bổ sung địa điểm kiểm tra là 'tại cảng xuất phát'; bổ sung quy trình xử lý khiếu nại về số lượng/chất lượng hàng hóa với thời hạn 15 ngày làm việc để giao hàng thay thế và 10 ngày để giải quyết khiếu nại; cập nhật viện dẫn đến Điều 8.",
+        "changes": [
+          "Cũ: Bên bán phải kiểm tra hàng hóa trước khi giao hàng (Kiểm tra lần 1).\nMới: Bên bán phải kiểm tra hàng hóa trước khi giao hàng **tại cảng xuất phát**.",
+          "Cũ: Các viện dẫn: Không có\nMới: Các viện dẫn: Điều 8",
+          "Thêm mới: Trong trường hợp có sự khác biệt về số lượng hoặc chất lượng (chi tiết của phụ tùng) khi nhận hàng, Bên mua có quyền đòi bên bán:. - Gửi ngay lập tức hàng hóa với chất lượng như đã cam kết trong hợp đồng này trong vòng **15 ngày làm việc** sau khi nhận được khiếu nại.. - Thay thế những phần hoặc toàn bộ hàng hóa không đảm bảo bằng những phần hoặc hàng hóa mới, đảm bảo chất lượng theo đúng quy định trong hợp đồng.. Bên bán phải giải quyết khiếu nại của bên mua trong vòng **10 ngày** kể từ khi nhận được khiếu nại.. Bên mua có quyền từ chối không nhận hàng nếu xét thấy có sự khác biệt nói ở điều 8.3 của hàng hóa không thể khắc phục được."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_9",
+        "vb2_id": "dieu_9",
+        "vb1_excerpt": "Thời gian bảo hành cho Hàng Cung Cấp là 12 tháng kể từ ngày ký vận đơn đường biển hoặc 8000 giờ hoạt động tùy theo điều kiện nào đến trước.",
+        "vb2_excerpt": "Thời gian bảo hành cho Hàng Cung Cấp là **24 tháng** kể từ ngày ký vận đơn đường biển hoặc **15000 giờ** hoạt động tùy theo điều kiện nào đến trước.",
+        "summary": "Sửa đổi Điều 9: Thời gian bảo hành tăng từ 12 tháng lên 24 tháng và từ 8000 giờ hoạt động lên 15000 giờ hoạt động.",
+        "changes": [
+          "Cũ: Thời gian bảo hành cho Hàng Cung Cấp là 12 tháng kể từ ngày ký vận đơn đường biển hoặc 8000 giờ hoạt động tùy theo điều kiện nào đến trước.\nMới: Thời gian bảo hành cho Hàng Cung Cấp là **24 tháng** kể từ ngày ký vận đơn đường biển hoặc **15000 giờ** hoạt động tùy theo điều kiện nào đến trước."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_12",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Phạt chậm thanh toán: Trong trường hợp Bên Mua chậm thanh toán bất kỳ khoản tiền nào theo quy định tại Điều 5, Bên Mua sẽ phải chịu phạt chậm thanh toán với mức lãi suất 0.1% trên tổng số tiền chậm thanh toán cho mỗi ngày chậm trễ, nhưng không vượt quá 8% tổng giá trị phần hợp đồng bị vi phạm.",
+        "summary": "Thêm mới Mã đoạn: Điều 12: quy định về phạt chậm thanh toán của Bên Mua với mức lãi suất 0.1%/ngày và giới hạn 8% tổng giá trị phần hợp đồng bị vi phạm.",
+        "changes": [
+          "Thêm mới: Phạt chậm thanh toán: Trong trường hợp Bên Mua chậm thanh toán bất kỳ khoản tiền nào theo quy định tại Điều 5, Bên Mua sẽ phải chịu phạt chậm thanh toán với mức lãi suất 0.1% trên tổng số tiền chậm thanh toán cho mỗi ngày chậm trễ, nhưng không vượt quá 8% tổng giá trị phần hợp đồng bị vi phạm."
+        ],
+        "method": "high_confidence_greedy"
+      }
+    ],
+    "elapsed": 52.7
+  },
+  "VB17": {
+    "stats": {
+      "so_luong_chunk_vb1": 8,
+      "so_luong_chunk_vb2": 8,
+      "giong_nhau_hoan_toan": 2,
+      "sua_doi": 5,
+      "them_moi": 1,
+      "xoa_bo": 2
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_1",
+        "vb2_id": "dieu_2.khoan_1",
+        "vb1_excerpt": "Điều 2. Quy cách giao nhận hàng\nKhoản 1:\n1. Chủ hàng phải chịu mọi thủ tục và chi phí giao hàng, phải thông báo trước cho chủ cửa hàng địa điểm giao nhận hàng (nếu không thể đưa trực tiếp đến cửa hàng).",
+        "vb2_excerpt": "Điều 2. Quy cách giao nhận hàng\nKhoản 1:\n1. Chủ hàng phải chịu mọi thủ tục và chi phí giao hàng, phải thông báo bằng văn bản hoặc email trước cho chủ cửa hàng địa điểm giao nhận hàng trước 48 giờ.",
+        "summary": "Sửa đổi Khoản 1, Điều 2: Bổ sung yêu cầu thông báo **bằng văn bản hoặc email** và thêm thời hạn **trước 48 giờ** khi thông báo địa điểm giao nhận hàng.",
+        "changes": [
+          "Cũ: phải thông báo trước cho chủ cửa hàng địa điểm giao nhận hàng\nMới: phải thông báo **bằng văn bản hoặc email** trước cho chủ cửa hàng địa điểm giao nhận hàng **trước 48 giờ**"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2",
+        "vb2_id": "dieu_2.khoan_2",
+        "vb1_excerpt": "Điều 2. Quy cách giao nhận hàng\nKhoản 2:\n2. Sau khi nhận hàng, cửa hàng phải chịu trách nhiệm về sự hư hỏng, mất mát, mặc dù quyền sở hữu hàng hóa tại cửa hàng vẫn thuộc về bên giao hàng và có quyền rút hàng ký gửi về bất cứ lúc nào.",
+        "vb2_excerpt": "Điều 2. Quy cách giao nhận hàng\nKhoản 2:\n2. Sau khi nhận hàng, cửa hàng phải chịu trách nhiệm về sự hư hỏng, mất mát do lỗi bảo quản, mặc dù quyền sở hữu hàng hóa vẫn thuộc về bên giao hàng.",
+        "summary": "Sửa đổi Khoản 2, Điều 2: Bổ sung điều kiện 'do lỗi bảo quản' để giới hạn trách nhiệm của cửa hàng và loại bỏ cụm 'tại cửa hàng vẫn thuộc về bên giao hàng và có quyền rút hàng ký gửi về bất cứ lúc nào', làm thay đổi phạm vi nghĩa vụ và quyền của bên giao hàng.",
+        "changes": [
+          "Cũ: Sau khi nhận hàng, cửa hàng phải chịu trách nhiệm về sự hư hỏng, mất mát, mặc dù quyền sở hữu hàng hóa tại cửa hàng vẫn thuộc về bên giao hàng và có quyền rút hàng ký gửi về bất cứ lúc nào.\nMới: Sau khi nhận hàng, cửa hàng phải chịu trách nhiệm về sự hư hỏng, mất mát **do lỗi bảo quản**, mặc dù quyền sở hữu hàng hóa **vẫn thuộc về bên giao hàng**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_3",
+        "vb2_id": null,
+        "vb1_excerpt": "Cửa hàng thực hiện việc kiểm hàng và thanh toán vào ngày mùng 5 hàng tháng sau khi kiểm sổ hàng thực tế đã bán.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 3: quy định về thanh toán sau khi kiểm sổ hàng thực tế đã bán",
+        "changes": [
+          "Xóa bỏ: Cửa hàng thực hiện việc kiểm hàng và thanh toán vào ngày mùng 5 hàng tháng sau khi kiểm sổ hàng thực tế đã bán."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3",
+        "vb2_id": "dieu_3",
+        "vb1_excerpt": "Cửa hàng thực hiện việc kiểm hàng và thanh toán vào ngày mùng 5 hàng tháng sau khi kiểm sổ hàng thực tế đã bán.",
+        "vb2_excerpt": "Cửa hàng thực hiện việc kiểm hàng và thanh toán 100% giá trị hàng hóa đã bán vào ngày **15** hàng tháng thông qua hình thức chuyển khoản ngân hàng.",
+        "summary": "Sửa đổi Điều 3: Thay đổi ngày thanh toán từ 'mùng 5' sang '15', bổ sung '100% giá trị hàng hóa' và 'thông qua hình thức chuyển khoản ngân hàng'",
+        "changes": [
+          "Cũ: Cửa hàng thực hiện việc kiểm hàng và thanh toán vào ngày mùng 5 hàng tháng sau khi kiểm sổ hàng thực tế đã bán.\nMới: Cửa hàng thực hiện việc kiểm hàng và thanh toán 100% giá trị hàng hóa đã bán vào ngày **15** hàng tháng thông qua hình thức chuyển khoản ngân hàng."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6",
+        "vb2_id": "dieu_6",
+        "vb1_excerpt": "Bên nào cần chấm dứt hợp đồng vào thời điểm nào phải báo trước cho bên kia trong vòng 30 ngày.",
+        "vb2_excerpt": "Bên nào cần chấm dứt hợp đồng vào thời điểm nào phải **thông báo bằng văn bản** cho bên kia **trước 15 ngày**.",
+        "summary": "Sửa đổi Điều 6: Thay đổi hình thức báo trước từ 'báo trước' thành 'thông báo bằng văn bản' và rút ngắn thời gian báo trước từ 30 ngày xuống 15 ngày. Sửa đổi Điều 6: Thêm dấu chấm kép ở cuối câu, không ảnh hưởng nghĩa pháp lý — nhưng do yêu cầu rà soát kỹ từng chi tiết và dấu câu có thể ảnh hưởng đến tính chính xác văn bản pháp lý, nên ghi nhận thay đổi về hình thức.",
+        "changes": [
+          "Cũ: Bên nào cần chấm dứt hợp đồng vào thời điểm nào phải báo trước cho bên kia trong vòng 30 ngày.\nMới: Bên nào cần chấm dứt hợp đồng vào thời điểm nào phải **thông báo bằng văn bản** cho bên kia **trước 15 ngày**.",
+          "Cũ: Hợp đồng không cho phép cửa hàng chuyển nhượng cho bên thứ ba.\nMới: Hợp đồng không cho phép cửa hàng chuyển nhượng cho bên thứ ba.."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7",
+        "vb1_excerpt": "Khi phát sinh các tranh chấp trong hợp đồng này hai bên chủ động thương lượng giải quyết, chỉ khởi kiện ra Tòa án khi nội dung tranh chấp có giá trị lớn mà hai bên không thể hòa giải được.",
+        "vb2_excerpt": "Khi phát sinh các tranh chấp trong hợp đồng này hai bên chủ động thương lượng giải quyết, nếu không thể hòa giải được sẽ đưa sự việc ra Tòa án Kinh tế có thẩm quyền tại Hà Nội để giải quyết.",
+        "summary": "Sửa đổi Điều 7: Thay đổi điều kiện khởi kiện từ 'chỉ khởi kiện ra Tòa án khi nội dung tranh chấp có giá trị lớn mà hai bên không thể hòa giải được' thành 'nếu không thể hòa giải được sẽ đưa sự việc ra Tòa án Kinh tế có thẩm quyền tại Hà Nội để giải quyết'",
+        "changes": [
+          "Cũ: Khi phát sinh các tranh chấp trong hợp đồng này hai bên chủ động thương lượng giải quyết, chỉ khởi kiện ra Tòa án khi nội dung tranh chấp có giá trị lớn mà hai bên không thể hòa giải được.\nMới: Khi phát sinh các tranh chấp trong hợp đồng này hai bên chủ động thương lượng giải quyết, nếu không thể hòa giải được sẽ đưa sự việc ra Tòa án Kinh tế có thẩm quyền tại Hà Nội để giải quyết."
+        ],
+        "method": "high_confidence_greedy"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. Phạt vi phạm hợp đồng\nTrong trường hợp một trong hai bên vi phạm các điều khoản đã thỏa thuận, bên vi phạm sẽ phải chịu phạt 8% giá trị phần hợp đồng bị vi phạm và bồi thường thiệt hại phát sinh (nếu có).",
+        "summary": "Thêm mới Điều 5, quy định về mức phạt 8% giá trị phần hợp đồng bị vi phạm và nghĩa vụ bồi thường thiệt hại phát sinh khi một bên vi phạm các điều khoản đã thỏa thuận.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_4",
+        "vb2_id": null,
+        "vb1_excerpt": "Điều 4. Treo bảng hiệu tên chủ hàng\n1. Cửa hàng muốn treo bảng hiệu mang tên doanh nghiệp của chủ hàng phải được sự đồng ý của chủ hàng.\n2. Bảng hiệu sẽ do chủ hàng thiết kế đúng quy cách được Nhà nước cho phép.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 4, quy định về yêu cầu đồng ý của chủ hàng để treo bảng hiệu và quy cách thiết kế bảng hiệu theo quy định của Nhà nước.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 23.9
+  },
+  "VB18": {
+    "stats": {
+      "so_luong_chunk_vb1": 9,
+      "so_luong_chunk_vb2": 9,
+      "giong_nhau_hoan_toan": 3,
+      "sua_doi": 6,
+      "them_moi": 2,
+      "xoa_bo": 0
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_1",
+        "vb2_id": "dieu_2.khoan_2_1",
+        "vb1_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.1:\n2.1. Phí dịch vụ bảo vệ là: 30.000.000 đồng/tháng. Chưa bao gồm 10% thuế VAT..",
+        "vb2_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.1:\n2.1. Phí dịch vụ bảo vệ là: 35.000.000 đồng/tháng. Đã bao gồm 10% thuế VAT..",
+        "summary": "Sửa đổi Khoản 2.1, Điều 2: Phí dịch vụ bảo vệ tăng từ 30.000.000 đồng/tháng lên 35.000.000 đồng/tháng và thay đổi từ 'chưa bao gồm 10% thuế VAT' thành 'đã bao gồm 10% thuế VAT'.",
+        "changes": [
+          "Cũ: Phí dịch vụ bảo vệ là: **30.000.000** đồng/tháng. Chưa bao gồm **10% thuế VAT**.\nMới: Phí dịch vụ bảo vệ là: **35.000.000** đồng/tháng. **Đã bao gồm 10% thuế VAT**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_2",
+        "vb2_id": "dieu_2.khoan_2_2",
+        "vb1_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.2:\n2.2. Thời gian thanh toán: từ ngày 01 đến ngày 05 hàng tháng. Khi nhận tiền, bên B có trách nhiệm xuất hoá đơn tài chính theo quy định cho bên A..",
+        "vb2_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.2:\n2.2. Thời gian thanh toán: từ ngày 05 đến ngày 10 hàng tháng. Khi nhận tiền, bên B có trách nhiệm xuất hoá đơn tài chính hợp lệ theo quy định của pháp luật cho bên A..",
+        "summary": "Sửa đổi Khoản 2.2, Điều 2: Thời gian thanh toán thay đổi từ ngày 01 đến ngày 05 hàng tháng thành từ ngày 05 đến ngày 10 hàng tháng; bổ sung yêu cầu hoá đơn phải 'hợp lệ' và cụ thể hóa căn cứ pháp lý là 'pháp luật'.",
+        "changes": [
+          "Cũ: từ ngày **01** đến ngày **05** hàng tháng.\nMới: từ ngày **05** đến ngày **10** hàng tháng.",
+          "Cũ: xuất hoá đơn tài chính theo quy định cho bên A.\nMới: xuất hoá đơn tài chính **hợp lệ** theo quy định của **pháp luật** cho bên A."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_3",
+        "vb2_id": "dieu_2.khoan_2_3",
+        "vb1_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.3:\n2.3. Hình thức thanh toán: tiền mặt hoặc chuyển khoản vào tài khoản của bên B theo chi tiết sau :. \r. Tên Tài khoản ngân hàng: Công ty TNHH Dịch vụ Bảo vệ Beta. \r. Số tài khoản: 1122334455. \r. Ngân hàng: Ngân hàng TMCP Ngoại thương ",
+        "vb2_excerpt": "Điều 2. : PHÍ DỊCH VỤ, THỜi GIAN VÀ HÌNH THỨC THANH TOÁN\nKhoản 2.3:\n2.3. Hình thức thanh toán: chuyển khoản trực tiếp vào tài khoản của bên B theo chi tiết sau :. \r. Tên Tài khoản ngân hàng: Công ty TNHH Dịch vụ Bảo vệ Beta. \r. Số tài khoản: 1122334455. \r. Ngân hàng: Ngân hàng TMCP Ngoại thương Việt",
+        "summary": "Sửa đổi Khoản 2.3, Điều 2: Hình thức thanh toán bị thu hẹp từ 'tiền mặt hoặc chuyển khoản' thành 'chuyển khoản trực tiếp', loại bỏ phương thức thanh toán bằng tiền mặt.",
+        "changes": [
+          "Cũ: Hình thức thanh toán: **tiền mặt hoặc chuyển khoản** vào tài khoản của bên B theo chi tiết sau :.\nMới: Hình thức thanh toán: **chuyển khoản trực tiếp** vào tài khoản của bên B theo chi tiết sau :."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_6",
+        "vb2_id": "dieu_4.khoan_4_6",
+        "vb1_excerpt": "Điều 4. : QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.6:\n4.6. Thanh toán phí dịch vụ như đã thỏa thuận..",
+        "vb2_excerpt": "Điều 4. : QUYỀN VÀ NGHĨA VỤ CỦA BÊN A\nKhoản 4.6:\n4.6. Thực hiện nghĩa vụ thanh toán phí dịch vụ đầy đủ và đúng hạn theo như thỏa thuận tại Điều 2 của Hợp đồng này..",
+        "summary": "Sửa đổi Khoản 4.6, Điều 4: Bổ sung nghĩa vụ thanh toán phải đầy đủ và đúng hạn, đồng thời viện dẫn cụ thể đến Điều 2 của Hợp đồng, làm tăng tính ràng buộc pháp lý so với bản cũ chỉ nêu chung chung 'như đã thỏa thuận'.",
+        "changes": [
+          "Cũ: Thanh toán phí dịch vụ như đã thỏa thuận.\nMới: Thực hiện nghĩa vụ **thanh toán phí dịch vụ đầy đủ và đúng hạn** theo như thỏa thuận tại **Điều 2 của Hợp đồng này**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_5",
+        "vb2_id": "dieu_5.khoan_5_10",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 5. QUYỀN VÀ NGHĨA VỤ CỦA BÊN B\nKhoản 5.10:\n5.10. Bên B có nghĩa vụ mua bảo hiểm trách nhiệm dân sự và bảo hiểm nghề nghiệp cho toàn bộ đội ngũ nhân viên bảo vệ làm việc tại mục tiêu của Bên A.",
+        "summary": "Thêm mới Khoản 5.10, Điều 5, quy định về nghĩa vụ của Bên B trong việc mua bảo hiểm trách nhiệm dân sự và bảo hiểm nghề nghiệp cho toàn bộ đội ngũ nhân viên bảo vệ làm việc tại mục tiêu của Bên A.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_2",
+        "vb2_id": "dieu_6.khoan_6_2",
+        "vb1_excerpt": "Điều 6. : TRÁCH NHIỆM BỒI THƯỜNG CỦA BÊN B\nKhoản 6.2:\n6.2. Việc bồi thường được tính theo giá thị trường vào thời điểm xảy ra những thiệt hại. Trong vòng 30 ngày kể từ khi nhận được tài liệu kê khai tài sản bị thiệt hại do bên A cung cấp, nếu bên B chưa hoàn tất việc bồi thường thì phải chịu hình th",
+        "vb2_excerpt": "Điều 6. : TRÁCH NHIỆM BỒI THƯỜNG CỦA BÊN B\nKhoản 6.2:\n6.2. Việc bồi thường được tính theo giá thị trường vào thời điểm xảy ra những thiệt hại. Trong vòng 30 ngày kể từ khi nhận được tài liệu kê khai tài sản bị thiệt hại do bên A cung cấp, nếu bên B chưa hoàn tất việc bồi thường thì phải chịu hình th",
+        "summary": "Sửa đổi Khoản 6.2, Điều 6: Mức phạt chậm thanh toán bồi thường tăng từ 0.05% lên 0.1% trên số tiền bồi thường chưa trả mỗi ngày.",
+        "changes": [
+          "Cũ: phạt **0.05%**/ số tiền bồi thường chưa trả/ số ngày chậm thanh toán.\nMới: phạt **0.1%**/ số tiền bồi thường chưa trả/ số ngày chậm thanh toán."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7.khoan_7_5",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 7. : NHỮNG THỎA THUẬN KHÁC\nKhoản 7.5:\n7.5 Mọi sửa đổi, bổ sung của Hợp đồng này đều phải được lập thành văn bản và có chữ ký xác nhận của đại diện có thẩm quyền của cả hai bên.",
+        "summary": "Thêm mới Khoản 7.5, Điều 7, quy định về yêu cầu mọi sửa đổi, bổ sung hợp đồng phải được lập thành văn bản và có chữ ký xác nhận của đại diện có thẩm quyền của cả hai bên.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_7.khoan_7_3",
+        "vb2_id": "dieu_7.khoan_7_3",
+        "vb1_excerpt": "Điều 7. : NHỮNG THỎA THUẬN KHÁC\nKhoản 7.3:\n7.3 Cả hai bên có thể chấm dứt hoặc gia hạn hợp đồng trước thời hạn bằng văn bản báo trước cho bên kia 15 ngày kể từ ngày ghi trên hợp đồng. Mỗi bên có quyền đề xuất bằng văn bản việc chấm dứt hợp đồng nếu xét thấy bên kia vi phạm nghiêm trọng nội dung được",
+        "vb2_excerpt": "Điều 7. : NHỮNG THỎA THUẬN KHÁC\nKhoản 7.3:\n7.3 Cả hai bên có thể chấm dứt hoặc gia hạn hợp đồng trước thời hạn bằng văn bản báo trước cho bên kia 30 ngày kể từ ngày ghi trên hợp đồng. Mỗi bên có quyền đề xuất bằng văn bản việc chấm dứt hợp đồng nếu xét thấy bên kia vi phạm nghiêm trọng nội dung được",
+        "summary": "Sửa đổi Khoản 7.3, Điều 7: Thời gian báo trước để chấm dứt hoặc gia hạn hợp đồng tăng từ 15 ngày lên 30 ngày.",
+        "changes": [
+          "Cũ: báo trước cho bên kia **15 ngày** kể từ ngày ghi trên hợp đồng.\nMới: báo trước cho bên kia **30 ngày** kể từ ngày ghi trên hợp đồng."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 68.3
+  },
+  "VB19": {
+    "stats": {
+      "so_luong_chunk_vb1": 9,
+      "so_luong_chunk_vb2": 9,
+      "giong_nhau_hoan_toan": 2,
+      "sua_doi": 10,
+      "them_moi": 0,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_4.khoan_4_4",
+        "vb2_id": "dieu_4",
+        "vb1_excerpt": "Điều 4. YÊU CẦU ĐẶT HÀNG\nKhoản 4.4:\n4.4. Định kỳ sáu (6) tháng hàng năm, các Bên sẽ rà soát lại khả năng của Bên B trong việc đáp ứng Số đặt hàng tối thiểu. Trong trường hợp Bên B không đáp ứng được số đặt hàng tối thiểu theo quy định tại Khoản 4.3 trên đây, Bên A có quyền đơn phương chấm dứt Hợp đồ",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 4.4, Điều 4, quy định về việc rà soát định kỳ 6 tháng khả năng đáp ứng số đặt hàng tối thiểu và quyền đơn phương chấm dứt hợp đồng của Bên A mà không bồi thường thiệt hại cho Bên B.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_1",
+        "vb2_id": "dieu_4.khoan_4_1",
+        "vb1_excerpt": "Điều 4. YÊU CẦU ĐẶT HÀNG\nKhoản 4.1:\n4.1. Chậm nhất vào ngày 10 hàng tháng, Bên B sẽ gửi yêu cầu đặt hàng bằng văn bản cho Bên A trong đó nêu rõ tên, chủng loại, số lượng Sản phẩm cần đặt hàng, thời gian giao hàng và phương thức giao hàng. Trong thời hạn 02 ngày làm việc kể từ ngày nhận được văn bản ",
+        "vb2_excerpt": "Điều 4. YÊU CẦU ĐẶT HÀNG\nKhoản 4.1:\n4.1. Chậm nhất vào ngày 05 hàng tháng, Bên B sẽ gửi yêu cầu đặt hàng bằng văn bản cho Bên A trong đó nêu rõ tên, chủng loại, số lượng Sản phẩm cần đặt hàng, thời gian giao hàng và phương thức giao hàng. Trong thời hạn 02 ngày làm việc kể từ ngày nhận được văn bản ",
+        "summary": "Sửa đổi Khoản 4.1, Điều 4: Ngày cuối cùng để Bên B gửi yêu cầu đặt hàng từ ngày 10 hàng tháng được thay đổi thành ngày 05 hàng tháng.",
+        "changes": [
+          "Cũ: Chậm nhất vào ngày **10** hàng tháng, Bên B sẽ gửi yêu cầu đặt hàng bằng văn bản cho Bên A trong đó nêu rõ tên, chủng loại, số lượng Sản phẩm cần đặt hàng, thời gian giao hàng và phương thức giao hàng.\nMới: Chậm nhất vào ngày **05** hàng tháng, Bên B sẽ gửi yêu cầu đặt hàng bằng văn bản cho Bên A trong đó nêu rõ tên, chủng loại, số lượng Sản phẩm cần đặt hàng, thời gian giao hàng và phương thức giao hàng."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_4.khoan_4_3",
+        "vb2_id": "dieu_4.khoan_4_3",
+        "vb1_excerpt": "Điều 4. YÊU CẦU ĐẶT HÀNG\nKhoản 4.3:\n4.3. Các Bên cam kết và xác nhận rằng, trong thời hạn 12 tháng.Số đặt hàng tối thiểu trong các năm tiếp theo sẽ tăng ít nhất 10%, trừ khi các Bên có thỏa thuận khác bằng văn bản.",
+        "vb2_excerpt": "Điều 4. YÊU CẦU ĐẶT HÀNG\nKhoản 4.3:\n4.3. Các Bên cam kết và xác nhận rằng, trong thời hạn 12 tháng. Số đặt hàng tối thiểu trong các năm tiếp theo sẽ tăng ít nhất 15%, trừ khi các Bên có thỏa thuận khác bằng văn bản..",
+        "summary": "Sửa đổi Khoản 4.3, Điều 4: Tỷ lệ tăng tối thiểu số đặt hàng hàng năm được nâng từ 10% lên 15%.",
+        "changes": [
+          "Cũ: sẽ tăng ít nhất **10%**\nMới: sẽ tăng ít nhất **15%**"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_4",
+        "vb2_id": "dieu_5.khoan_5_4",
+        "vb1_excerpt": "Điều 5. GIÁ CẢ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 5.4:\n5.4. Bên B sẽ thanh toán cho Bên A bằng tiền mặt hoặc bằng cách chuyển khoản đến tài khoản do Bên A chỉ định trong thời hạn 07 ngày làm việc kể từ ngày nhận được đề nghị thanh toán của Bên A;.",
+        "vb2_excerpt": "Điều 5. GIÁ CẢ VÀ PHƯƠNG THỨC THANH TOÁN\nKhoản 5.4:\n5.4. Bên B sẽ thanh toán cho Bên A bằng tiền mặt hoặc bằng cách chuyển khoản đến tài khoản do Bên A chỉ định trong thời hạn 05 ngày làm việc kể từ ngày nhận được đề nghị thanh toán của Bên A;.",
+        "summary": "Sửa đổi Khoản 5.4, Điều 5: Thời hạn thanh toán giảm từ 07 ngày làm việc xuống còn 05 ngày làm việc kể từ ngày nhận được đề nghị thanh toán.",
+        "changes": [
+          "Cũ: trong thời hạn **07 ngày làm việc** kể từ ngày nhận được đề nghị thanh toán của Bên A;\nMới: trong thời hạn **05 ngày làm việc** kể từ ngày nhận được đề nghị thanh toán của Bên A;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_2",
+        "vb2_id": "dieu_6.khoan_6_2",
+        "vb1_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.2:\n6.2. Bên B sẽ được hưởng hạn mức giá trị đơn hàng là 500.000.000 VNĐ (Bằng chữ: Năm trăm triệu Việt Nam Đồng)..",
+        "vb2_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.2:\n6.2. Bên B sẽ được hưởng hạn mức giá trị đơn hàng là 1.000.000.000 VNĐ (Bằng chữ: Một tỷ Việt Nam Đồng)..",
+        "summary": "Sửa đổi Khoản 6.2, Điều 6: Hạn mức giá trị đơn hàng tăng từ 500.000.000 VNĐ (Năm trăm triệu Việt Nam Đồng) lên 1.000.000.000 VNĐ (Một tỷ Việt Nam Đồng).",
+        "changes": [
+          "Cũ: hạn mức giá trị đơn hàng là **500.000.000** VNĐ (Bằng chữ: **Năm trăm triệu** Việt Nam Đồng).\nMới: hạn mức giá trị đơn hàng là **1.000.000.000** VNĐ (Bằng chữ: **Một tỷ** Việt Nam Đồng)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_3",
+        "vb2_id": "dieu_6.khoan_6_3",
+        "vb1_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.3:\n6.3. Hết thời hạn thanh toán, nếu Bên B vẫn chưa thanh toán được số tiền hàng của tháng trước (nếu có), Bên B sẽ bị áp dụng mức lãi suất trả chậm tương ứng với mức lãi suất trả chậm do Ngân hàng cổ phần thương mại Ngoại thương Việt Nam",
+        "vb2_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.3:\n6.3. Hết thời hạn thanh toán, nếu Bên B vẫn chưa thanh toán được số tiền hàng của tháng trước (nếu có), Bên B sẽ bị áp dụng mức lãi suất trả chậm tương ứng với mức 150% lãi suất cơ bản do Ngân hàng Nhà nước công bố ở cùng thời điểm, tí",
+        "summary": "Sửa đổi Khoản 6.3, Điều 6: Mức lãi suất trả chậm thay đổi từ dựa trên lãi suất của Vietcombank sang 150% lãi suất cơ bản do Ngân hàng Nhà nước công bố.",
+        "changes": [
+          "Cũ: mức lãi suất trả chậm tương ứng với mức lãi suất trả chậm do Ngân hàng cổ phần thương mại Ngoại thương Việt Nam (Vietcombank) công bố ở cùng thời điểm\nMới: mức lãi suất trả chậm tương ứng với mức **150% lãi suất cơ bản** do **Ngân hàng Nhà nước** công bố ở cùng thời điểm"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_6.khoan_6_4",
+        "vb2_id": "dieu_6.khoan_6_4",
+        "vb1_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.4:\n6.4. Trong trường hợp Bên B vượt quá hạn mức giá trị đơn hàng theo quy định tại Khoản 6.2 và/hoặc 6.3 trên đây, Bên B có nghĩa vụ đặt cọc cho Bên A một khoản tiền tương ứng với 20% giá trị lô hàng trong thời hạn 05 ngày làm việc kể từ ",
+        "vb2_excerpt": "Điều 6. ĐỐI CHIẾU CÔNG NỢ VÀ HẠN MỨC GIÁ TRỊ ĐƠN HÀNG\nKhoản 6.4:\n6.4. Trong trường hợp Bên B vượt quá hạn mức giá trị đơn hàng theo quy định tại Khoản 6.2 và/hoặc 6.3 trên đây, Bên B có nghĩa vụ đặt cọc cho Bên A một khoản tiền tương ứng với 30% giá trị lô hàng trong thời hạn 05 ngày làm việc kể từ ",
+        "summary": "Sửa đổi Khoản 6.4, Điều 6: Tỷ lệ đặt cọc tăng từ 20% lên 30% giá trị lô hàng khi Bên B vượt hạn mức giá trị đơn hàng.",
+        "changes": [
+          "Cũ: tương ứng với **20%** giá trị lô hàng\nMới: tương ứng với **30%** giá trị lô hàng"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_7.khoan_7_1",
+        "vb2_id": "dieu_7.khoan_7_1",
+        "vb1_excerpt": "Điều 7. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 7.1:\n7.1. Quyền và nghĩa vụ của Bên A. \r. Ngoài các quyền và nghĩa vụ được quy định trong các điều khoản khác của Hợp đồng này, Bên A còn có các quyền và nghĩa vụ sau đây:. \r. - Được thanh toán đầy đủ và đúng hạn tiền hàng;. \r. - Cung cấp bản sao các hồ sơ",
+        "vb2_excerpt": "Điều 7. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 7.1:\n7.1. Quyền và nghĩa vụ của Bên A. \r. Ngoài các quyền và nghĩa vụ được quy định trong các điều khoản khác của Hợp đồng này, Bên A còn có các quyền và nghĩa vụ sau đây:. \r. - Được thanh toán đầy đủ và đúng hạn tiền hàng;. \r. - Cung cấp bản sao các hồ sơ",
+        "summary": "Sửa đổi Khoản 7.1, Điều 7: Thêm nghĩa vụ mới là Bên A phải chịu phạt 1% giá trị đơn hàng cho mỗi ngày giao hàng chậm trễ, đồng thời loại bỏ cụm 'Đảm bảo cung cấp Sản phẩm đúng chủng loại, chất lượng và tiêu chuẩn kỹ thuật của Nhà cung cấp/Nhà sản xuất' khỏi danh sách nghĩa vụ (dù nội dung này vẫn tồn tại trong văn bản, nhưng vị trí bị thay thế bởi điều khoản phạt mới — do thay đổi cấu trúc danh sách nghĩa vụ, việc thay thế này làm thay đổi phạm vi nghĩa vụ pháp lý của Bên A).",
+        "changes": [
+          "Cũ: - Đảm bảo cung cấp Sản phẩm đúng chủng loại, chất lượng và tiêu chuẩn kỹ thuật của Nhà cung cấp/Nhà sản xuất;.\nMới: - **Chịu phạt 1% giá trị đơn hàng cho mỗi ngày giao hàng chậm trễ so với thời gian đã thỏa thuận**;."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_7.khoan_7_2",
+        "vb2_id": "dieu_7.khoan_7_2",
+        "vb1_excerpt": "Điều 7. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 7.2:\n7.2. Quyền và nghĩa vụ của Bên B. \r. Ngoài các quyền và nghĩa vụ được quy định trong các điều khoản khác của Hợp đồng này, Bên B còn có các quyền và nghĩa vụ sau đây:. \r. - Cung cấp bản sao các hồ sơ pháp lý doanh nghiệp của Bên B;. \r. - Không mua, bá",
+        "vb2_excerpt": "Điều 7. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN\nKhoản 7.2:\n7.2. Quyền và nghĩa vụ của Bên B. \r. Ngoài các quyền và nghĩa vụ được quy định trong các điều khoản khác của Hợp đồng này, Bên B còn có các quyền và nghĩa vụ sau đây:. \r. - Không mua, bán, phân phối các Sản phẩm cạnh tranh trực tiếp do Bên A thông báo",
+        "summary": "Sửa đổi Khoản 7.2, Điều 7: Xóa bỏ nghĩa vụ 'Cung cấp bản sao các hồ sơ pháp lý doanh nghiệp của Bên B' và thay đổi thứ tự các điểm, nhưng không thêm hoặc sửa đổi nội dung các nghĩa vụ còn lại — dẫn đến thay đổi danh sách nghĩa vụ cụ thể của Bên B.",
+        "changes": [
+          "Cũ: - Cung cấp bản sao các hồ sơ pháp lý doanh nghiệp của Bên B;.\nMới: - Không mua, bán, phân phối các Sản phẩm cạnh tranh trực tiếp do Bên A thông báo bằng văn bản trong từng thời điểm cụ thể;."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_8.khoan_8_2",
+        "vb2_id": "dieu_8.khoan_8_2",
+        "vb1_excerpt": "Điều 8. VI PHẠM HỢP ĐỒNG\nKhoản 8.2:\n8.2. Không ảnh hưởng đến hiệu lực của Khoản 8.1 trên đây, Bên bị vi phạm có quyền áp dụng một khoản phạt vi phạm hợp đồng đối với Bên vi phạm tương ứng với 8% giá trị của phần Hợp đồng bị vi phạm và yêu cầu bồi thường thiệt hại (nếu có);.",
+        "vb2_excerpt": "Điều 8. VI PHẠM HỢP ĐỒNG\nKhoản 8.2:\n8.2. Không ảnh hưởng đến hiệu lực của Khoản 8.1 trên đây, Bên bị vi phạm có quyền áp dụng một khoản phạt vi phạm hợp đồng đối với Bên vi phạm tương ứng với 5% giá trị của phần Hợp đồng bị vi phạm và yêu cầu bồi thường thiệt hại (nếu có);.",
+        "summary": "Sửa đổi Khoản 8.2, Điều 8: Tỷ lệ khoản phạt vi phạm hợp đồng giảm từ 8% xuống 5% giá trị của phần Hợp đồng bị vi phạm.",
+        "changes": [
+          "Cũ: tương ứng với **8%** giá trị của phần Hợp đồng bị vi phạm\nMới: tương ứng với **5%** giá trị của phần Hợp đồng bị vi phạm"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_9.khoan_9_2",
+        "vb2_id": "dieu_9.khoan_9_2",
+        "vb1_excerpt": "Điều 9. SỬA ĐỔI VÀ CHẤM DỨT HỢP ĐỒNG\nKhoản 9.2:\n9.2. Hợp Đồng này sẽ chấm dứt trong trường hợp sau:. \r. - Hợp Đồng hết hạn mà không được gia hạn; hoặc. \r. - Một trong hai Bên bị giải thể, phá sản hoặc tạm ngừng hoặc bị đình chỉ hoạt động kinh doanh; hoặc. \r. - Hai Bên thỏa thuận chấm dứt Hợp đồng tr",
+        "vb2_excerpt": "Điều 9. SỬA ĐỔI VÀ CHẤM DỨT HỢP ĐỒNG\nKhoản 9.2:\n9.2. Hợp Đồng này sẽ chấm dứt trong trường hợp sau:. \r. - Hợp Đồng hết hạn mà không được gia hạn; hoặc. \r. - Một trong hai Bên bị giải thể, phá sản hoặc tạm ngừng hoặc bị đình chỉ hoạt động kinh doanh; hoặc. \r. - Hai Bên thỏa thuận chấm dứt Hợp đồng tr",
+        "summary": "Sửa đổi Khoản 9.2, Điều 9: Bỏ tham chiếu đến Khoản 4.4 trong điều kiện cho phép Bên A đơn phương chấm dứt hợp đồng, chỉ giữ lại Khoản 3.4.",
+        "changes": [
+          "Cũ: các Khoản 3.4 và/hoặc 4.4 của Hợp đồng này\nMới: các Khoản 3.4 của Hợp đồng này"
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 127.1
+  },
+  "VB20": {
+    "stats": {
+      "so_luong_chunk_vb1": 11,
+      "so_luong_chunk_vb2": 11,
+      "giong_nhau_hoan_toan": 7,
+      "sua_doi": 4,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_f",
+        "vb2_id": "dieu_1.khoan_f",
+        "vb1_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản f:\nf) Giá chuyển nhượng: 15.000 đồng/cổ phần (Bằng chữ: Mười lăm nghìn đồng/cổ phần).",
+        "vb2_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản f:\nf) Giá chuyển nhượng: 20.000 đồng/cổ phần (Bằng chữ: Hai mươi nghìn đồng/cổ phần).",
+        "summary": "Sửa đổi Khoản f, Điều 1: Giá chuyển nhượng tăng từ 15.000 đồng/cổ phần (Mười lăm nghìn đồng/cổ phần) lên 20.000 đồng/cổ phần (Hai mươi nghìn đồng/cổ phần).",
+        "changes": [
+          "Cũ: Giá chuyển nhượng: **15.000** đồng/cổ phần (Bằng chữ: **Mười lăm nghìn** đồng/cổ phần).\nMới: Giá chuyển nhượng: **20.000** đồng/cổ phần (Bằng chữ: **Hai mươi nghìn** đồng/cổ phần)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_1.khoan_g",
+        "vb2_id": "dieu_1.khoan_g",
+        "vb1_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản g:\ng) Tổng giá trị giao dịch: 150.000.000 đồng (Bằng chữ: Một trăm năm mươi triệu đồng chẵn).",
+        "vb2_excerpt": "Điều 1. Đối tượng của hợp đồng\nKhoản g:\ng) Tổng giá trị giao dịch: 200.000.000 đồng (Bằng chữ: Hai trăm triệu đồng chẵn).",
+        "summary": "Sửa đổi Khoản g, Điều 1: Tổng giá trị giao dịch tăng từ 150.000.000 đồng (một trăm năm mươi triệu đồng) lên 200.000.000 đồng (hai trăm triệu đồng).",
+        "changes": [
+          "Cũ: Tổng giá trị giao dịch: **150.000.000** đồng (Bằng chữ: **Một trăm năm mươi triệu** đồng chẵn).\nMới: Tổng giá trị giao dịch: **200.000.000** đồng (Bằng chữ: **Hai trăm triệu** đồng chẵn)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_b",
+        "vb2_id": "dieu_2.khoan_b",
+        "vb1_excerpt": "Điều 2. Phương thức và thời hạn thanh toán\nKhoản b:\nb) Thời hạn thanh toán:. - Ngay sau khi hai bên ký kết hợp đồng này, Bên B sẽ đặt cọc một khoản tiền tương ứng là 20% giá trị của Hợp đồng.. - Sau 05 ngày, kể từ ngày ký kết hợp đồng đến ngày 18 tháng 04 năm 2026 Bên B thanh toán cho Bên A khoản ti",
+        "vb2_excerpt": "Điều 2. Phương thức và thời hạn thanh toán\nKhoản b:\nb) Thời hạn thanh toán:. - Ngay sau khi hai bên ký kết hợp đồng này, Bên B sẽ đặt cọc một khoản tiền tương ứng là 30% giá trị của Hợp đồng.. - Sau 05 ngày, kể từ ngày ký kết hợp đồng đến ngày 18 tháng 04 năm 2026 Bên B thanh toán cho Bên A khoản ti",
+        "summary": "Sửa đổi Khoản b, Điều 2: Tỷ lệ đặt cọc tăng từ 20% lên 30% giá trị hợp đồng, và số tiền thanh toán sau 05 ngày tăng từ 150.000.000 VNĐ lên 200.000.000 VNĐ.",
+        "changes": [
+          "Cũ: đặt cọc một khoản tiền tương ứng là **20%** giá trị của Hợp đồng.\nMới: đặt cọc một khoản tiền tương ứng là **30%** giá trị của Hợp đồng.",
+          "Cũ: khoản tiền là: **150.000.000** VNĐ\nMới: khoản tiền là: **200.000.000** VNĐ"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_d",
+        "vb2_id": "dieu_3.khoan_d",
+        "vb1_excerpt": "Điều 3. Quyền và nghĩa vụ của Bên A\nKhoản d:\nd) Trong trường hợp Bên A vì lý do bất kỳ mà không thực hiện chuyển nhượng cổ phần theo quy định trong Hợp đồng này, sẽ phải hoàn trả số tiền đã nhận như trên và bồi thường thiệt hại cho Bên B một khoản tiền bằng 10% giá trị của hợp đồng này, tức 15.000.0",
+        "vb2_excerpt": "Điều 3. Quyền và nghĩa vụ của Bên A\nKhoản d:\nd) ) Trong trường hợp Bên A vì lý do bất kỳ mà không thực hiện chuyển nhượng cổ phần theo quy định trong Hợp đồng này, sẽ phải hoàn trả số tiền đã nhận như trên và bồi thường thiệt hại cho Bên B một khoản tiền bằng 10% giá trị của hợp đồng này, tức 20.000",
+        "summary": "Sửa đổi Khoản d, Điều 3: Số tiền bồi thường thiệt hại tăng từ 15.000.000 đồng lên 20.000.000 đồng, tương ứng với thay đổi giá trị tương đương 10% giá trị hợp đồng.",
+        "changes": [
+          "Cũ: tức **15.000.000** đồng (Bằng chữ: Mười lăm triệu đồng chẵn).\nMới: tức **20.000.000** đồng (Bằng chữ: Hai mươi triệu đồng chẵn)."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": null,
+        "vb2_id": "dieu_9",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 9. Bảo mật thông tin\nHai bên cam kết giữ bí mật tuyệt đối các thông tin, điều khoản liên quan đến giao dịch và giá trị Hợp đồng này. Bất kỳ bên nào tiết lộ thông tin cho bên thứ ba (trừ trường hợp cơ quan Nhà nước có thẩm quyền yêu cầu) gây thiệt hại cho bên còn lại sẽ phải chịu trách nhiệm bồi",
+        "summary": "Thêm mới Điều 9, quy định về nghĩa vụ bảo mật thông tin của hai bên trong giao dịch và trách nhiệm bồi thường khi tiết lộ thông tin trái phép cho bên thứ ba.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_9",
+        "vb2_id": null,
+        "vb1_excerpt": "Điều 9. Các sự cố vi phạm:\n- Do giá trị của Công ty chưa được kiểm toán, nên Bên B yêu cầu Bên A cam kết Bảng danh mục tài sản của Công ty đã được Hội đồng quản trị xác nhận tại Phụ Lục của Hợp đồng này như sau: Tương ứng với số tài sản của Công ty tại Bảng danh mục tài sản thì giá của một cổ phần c",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Điều 9, quy định về cam kết giá trị cổ phần của Công ty Cổ phần Công nghệ AI Việt Nam là 15.000 đồng và cơ chế điều chỉnh giá trị cổ phần trong vòng một tháng sau ngày đặt cọc dựa trên biến động tài sản, đồng thời loại bỏ quy định về việc coi hợp đồng đã thực hiện và không điều chỉnh giá sau thời hạn này.",
+        "changes": [],
+        "method": "xoa_bo"
+      }
+    ],
+    "elapsed": 37.6
+  },
+  "VB21": {
+    "stats": {
+      "so_luong_chunk_vb1": 14,
+      "so_luong_chunk_vb2": 14,
+      "giong_nhau_hoan_toan": 9,
+      "sua_doi": 4,
+      "them_moi": 1,
+      "xoa_bo": 1
+    },
+    "items": [
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_2.khoan_2_2",
+        "vb2_id": "dieu_2.khoan_2_2",
+        "vb1_excerpt": "Điều 2. Nghĩa vụ của bên tiếp nhận thông tin\nKhoản 2.2:\n2.2 Bên nhận thông tin phải ngay lập tức thông báo với nhân viên, đại diện, nhà thầu hay nhà tư vấn độc lập được cung cấp thông tin bảo mật về nghĩa vụ theo hợp đồng này và phải thực hiện những biện pháp cần thiết để đảm bảo tính bảo mật của th",
+        "vb2_excerpt": "Điều 2. Nghĩa vụ của bên tiếp nhận thông tin\nKhoản 2.2:\n2.2 Bên nhận thông tin có trách nhiệm lập tức thông báo cho nhân viên, đại diện, nhà thầu hay nhà tư vấn độc lập được cung cấp thông tin bảo mật về các nghĩa vụ quy định trong hợp đồng này, đồng thời áp dụng các biện pháp cần thiết nhằm đảm bảo",
+        "summary": "Sửa đổi Khoản 2.2, Điều 2: Thay 'phải ngay lập tức thông báo với' bằng 'có trách nhiệm lập tức thông báo cho'; thay 'nghĩa vụ theo hợp đồng này' bằng 'các nghĩa vụ quy định trong hợp đồng này'; thay 'theo hợp đồng này' bằng 'theo đúng thỏa thuận'; thay 'phải thực hiện những biện pháp cần thiết để đảm bảo tính bảo mật của thông tin bảo mật sẽ được duy trì' bằng 'áp dụng các biện pháp cần thiết nhằm đảm bảo duy trì tính bảo mật của thông tin'.",
+        "changes": [
+          "Cũ: Bên nhận thông tin **phải ngay lập tức thông báo với** nhân viên, đại diện, nhà thầu hay nhà tư vấn độc lập được cung cấp thông tin bảo mật về **nghĩa vụ theo hợp đồng này** và phải thực hiện những biện pháp cần thiết để đảm bảo tính bảo mật của thông tin bảo mật sẽ được duy trì **theo hợp đồng này**;\nMới: Bên nhận thông tin **có trách nhiệm lập tức thông báo cho** nhân viên, đại diện, nhà thầu hay nhà tư vấn độc lập được cung cấp thông tin bảo mật về **các nghĩa vụ quy định trong hợp đồng này**, đồng thời áp dụng các biện pháp cần thiết nhằm đảm bảo duy trì tính bảo mật của thông tin **theo đúng thỏa thuận**;"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_3.khoan_3_1",
+        "vb2_id": "dieu_3.khoan_3_1",
+        "vb1_excerpt": "Điều 3. Thời hạn\nKhoản 3.1:\n3.1 Hợp đồng này sẽ có hiệu lực bắt đầu từ ngày 15/04/2026 và sẽ kết thúc vào ngày 15/04/2027, tuy nhiên nghĩa vụ của bên tiếp nhận thông tin về việc bảo vệ những thông tin bảo mật sẽ tồn tại trong thời hạn 03 năm tiếp theo kể từ ngày hợp đồng này chấm dứt;",
+        "vb2_excerpt": "Điều 3. Thời hạn\nKhoản 3.1:\n3.1 Hợp đồng này sẽ có hiệu lực bắt đầu từ ngày 15/04/2026 và sẽ kết thúc vào ngày 15/04/2027, tuy nhiên nghĩa vụ của bên tiếp nhận thông tin về việc bảo vệ những thông tin bảo mật sẽ tồn tại trong thời hạn 05 năm tiếp theo kể từ ngày hợp đồng này chấm dứt;",
+        "summary": "Sửa đổi Khoản 3.1, Điều 3: Thời hạn nghĩa vụ bảo mật tăng từ 03 năm lên 05 năm sau khi hợp đồng chấm dứt.",
+        "changes": [
+          "Cũ: thời hạn **03 năm** tiếp theo kể từ ngày hợp đồng này chấm dứt\nMới: thời hạn **05 năm** tiếp theo kể từ ngày hợp đồng này chấm dứt"
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "them_moi",
+        "vb1_id": "dieu_7",
+        "vb2_id": "dieu_7.khoan_7_3",
+        "vb1_excerpt": "",
+        "vb2_excerpt": "Điều 7. Bồi thường và Phạt vi phạm\nKhoản 7.3:\n7.3 Mức phạt vi phạm hợp đồng: Ngoài việc bồi thường thiệt hại theo quy định tại Điều 7.2, trường hợp Bên B vi phạm nghĩa vụ bảo mật thông tin, Bên B sẽ phải chịu phạt vi phạm hợp đồng với số tiền là 500.000.000 VNĐ (Năm trăm triệu đồng chẵn) cho mỗi lần",
+        "summary": "Thêm mới Khoản 7.3, Điều 7, quy định về mức phạt vi phạm hợp đồng là 500.000.000 VNĐ cho mỗi lần Bên B vi phạm nghĩa vụ bảo mật thông tin, ngoài nghĩa vụ bồi thường thiệt hại.",
+        "changes": [],
+        "method": "them_moi"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_12.khoan_12_2",
+        "vb2_id": "dieu_12.khoan_12_2",
+        "vb1_excerpt": "Điều 12. Giải quyết tranh chấp\nKhoản 12.2:\n12.2 Trường hợp hai bên không thể đàm phán, hoà giải các tranh chấp, khiếu nại phát sinh từ hoặc liên quan đến cam kết này sẽ được giải quyết bằng trọng tài tại Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) theo Quy tắc tố tụng trọng tài của Trung tâm này.",
+        "vb2_excerpt": "Điều 12. Giải quyết tranh chấp\nKhoản 12.2:\n12.2 Trường hợp hai bên không thể đàm phán, hoà giải, các tranh chấp hoặc khiếu nại phát sinh từ hoặc liên quan đến cam kết này sẽ được đưa ra giải quyết tại Tòa án nhân dân có thẩm quyền tại nơi đặt trụ sở chính của Bên A theo quy định của pháp luật.",
+        "summary": "Sửa đổi Khoản 12.2, Điều 12: Cơ chế giải quyết tranh chấp thay từ trọng tài tại VIAC sang tòa án tại nơi đặt trụ sở chính của Bên A, đồng thời thay đổi căn cứ pháp lý từ Quy tắc tố tụng trọng tài của VIAC sang quy định của pháp luật.",
+        "changes": [
+          "Cũ: sẽ được giải quyết bằng trọng tài tại **Trung tâm Trọng tài Quốc tế Việt Nam (VIAC)** theo **Quy tắc tố tụng trọng tài của Trung tâm này**.\nMới: sẽ được đưa ra giải quyết tại **Tòa án nhân dân có thẩm quyền tại nơi đặt trụ sở chính của Bên A** theo **quy định của pháp luật**."
+        ],
+        "method": "progressive_zoom_in"
+      },
+      {
+        "kind": "xoa_bo",
+        "vb1_id": "dieu_5.khoan_5_2",
+        "vb2_id": "dieu_5",
+        "vb1_excerpt": "Điều 5. Không ràng buộc\nKhoản 5.2:\n5.2 Bản cam kết này có giá trị ràng buộc bắt buộc đối với cả hai bên, được xem và hiểu như là một bộ phận không thể tách rời với các hợp đồng, phụ lục hoặc thỏa thuận khác,… mà hai bên sẽ ký kết với nhau trong quá trình triển khai dự án.",
+        "vb2_excerpt": "",
+        "summary": "Xóa bỏ Khoản 5.2, Điều 5, quy định về giá trị ràng buộc bắt buộc của bản cam kết như một bộ phận không thể tách rời với các hợp đồng, phụ lục hoặc thỏa thuận khác trong quá trình triển khai dự án.",
+        "changes": [],
+        "method": "xoa_bo"
+      },
+      {
+        "kind": "sua_doi",
+        "vb1_id": "dieu_5.khoan_5_1",
+        "vb2_id": "dieu_5.khoan_5_1",
+        "vb1_excerpt": "Điều 5. Không ràng buộc\nKhoản 5.1:\n5.1 Các Bên hiểu rằng Hợp đồng này được ký kết một cách riêng biệt cho mục đích trao đổi thông tin bảo mật và các bên cũng không bị ràng buộc theo bất kỳ khía cạnh nào phải tham gia vào bất kỳ mối quan hệ kinh doanh nào trong tương lai;",
+        "vb2_excerpt": "Điều 5. Ràng buộc\nKhoản 5.1:\n5.1 Bản cam kết này có giá trị ràng buộc bắt buộc đối với cả hai bên, được xem và hiểu như là một bộ phận không thể tách rời với các hợp đồng, phụ lục hoặc thỏa thuận khác,… mà hai bên sẽ ký kết với nhau trong quá trình triển khai dự án.",
+        "summary": "Sửa đổi Khoản 5.1, Điều 5: Nội dung thay đổi từ việc khẳng định không ràng buộc (không phải tham gia mối quan hệ kinh doanh tương lai) sang khẳng định bản cam kết có giá trị ràng buộc bắt buộc và là bộ phận không thể tách rời của các hợp đồng tương lai.",
+        "changes": [
+          "Cũ: Hợp đồng này được ký kết một cách riêng biệt cho mục đích trao đổi thông tin bảo mật và các bên cũng không bị ràng buộc theo bất kỳ khía cạnh nào phải tham gia vào bất kỳ mối quan hệ kinh doanh nào trong tương lai;\nMới: Bản cam kết này có giá trị ràng buộc bắt buộc đối với cả hai bên, được xem và hiểu như là một bộ phận không thể tách rời với các hợp đồng, phụ lục hoặc thỏa thuận khác,… mà hai bên sẽ ký kết với nhau trong quá trình triển khai dự án."
+        ],
+        "method": "progressive_zoom_in"
+      }
+    ],
+    "elapsed": 45.0
+  }
+}

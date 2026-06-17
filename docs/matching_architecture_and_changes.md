@@ -217,6 +217,10 @@ timeline
 | 10 | **Fix extractor — render numbering Word** | [docx_extractor.py](../src/core/ingestion/docx_extractor.py) | Văn bản dùng numbered-list tự động của Word → pandoc làm mất số "Điều N" → parser không tách được Điều |
 | 11 | ~~Surface paraphrase → ngu_nghia~~ **(ĐÃ GỠ)** | llm_review.py, runner.py, FE | Thử tách paraphrase ra tab riêng, nhưng LLM (qwen) phán nhầm thay đổi thật (vd xóa 1 câu) là "giống nghĩa" → GIẤU thay đổi. Đã gỡ tab "Giống ngữ nghĩa": mọi cặp LLM coi là giống đều bỏ qua, không tách riêng |
 | 12 | **Bôi đậm từ thay đổi** | [llm_prompts.py](../src/core/matching/llm_prompts.py), [ResultsPage.jsx](../web/frontend/src/components/ResultsPage.jsx) | LLM bọc từ thay đổi bằng `**...**`; frontend `renderRich` render `<strong>` tô nổi bật |
+| 13 | **Gỡ trường `type` / paraphrase khỏi LLM** | [llm_prompts.py](../src/core/matching/llm_prompts.py), [llm_review.py](../src/core/matching/llm_review.py), [runner.py](../src/pipeline/runner.py) | LLM chỉ còn trả `identical` true/false, không phân loại exact/danh_so/paraphrase nữa → đơn giản, mọi cặp "giống" → `giong_nhau_hoan_toan` |
+| 14 | **Fix `section_id` Điều trùng giữa các Phần** | [legal_parser.py](../src/core/chunker/legal_parser.py) | VB nhiều Phần lặp "Điều 1..N" → trùng `dieu_N` → registry ghi đè + Phase 0 bỏ rơi chunk thứ hai (mất thay đổi thật). Dedup hậu tố `_2,_3...` |
+| 15 | **Xử lý Điều phẳng (tách sửa/thêm/xóa)** | [llm_prompts.py](../src/core/matching/llm_prompts.py) (`FLAT_DIEU_*`), [llm_review.py](../src/core/matching/llm_review.py) (`llm_review_dieu_flat`), [runner.py](../src/pipeline/runner.py) | Điều không Khoản/Điểm: gộp mọi sửa thành 1 item nhưng TÁCH từng đoạn xóa/thêm thành item riêng → không nuốt các vế *Xóa* bên trong |
+| 16 | **Bộ benchmark + chấm điểm tự động** | [benchmark/run_bench.py](../benchmark/run_bench.py), [benchmark/eval.py](../benchmark/eval.py) | Chạy pipeline trên 21 bộ VB, khớp item↔groundtruth theo vị trí Điều/Khoản/Điểm, tính Precision/Recall/F1 + Macro/Weighted, có log alignment kiểm chứng |
 
 ### 5.2. Chi tiết 3 fix quan trọng nhất
 
@@ -316,27 +320,102 @@ Mới: ...mỗi ngày chậm thanh toán phải chịu **0,05%** giá trị...
 ```
 Giúp người đọc thấy ngay chỗ khác biệt (số liệu, phủ định, động từ tình thái).
 
+#### Fix #14 — `section_id` Điều trùng giữa các Phần (phát hiện ở VB1)
+Văn bản nhiều **Phần** lặp lại "Điều 1..N" → parser gán cùng id `dieu_6` cho 2 Điều khác nhau. Hậu quả kép: (A) `build_node_registry` dùng `registry[id]=node` → node sau **ghi đè** node trước (mất nội dung); (B) `runner` Phase 0 theo dõi `matched_vb1/2` bằng **set section_id** → khi 1 bản `dieu_6` khớp, bản kia (chứa thay đổi thật) bị coi "đã khớp" rồi bỏ rơi.
+
+```mermaid
+flowchart TD
+    A["VB1: Phần 2·Điều 6 + Phần 3·Điều 6"] --> B["parser: cả hai = id 'dieu_6'"]
+    B --> C["registry['dieu_6'] ghi đè<br/>→ chỉ giữ 1 node"]
+    B --> D["Phase 0: khớp dieu_6 (bản template)<br/>→ matched.add('dieu_6')"]
+    D --> E["❌ bản dieu_6 chứa thay đổi bị bỏ rơi"]
+    C --> E
+    F["Fix: dedup → dieu_6, dieu_6_2..."] --> G["✅ 45 chunk = 45 id duy nhất<br/>khôi phục đoạn bị mất"]
+```
+VB1: 45 chunk nhưng chỉ 31 id duy nhất (14 trùng). Sau fix → 45 id duy nhất; recall 0.64 → **0.82** (bắt được Điều 6.2 `[ĐKCT]`→`10%` và Điều 13.1.a `[ĐKCT]`→`4.950.000.000`). Vì id Khoản/Điểm có prefix `dieu_N` nên dedup tự cascade.
+
+#### Fix #15 — Xử lý Điều phẳng, tách Xóa/Thêm (phát hiện ở VB5)
+Điều phẳng (hợp đồng dịch vụ, không Khoản/Điểm) trước đây review cả Điều bằng `llm_review_pair` → LLM gộp thành 1 `sua_doi` và **nuốt các vế Xóa** bên trong. Thêm nhánh riêng:
+
+```mermaid
+flowchart TD
+    A["Điều phẳng (không Khoản)"] --> B[llm_review_dieu_flat + prompt FLAT_DIEU_*]
+    B --> C["LLM phân loại từng thay đổi: kind=sua/them/xoa"]
+    C --> D["GỘP mọi sua_doi → 1 item<br/>(tránh phân mảnh từng dòng bảng)"]
+    C --> E["TÁCH mỗi xóa/thêm → item riêng<br/>(id phụ .xoa_1 để khỏi bị merge)"]
+    D & E --> F["Xóa lên đúng tab 'Xóa bỏ'"]
+```
+Chỉ áp dụng ở nhánh `cb_dieu_no_khoan` → **không đụng** luồng Khoản/Điểm. VB5: recall 0.25 → **0.75**, precision vẫn 0.86 (F1 0.36 → 0.80).
+
 ---
 
-## 6. Kết quả Kiểm thử (4 bộ văn bản, qwen3-80b)
+## 6. Kết quả Kiểm thử & Phương pháp đánh giá
 
-| Bộ | Loại | Trước fix | Sau fix | Groundtruth |
-|----|------|-----------|---------|-------------|
-| **VB4** | Hợp đồng mua bán điện | Điều 7/8 sai hoàn toàn | **9/9** ✓ | 3 sửa / 2 thêm / 4 xóa |
-| **VB1** | Hợp đồng tư vấn | 1 sửa, paraphrase tách xóa+thêm | **5 sửa / 1 thêm / 1 xóa** | nhiều paraphrase |
-| **VB5** | Hợp đồng SEO | 0–1 (chỉ tiêu đề) | **3 sửa đúng** | cấu trúc phẳng |
-| **VB10** | Hợp đồng xây dựng | 5/9 (eval cũ) | **9/9 phát hiện** ✓ | 6 sửa / 1 thêm / 1 xóa / 1 paraphrase |
-| **VB3** | Hợp đồng thế chấp | 6/9, chunking sai (`dieu_kho`) | **9/9** ✓ | 5 sửa / 2 thêm / 2 xóa |
+### 6.1. Phương pháp tính metric
+Bài toán là **phát hiện thay đổi** (detection). Khớp mỗi item hệ thống với một dòng groundtruth theo **vị trí Điều/Khoản/Điểm** (ưu tiên cùng loại sửa/thêm/xóa).
+
+- **TP** = item khớp đúng vị trí một dòng GT · **FP** = item không khớp GT nào (= `số trả về − TP`) · **FN** = dòng GT không được khớp (= `tổng GT − TP`)
+- **Precision** = TP/(TP+FP) · **Recall** = TP/(TP+FN) · **F1** = 2·P·R/(P+R) · báo cáo **Macro** (trung bình đều) và **Weighted** (theo số GT mỗi VB)
+- **Không dùng Accuracy**: cần True Negative (cặp không đổi) — số này khổng lồ (vd VB01 có 36 cặp giống hệt) sẽ thổi phồng accuracy lên ~0.95+ dù recall thấp, gây hiểu sai.
+- **Paraphrase trong groundtruth được tính là `sua_doi`** (theo quy ước hiện tại). Do LLM được cấu hình coi paraphrase = không đổi nghĩa, các dòng này thường bị tính **bỏ sót** → kéo recall xuống; đây là mâu thuẫn *thiết kế ↔ groundtruth* đã biết, không phải bug.
+
+Công cụ: [benchmark/eval.py](../benchmark/eval.py) tự đọc groundtruth (chịu được nhiều layout cột), in bảng + log alignment từng dòng để kiểm chứng.
+
+### 6.2. Kết quả 5 bộ đầu (qwen3-80b) — qua từng giai đoạn fix
+
+| VB | Loại | F1 đầu phiên | Sau fix #14 (id trùng) | **Sau fix #15 (Điều phẳng)** |
+|----|------|----|----|----|
+| VB01 | HĐ tư vấn (đa Phần) | 0.78 | 0.90 | **0.90** (P=1.00 R=0.82) |
+| VB02 | HĐ thi công | 0.67 | 0.80 | **0.80** (P=1.00 R=0.67) |
+| VB03 | HĐ thế chấp | 1.00 | 1.00 | **1.00** |
+| VB04 | HĐ mua bán điện | 1.00 | 1.00 | **1.00** |
+| VB05 | HĐ SEO (Điều phẳng) | 0.36 | 0.36 | **0.80** (P=0.86 R=0.75) |
+| **Macro F1** | | **0.76** | 0.81 | **0.90** |
 
 ```mermaid
 xychart-beta
-    title "Độ phủ phát hiện thay đổi (số ca đúng)"
-    x-axis ["VB4", "VB1", "VB5", "VB10", "VB3"]
-    y-axis "Số ca" 0 --> 9
-    bar [3, 1, 1, 5, 6]
-    bar [9, 6, 3, 9, 9]
+    title "F1 qua từng giai đoạn fix (5 bộ đầu)"
+    x-axis ["VB01", "VB02", "VB03", "VB04", "VB05"]
+    y-axis "F1" 0 --> 1
+    bar [0.78, 0.67, 1.0, 1.0, 0.36]
+    bar [0.90, 0.80, 1.0, 1.0, 0.80]
 ```
-> Cột trái: trước fix — Cột phải: sau fix.
+> Cột trái: đầu phiên — Cột phải: sau toàn bộ fix. Đặc trưng: precision rất cao (ít báo sai), recall bị giới hạn bởi paraphrase (chủ ý tắt) và một số ca Điều phẳng/đa Khoản.
+
+### 6.3. Kết quả đầy đủ 21 bộ (qwen3-80b)
+
+Khớp item↔groundtruth bằng **vị trí + độ trùng nội dung** (token overlap) — chịu được groundtruth không ghi rõ "Điều N". VB12–13 đầu vào là **PDF**; VB14–21 dùng quy ước `<tên>.docx` (gốc) + `<tên>-sua-doi.docx`. VB15 không có file groundtruth (chỉ "Đúng hết.docx") → loại khỏi trung bình.
+
+| VB | GT | TP | FP | FN | P | R | F1 |
+|----|----|----|----|----|----|----|----|
+| VB01 | 11 | 9 | 0 | 2 | 1.00 | 0.82 | 0.90 |
+| VB02 | 9 | 6 | 0 | 3 | 1.00 | 0.67 | 0.80 |
+| VB03 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB04 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB05 | 8 | 7 | 1 | 1 | 0.88 | 0.88 | 0.88 |
+| VB06 | 8 | 6 | 0 | 2 | 1.00 | 0.75 | 0.86 |
+| VB07 | 9 | 5 | 0 | 4 | 1.00 | 0.56 | 0.71 |
+| VB08 | 5 | 5 | 2 | 0 | 0.71 | 1.00 | 0.83 |
+| VB09 | 8 | 8 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB10 | 9 | 9 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB11 | 5 | 5 | 0 | 0 | 1.00 | 1.00 | 1.00 |
+| VB12 (PDF) | 7 | 6 | 1 | 1 | 0.86 | 0.86 | 0.86 |
+| VB13 (PDF) | 8 | 8 | 4 | 0 | 0.67 | 1.00 | 0.80 |
+| VB14 | 6 | 6 | 1 | 0 | 0.86 | 1.00 | 0.92 |
+| VB15 | — | — | — | — | _không có groundtruth_ | | |
+| VB16 | 6 | 6 | 6 | 0 | 0.50 | 1.00 | 0.67 |
+| VB17 | 7 | 7 | 1 | 0 | 0.88 | 1.00 | 0.93 |
+| VB18 | 9 | 8 | 0 | 1 | 1.00 | 0.89 | 0.94 |
+| VB19 | 10 | 9 | 2 | 1 | 0.82 | 0.90 | 0.86 |
+| VB20 | 6 | 5 | 1 | 1 | 0.83 | 0.83 | 0.83 |
+| VB21 | 5 | 5 | 1 | 0 | 0.83 | 1.00 | 0.91 |
+| **Macro (20 VB)** | | | | | **0.89** | **0.91** | **0.89** |
+| **Weighted (theo GT)** | | | | | **0.91** | **0.90** | **0.89** |
+
+**Nhận xét:**
+- **Precision cao** (Macro 0.89): hệ thống ít báo sai. Các ca FP chủ yếu là **over-detection** — bắt thêm thay đổi mà groundtruth không liệt kê, hoặc nhánh Điều phẳng tách một đoạn viết-lại thành xóa+thêm (vd VB16 `dieu_5`). Với công cụ diff pháp lý, báo dư an toàn hơn bỏ sót.
+- **Recall cao** (Macro 0.91). Các ca recall thấp: VB07 (0.56 — nhiều thay đổi ở Điểm sâu La Mã `i/ii/xiii`), VB02 (0.67 — paraphrase + 1 xóa nguyên khoản).
+- So với bảng tham chiếu ban đầu (Macro P=0.76 R=0.83 F1=0.78), kết quả hiện tại **P=0.89 R=0.91 F1=0.89**.
 
 ---
 
@@ -346,9 +425,10 @@ xychart-beta
 |---------|----------|-------------|
 | Summary sai số lẻ (vd "04 năm" → "0 năm") | Model qwen sinh nhầm chữ; phân loại vẫn đúng | UI hiển thị excerpt thật cạnh nhau; có thể thêm hậu kiểm số liệu |
 | LLM phán nhầm "giống" cho thay đổi thật | qwen đôi khi coi việc xóa/thêm 1 câu là "giống nghĩa" → cặp đó bị bỏ qua (không hiện thành sửa đổi) | Đã gỡ tab paraphrase (tránh hiển thị sai); nhưng cặp bị LLM phán nhầm vẫn có thể bị bỏ sót — guard difflib là phương án nếu cần tăng recall |
-| **Hiển thị bảng thật trên UI** (Feature 1) | Bảng hiện được flatten thành text để so sánh; UI chưa render `<table>` gốc | Đang lên kế hoạch — cần giữ HTML bảng theo section xuyên pipeline → API → frontend |
-| Điều phẳng (không Khoản/Điểm) | Thêm/xóa trong Điều bị gộp thành 1 `sua_doi` cấp Điều | Tách Điều phẳng theo bullet/câu (chưa làm) |
+| ~~Điều phẳng gộp thêm/xóa~~ **(ĐÃ FIX #15)** | Thêm/xóa trong Điều phẳng bị gộp thành 1 `sua_doi` | Đã tách qua `llm_review_dieu_flat`; còn lại: LLM thỉnh thoảng sót 1 vế xóa khi nhiều đoạn xóa nằm sát nhau |
+| Paraphrase ↔ groundtruth | LLM coi paraphrase = không đổi nghĩa (chủ ý tắt), nhưng groundtruth tính là `sua_doi` → trừ recall | Quyết định thiết kế; nếu muốn bắt paraphrase phải bật lại — đánh đổi nguy cơ giấu thay đổi thật |
 | Điều > 2048 token | Vượt giới hạn embedding | Tách khoản (đã có); cân nhắc đồng bộ granularity 2 bản |
+| eval under-count khi GT không ghi "Điều N" | Dòng groundtruth chỉ ghi nội dung, không nêu vị trí Điều → bộ chấm không trích được vị trí | Hạn chế của công cụ chấm, không phải pipeline; bổ sung cột "Vị trí" trong groundtruth sẽ khắc phục |
 | Fallback numbering chưa xử lý bảng | `_render_docx_with_numbering` chỉ render text + numbering, chưa flatten bảng như pandoc | Văn bản vừa dùng Word-numbering vừa có bảng có thể mất bảng (hiếm) |
 
 ---
@@ -377,4 +457,4 @@ sequenceDiagram
 
 ---
 
-*Cập nhật: 2026-06-17*
+*Cập nhật: 2026-06-17 — thêm fix #13–16, đánh giá đầy đủ 21 VB (Macro F1 0.89).*

@@ -106,6 +106,12 @@ def build_json_tree(text):
     current_b_tieu_de = ''
     current_lines = []
 
+    # Đảm bảo id của Điều là DUY NHẤT trong toàn văn bản. Văn bản nhiều "Phần"
+    # có thể lặp lại "Điều 1..N" ở mỗi Phần; nếu trùng id, registry (keyed by id)
+    # sẽ ghi đè và logic khớp (theo dõi bằng set section_id) sẽ bỏ rơi chunk thứ hai
+    # cùng các thay đổi thật bên trong nó. Gặp id trùng -> thêm hậu tố _2, _3...
+    seen_dieu_ids: dict[str, int] = {}
+
     for line in lines:
         if not line: continue
 
@@ -115,7 +121,9 @@ def build_json_tree(text):
                 dieu_blocks.append((current_b_loai, current_b_id, current_b_tieu_de, current_lines))
 
             current_b_loai = 'dieu'
-            current_b_id = f"dieu_{m.group(1).lower()}"
+            base_id = f"dieu_{m.group(1).lower()}"
+            seen_dieu_ids[base_id] = seen_dieu_ids.get(base_id, 0) + 1
+            current_b_id = base_id if seen_dieu_ids[base_id] == 1 else f"{base_id}_{seen_dieu_ids[base_id]}"
             dieu_num = m.group(1)
             dieu_title = m.group(2).strip()
             current_b_tieu_de = f"Điều {dieu_num}. {dieu_title}" if dieu_title else f"Điều {dieu_num}"

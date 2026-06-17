@@ -24,6 +24,8 @@ from src.core.matching.llm_prompts import (
     SINGLE_REVIEW_USER_PROMPT,
     KHOAN_WITH_DIEM_SYSTEM_PROMPT,
     KHOAN_WITH_DIEM_USER_PROMPT,
+    FLAT_DIEU_SYSTEM_PROMPT,
+    FLAT_DIEU_USER_PROMPT,
 )
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
@@ -212,6 +214,114 @@ def llm_review_pair(
         method=method,
         changes=filtered_changes,
     ), raw_text, None
+
+
+def llm_review_dieu_flat(
+    vb1_chunk: ChunkDocumentForHierarchical,
+    vb2_chunk: ChunkDocumentForHierarchical,
+    method: str,
+) -> tuple[list[ChangeItem], str]:
+    """Review một Điều PHẲNG (không có Khoản/Điểm). Trả về DANH SÁCH ChangeItem,
+    mỗi thay đổi (sửa/thêm/xóa) là một item riêng — đặc biệt để không bỏ sót các
+    đoạn bị XÓA bên trong một Điều bị sửa. Chỉ dùng cho nhánh Điều phẳng ở runner,
+    không ảnh hưởng luồng Khoản/Điểm.
+    """
+    dieu_id = vb1_chunk.metadata.section_id or vb2_chunk.metadata.section_id
+
+    # Bỏ qua LLM nếu text trùng khớp chính xác.
+    vb1_text = re.sub(r"\s+", " ", vb1_chunk.noi_dung or "").strip().lower()
+    vb2_text = re.sub(r"\s+", " ", vb2_chunk.noi_dung or "").strip().lower()
+    if vb1_text and vb1_text == vb2_text:
+        return [], "SKIPPED: content identical"
+
+    user_prompt = FLAT_DIEU_USER_PROMPT.format(
+        vb1_text=format_chunk(vb1_chunk, True),
+        vb2_text=format_chunk(vb2_chunk, True),
+    )
+    messages = [
+        {"role": "system", "content": FLAT_DIEU_SYSTEM_PROMPT},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    try:
+        raw_text = call_local_llm(messages)
+        data = parse_json_response(raw_text)
+    except Exception as exc:
+        logger.warning("LLM flat-dieu review failed for %s: %s", dieu_id, exc)
+        # Fallback an toàn: coi như một sửa đổi tổng thể để không nuốt thay đổi
+        return [ChangeItem(
+            kind="sua_doi",
+            vb1_chunk_id=dieu_id,
+            vb2_chunk_id=dieu_id,
+            vb1_excerpt=vb1_chunk.noi_dung or "",
+            vb2_excerpt=vb2_chunk.noi_dung or "",
+            summary="LLM khong tra ve ket qua hop le.",
+            method=method,
+        )], f"ERROR: {exc}"
+
+    if data.get("identical", False):
+        return [], raw_text
+
+    # Chiến lược: GỘP mọi thay đổi "sua_doi" trong cùng Điều thành MỘT item
+    # (tránh phân mảnh từng dòng bảng/giá), nhưng TÁCH riêng từng đoạn bị XÓA và
+    # từng đoạn THÊM MỚI thành item độc lập (đây mới là phần trước đây hay bị nuốt).
+    items: list[ChangeItem] = []
+    sua_changes: list[str] = []
+    sua_summaries: list[str] = []
+    sua_old, sua_new = "", ""
+    kind_counts = {"them_moi": 0, "xoa_bo": 0}
+
+    for c in data.get("changes", []):
+        if not isinstance(c, dict):
+            continue
+        old = str(c.get("old_content", "")).strip()
+        new = str(c.get("new_content", "")).strip()
+        if old and new and old == new:
+            continue
+
+        kind = str(c.get("kind", "")).strip().lower()
+        if kind not in ("them_moi", "xoa_bo", "sua_doi"):
+            kind = "xoa_bo" if old and not new else "them_moi" if new and not old else "sua_doi"
+        summary = str(c.get("summary", "")).strip()
+
+        if kind == "sua_doi":
+            sua_changes.append(f"Cũ: {old}\nMới: {new}" if old and new else (f"Xóa bỏ: {old}" if old else f"Thêm mới: {new}"))
+            if summary:
+                sua_summaries.append(summary)
+            if old and not sua_old:
+                sua_old = old
+            if new and not sua_new:
+                sua_new = new
+            continue
+
+        # xoa_bo / them_moi: mỗi đoạn là một item riêng (gán hậu tố id để khỏi bị merge)
+        idx = kind_counts[kind]
+        kind_counts[kind] += 1
+        suffix = "" if idx == 0 else f".{kind[:3]}_{idx}"
+        items.append(ChangeItem(
+            kind=kind,
+            vb1_chunk_id=(dieu_id + suffix) if kind == "xoa_bo" else None,
+            vb2_chunk_id=(dieu_id + suffix) if kind == "them_moi" else None,
+            vb1_excerpt=old if kind == "xoa_bo" else "",
+            vb2_excerpt=new if kind == "them_moi" else "",
+            summary=summary,
+            method=method,
+            changes=[f"Xóa bỏ: {old}" if kind == "xoa_bo" else f"Thêm mới: {new}"],
+        ))
+
+    if sua_changes:
+        items.append(ChangeItem(
+            kind="sua_doi",
+            vb1_chunk_id=dieu_id,
+            vb2_chunk_id=dieu_id,
+            vb1_excerpt=sua_old or (vb1_chunk.noi_dung or ""),
+            vb2_excerpt=sua_new or (vb2_chunk.noi_dung or ""),
+            summary=" ".join(sua_summaries),
+            method=method,
+            changes=sua_changes,
+        ))
+
+    return items, raw_text
 
 
 def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[ChangeItem | None, str]:

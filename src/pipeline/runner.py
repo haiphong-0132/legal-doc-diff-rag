@@ -355,7 +355,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
     # Phase 2: Progressive Zoom-In & Unified LLM Review (Tối ưu hóa chạy SONG SONG)
     _notify("phase_2", "Phase 2: Lên lịch phân tích LLM...")
     logger.info("Phase 2 started")
-    from src.core.matching.llm_review import llm_review_pair, llm_review_single
+    from src.core.matching.llm_review import llm_review_pair, llm_review_single, llm_review_dieu_flat
     from src.core.matching.matcher import match_sub_nodes
 
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
@@ -450,18 +450,19 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             khoan_nodes_2 = node_dieu_2.get("con", [])
 
             if not khoan_nodes_1 and not khoan_nodes_2:
-                # Điều không có Khoản -> Chạy LLM Review trực tiếp cho cặp Điều
+                # Điều PHẲNG (không có Khoản) -> review riêng để tách từng thay đổi
+                # (sửa/thêm/xóa) thành item độc lập, tránh nuốt các đoạn bị XÓA bên trong.
                 vb1_c = vb1_map[vb1_id]
                 vb2_c = vb2_map[vb2_id]
                 def cb_dieu_no_khoan(res, m=match):
-                    item, _, _ = res
-                    if item is not None:
-                        change_items.append(item)
+                    items, _ = res
+                    if items:
+                        change_items.extend(items)
                     else:
                         # LLM coi là giống (kể cả khác đánh số / diễn đạt lại) → giong_nhau_hoan_toan
                         m.method = "raw_exact"
                 tasks.append({
-                    "func": llm_review_pair,
+                    "func": llm_review_dieu_flat,
                     "args": (vb1_c, vb2_c, match.method),
                     "callback": cb_dieu_no_khoan
                 })
