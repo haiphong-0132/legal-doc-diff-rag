@@ -24,12 +24,13 @@ llm:
   model_name: "qwen/qwen3-next-80b-a3b-instruct"
   
   # Tham số sinh văn bản cho NVIDIA mode
-  temperature: 0.5
-  top_p: 0.9
+  # temperature=0 để benchmark TÁI LẬP được (bài toán diff không cần sáng tạo)
+  temperature: 0
+  top_p: 1.0
   max_tokens: 4100
-  
+
   # Tham số sinh văn bản cho Remote Ollama mode
-  remote_temperature: 0.5
+  remote_temperature: 0
   remote_max_length: 2000
   remote_timeout: 180
 
