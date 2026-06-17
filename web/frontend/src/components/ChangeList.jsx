@@ -5,7 +5,6 @@ const TABS = [
   { key: 'sua_doi', label: 'Sửa đổi', badge: 'bg-amber-100 text-amber-700' },
   { key: 'them_moi', label: 'Thêm mới', badge: 'bg-green-100 text-green-700' },
   { key: 'xoa_bo', label: 'Xóa bỏ', badge: 'bg-red-100 text-red-700' },
-  { key: 'giong_nhau_ngu_nghia', label: 'Giống ngữ nghĩa', badge: 'bg-blue-100 text-blue-700' },
 ];
 
 function ChangeCard({ item, onClick }) {
@@ -25,7 +24,7 @@ function ChangeCard({ item, onClick }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-800 truncate">{id}</p>
           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{preview}</p>
-          {item.kind !== 'giong_nhau_ngu_nghia' && item.summary && item.summary !== 'tom tat ngan cac diem thay doi quan trong' && (
+          {item.summary && item.summary !== 'tom tat ngan cac diem thay doi quan trong' && item.summary !== 'Cặp chunk giống nhau về ngữ nghĩa' && (
             <p className="text-xs text-blue-600 mt-2 font-medium">{item.summary}</p>
           )}
         </div>

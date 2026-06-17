@@ -149,12 +149,14 @@ function ChangeDetailModal({ item, onClose }) {
             <div className={`p-4 overflow-y-auto ${!vb2Text ? 'col-span-2' : 'border-r border-gray-200'}`}>
               <div className="text-xs font-semibold text-gray-400 uppercase mb-2">VB1 (Cũ)</div>
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap select-text">{vb1Text}</p>
+              {renderTables(item.vb1?.tables)}
             </div>
           )}
           {vb2Text && (
             <div className={`p-4 overflow-y-auto ${!vb1Text ? 'col-span-2' : ''}`}>
               <div className="text-xs font-semibold text-gray-400 uppercase mb-2">VB2 (Mới)</div>
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap select-text">{vb2Text}</p>
+              {renderTables(item.vb2?.tables)}
             </div>
           )}
         </div>
@@ -172,11 +174,11 @@ function ChangeDetailModal({ item, onClose }) {
         )}
 
         {/* Phần kết quả so sánh LLM chiếm trọn không gian còn lại và tự cuộn */}
-        {((!isSemantic && item.summary) || item.changes?.length > 0) && (
+        {(item.summary || item.changes?.length > 0) && (
           <div className="flex-1 overflow-y-auto px-6 py-4 bg-gray-50 rounded-b-2xl">
-            {!isSemantic && item.summary && (
+            {item.summary && (
               <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                <span className="font-semibold">Tóm tắt:</span> {item.summary}
+                <span className="font-semibold">{isSemantic ? 'Ghi chú:' : 'Tóm tắt:'}</span> {item.summary}
               </p>
             )}
             {item.changes?.length > 0 && (
@@ -188,10 +190,10 @@ function ChangeDetailModal({ item, onClose }) {
                       {typeof c === 'object' ? (
                         <div className="space-y-1">
                           <p className="leading-relaxed whitespace-pre-wrap">
-                            <span className="font-semibold text-red-600">Cũ:</span> {c.old_content}
+                            <span className="font-semibold text-red-600">Cũ:</span> {renderRich(c.old_content)}
                           </p>
                           <p className="leading-relaxed whitespace-pre-wrap">
-                            <span className="font-semibold text-green-600">Mới:</span> {c.new_content}
+                            <span className="font-semibold text-green-600">Mới:</span> {renderRich(c.new_content)}
                           </p>
                         </div>
                       ) : (
@@ -200,19 +202,19 @@ function ChangeDetailModal({ item, onClose }) {
                             if (line.trim().startsWith('Cũ:')) {
                               return (
                                 <p key={idx} className="leading-relaxed whitespace-pre-wrap">
-                                  <span className="font-semibold text-red-600">Cũ:</span>{line.substring(line.indexOf(':') + 1)}
+                                  <span className="font-semibold text-red-600">Cũ:</span>{renderRich(line.substring(line.indexOf(':') + 1))}
                                 </p>
                               );
                             }
                             if (line.trim().startsWith('Mới:')) {
                               return (
                                 <p key={idx} className="leading-relaxed whitespace-pre-wrap">
-                                  <span className="font-semibold text-green-600">Mới:</span>{line.substring(line.indexOf(':') + 1)}
+                                  <span className="font-semibold text-green-600">Mới:</span>{renderRich(line.substring(line.indexOf(':') + 1))}
                                 </p>
                               );
                             }
                             return (
-                              <p key={idx} className="whitespace-pre-wrap leading-relaxed">{line}</p>
+                              <p key={idx} className="whitespace-pre-wrap leading-relaxed">{renderRich(line)}</p>
                             );
                           })}
                         </div>
@@ -226,6 +228,37 @@ function ChangeDetailModal({ item, onClose }) {
         )}
       </div>
     </div>
+  );
+}
+
+// Render danh sách bảng (HTML gốc) thành <table> thật thay vì text flatten.
+function renderTables(tables) {
+  if (!tables || tables.length === 0) return null;
+  return (
+    <div className="mt-3 space-y-3">
+      <div className="text-xs font-semibold text-gray-400 uppercase">Bảng biểu</div>
+      {tables.map((html, i) => (
+        <div
+          key={i}
+          className="overflow-x-auto text-xs border border-gray-200 rounded
+                     [&_table]:w-full [&_table]:border-collapse
+                     [&_td]:border [&_td]:border-gray-300 [&_td]:px-2 [&_td]:py-1 [&_td]:align-top
+                     [&_th]:border [&_th]:border-gray-300 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-gray-100 [&_th]:text-left"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Render text có đánh dấu **...** (Markdown bold) -> <strong> tô nổi bật từ thay đổi.
+function renderRich(text) {
+  if (text == null) return null;
+  const parts = String(text).split(/\*\*(.+?)\*\*/g);
+  return parts.map((p, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="font-bold text-blue-700 bg-blue-50 rounded px-0.5">{p}</strong>
+      : <span key={i}>{p}</span>
   );
 }
 

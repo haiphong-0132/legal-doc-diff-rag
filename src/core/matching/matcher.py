@@ -302,5 +302,27 @@ def match_sub_nodes(
     unmatched_1 = [n for n in nodes_1 if n.get("id") not in matched_1_ids]
     unmatched_2 = [n for n in nodes_2 if n.get("id") not in matched_2_ids]
 
+    # Fix B: Các con còn thừa ở CẢ HAI phía thường là cặp diễn đạt lại (paraphrase) bị
+    # ngưỡng hybrid loại. Ghép chúng với ngưỡng 0 (chỉ Hungarian) rồi trả về dưới dạng cặp
+    # đã khớp để LLM phán "sửa đổi / giống nghĩa", thay vì tự động coi là xóa + thêm.
+    if unmatched_1 and unmatched_2:
+        rem1 = [r for r in rec_list_1 if r.chunk.metadata.section_id not in matched_1_ids]
+        rem2 = [r for r in rec_list_2 if r.chunk.metadata.section_id not in matched_2_ids]
+        extra = build_global_matches(
+            vb1_records=rem1,
+            vb2_records=rem2,
+            vector_store=None,
+            retrieval_service=None,
+            hybrid_threshold=0.0,
+        )
+        for m in extra:
+            matched_pairs.append((m.vb1_chunk_id, m.vb2_chunk_id, m.hybrid_score or 0.0))
+            if m.vb1_chunk_id:
+                matched_1_ids.add(m.vb1_chunk_id)
+            if m.vb2_chunk_id:
+                matched_2_ids.add(m.vb2_chunk_id)
+        unmatched_1 = [n for n in nodes_1 if n.get("id") not in matched_1_ids]
+        unmatched_2 = [n for n in nodes_2 if n.get("id") not in matched_2_ids]
+
     return matched_pairs, unmatched_1, unmatched_2
 

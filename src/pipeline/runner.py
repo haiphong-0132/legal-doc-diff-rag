@@ -66,9 +66,45 @@ def _init_reranker() -> Any:
     return DummyReranker()
 
 
+_TABLE_MARKER_RE = re.compile(r"⟦BANG:(\d+)⟧")
+
+
+def _strip_table_markers(text: str) -> str:
+    if not text:
+        return text
+    return _TABLE_MARKER_RE.sub("", text).replace("\n\n", "\n").strip()
+
+
+def _attach_tables(chunks, registry, tables):
+    """Gắn HTML bảng gốc vào đúng đoạn (theo marker ⟦BANG:i⟧) rồi xóa marker khỏi text
+    để matching/LLM không thấy marker."""
+    def collect(text):
+        return [int(i) for i in _TABLE_MARKER_RE.findall(text or "") if int(i) < len(tables)]
+
+    for ch in chunks:
+        idxs = collect(ch.noi_dung) + collect(ch.tieu_de)
+        if idxs:
+            seen = set()
+            ch.tables = [tables[i] for i in idxs if not (i in seen or seen.add(i))]
+        ch.noi_dung = _strip_table_markers(ch.noi_dung)
+        ch.tieu_de = _strip_table_markers(ch.tieu_de)
+
+    for node in registry.values():
+        for key in ("noi_dung", "cached_merged_text", "tieu_de"):
+            if key in node and isinstance(node[key], str):
+                idxs = collect(node[key])
+                if idxs:
+                    node.setdefault("tables", [])
+                    for i in idxs:
+                        if tables[i] not in node["tables"]:
+                            node["tables"].append(tables[i])
+                node[key] = _strip_table_markers(node[key])
+
+
 def _load_chunks(file_path: str) -> tuple[List[ChunkDocumentForHierarchical], dict]:
     logger.info("Ingestion started for %s", file_path)
-    payload = build_json_tree(extract_file(file_path))
+    text, tables = extract_file(file_path, return_tables=True)
+    payload = build_json_tree(text)
     logger.info("Built JSON tree for %s", file_path)
 
     # 1. Dựng Registry phẳng O(1) và tính sẵn cached_keywords từ dưới lên
@@ -78,7 +114,11 @@ def _load_chunks(file_path: str) -> tuple[List[ChunkDocumentForHierarchical], di
     from src.config import CHUNK_MAX_TOKENS, CHUNK_BY
     chunks = HierarchicalChunker(max_tokens=CHUNK_MAX_TOKENS, chunk_by=CHUNK_BY).chunk({"payload": payload}, registry=registry)
 
-    logger.info("Loaded %d chunks and built registry with %d nodes from %s", len(chunks), len(registry), file_path)
+    # 2. Gắn HTML bảng gốc vào đoạn tương ứng + xóa marker khỏi text
+    if tables:
+        _attach_tables(chunks, registry, tables)
+
+    logger.info("Loaded %d chunks (%d tables) and built registry with %d nodes from %s", len(chunks), len(tables), len(registry), file_path)
     return chunks, registry
 
 
@@ -320,7 +360,6 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 
     vb2_map = {c.metadata.section_id: c for c in vb2_chunks}
     change_items: List[ChangeItem] = []
-    llm_identical_pairs = 0
 
     # Khởi tạo danh sách các tác vụ (task) gọi LLM song song
     tasks = []
@@ -345,13 +384,12 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
             vb2_c = vb2_map.get(vb2_id)
             if vb1_c and vb2_c:
                 def cb_dieu_fallback(res, m=match):
-                    nonlocal llm_identical_pairs
-                    item, _ = res
+                    item, _, _ = res
                     if item is not None:
                         change_items.append(item)
                     else:
-                        llm_identical_pairs += 1
-                        m.method = "llm_semantic_identical"
+                        # LLM coi là giống (kể cả khác đánh số / diễn đạt lại) → giong_nhau_hoan_toan
+                        m.method = "raw_exact"
                 tasks.append({
                     "func": llm_review_pair,
                     "args": (vb1_c, vb2_c, match.method),
@@ -363,7 +401,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
 
         # Định nghĩa các callback helper để xử lý kết quả LLM thu được sau song song
         def cb_dieu_intro(res, v1_id=vb1_id, v2_id=vb2_id):
-            item, _ = res
+            item, _, _ = res
             if item:
                 if not item.vb1_chunk_id:
                     item.vb1_chunk_id = v1_id
@@ -390,7 +428,7 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 change_items.append(item)
 
         def cb_matched_khoan(res, v1_id=vb1_id, v2_id=vb2_id):
-            item, _ = res
+            item, _, _ = res
             if item:
                 if not item.vb1_chunk_id:
                     item.vb1_chunk_id = v1_id
@@ -416,13 +454,12 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 vb1_c = vb1_map[vb1_id]
                 vb2_c = vb2_map[vb2_id]
                 def cb_dieu_no_khoan(res, m=match):
-                    nonlocal llm_identical_pairs
-                    item, _ = res
+                    item, _, _ = res
                     if item is not None:
                         change_items.append(item)
                     else:
-                        llm_identical_pairs += 1
-                        m.method = "llm_semantic_identical"
+                        # LLM coi là giống (kể cả khác đánh số / diễn đạt lại) → giong_nhau_hoan_toan
+                        m.method = "raw_exact"
                 tasks.append({
                     "func": llm_review_pair,
                     "args": (vb1_c, vb2_c, match.method),
@@ -547,16 +584,16 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                     context_d1 = get_node_context(d1["id"], registry_vb1)
                     chunk_d1 = ChunkDocumentForHierarchical(
                         metadata=ChunkMetadata(section_id=d1["id"]),
-                    tieu_de=d1.get("noi_dung") or d1.get("tieu_de", ""),
-                    noi_dung=context_d1,
-                    ref=d1.get("ref", [])
-                )
-                tasks.append({
-                    "func": llm_review_single,
-                    "args": (chunk_d1, "xoa_bo"),
-                    "callback": cb_unmatched_khoan_1
-                })
-                
+                        tieu_de=d1.get("noi_dung") or d1.get("tieu_de", ""),
+                        noi_dung=context_d1,
+                        ref=d1.get("ref", [])
+                    )
+                    tasks.append({
+                        "func": llm_review_single,
+                        "args": (chunk_d1, "xoa_bo"),
+                        "callback": cb_unmatched_khoan_1
+                    })
+
                 for d2 in unmatched_diem_2:
                     context_d2 = get_node_context(d2["id"], registry_vb2)
                     chunk_d2 = ChunkDocumentForHierarchical(
@@ -576,14 +613,16 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                     d1_node = registry_vb1.get(d1_id, {})
                     d2_node = registry_vb2.get(d2_id, {})
                     
-                    d1_tieu_de = strip_numbering(d1_node.get("tieu_de", ""))
-                    d2_tieu_de = strip_numbering(d2_node.get("tieu_de", ""))
-                    
-                    # LLM review nếu tieu_de khác
-                    if d1_tieu_de != d2_tieu_de and (d1_tieu_de or d2_tieu_de):
+                    # So sánh NỘI DUNG (không phải tieu_de — với Điểm tieu_de chỉ là nhãn "Điểm a").
+                    # strip_numbering để cặp chỉ-khác-đánh-số được coi là giống → bỏ qua.
+                    d1_content = strip_numbering(re.sub(r"\s+", " ", str(d1_node.get("cached_merged_text") or d1_node.get("noi_dung") or "")).strip())
+                    d2_content = strip_numbering(re.sub(r"\s+", " ", str(d2_node.get("cached_merged_text") or d2_node.get("noi_dung") or "")).strip())
+
+                    # LLM review nếu nội dung khác (sửa đổi/paraphrase); giống nhau thì bỏ qua
+                    if d1_content != d2_content and (d1_content or d2_content):
                         context_d1 = get_node_context(d1_id, registry_vb1)
                         context_d2 = get_node_context(d2_id, registry_vb2)
-                        
+
                         chunk_d1 = ChunkDocumentForHierarchical(
                             metadata=ChunkMetadata(section_id=d1_id),
                             tieu_de=d1_node.get("noi_dung") or d1_node.get("tieu_de", ""),
@@ -686,11 +725,13 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                         d1_node = registry_vb1.get(d1_id, {})
                         d2_node = registry_vb2.get(d2_id, {})
                         
-                        d1_tieu_de = strip_numbering(d1_node.get("tieu_de", ""))
-                        d2_tieu_de = strip_numbering(d2_node.get("tieu_de", ""))
-                        
-                        # LLM review nếu tieu_de khác
-                        if d1_tieu_de != d2_tieu_de and (d1_tieu_de or d2_tieu_de):
+                        # So sánh NỘI DUNG (Điểm có tieu_de chỉ là nhãn "Điểm a"); strip_numbering
+                        # để cặp chỉ-khác-đánh-số coi là giống → bỏ qua.
+                        d1_content = strip_numbering(re.sub(r"\s+", " ", str(d1_node.get("cached_merged_text") or d1_node.get("noi_dung") or "")).strip())
+                        d2_content = strip_numbering(re.sub(r"\s+", " ", str(d2_node.get("cached_merged_text") or d2_node.get("noi_dung") or "")).strip())
+
+                        # LLM review nếu nội dung khác (sửa đổi/paraphrase); giống nhau thì bỏ qua
+                        if d1_content != d2_content and (d1_content or d2_content):
                             context_d1 = get_node_context(d1_id, registry_vb1)
                             context_d2 = get_node_context(d2_id, registry_vb2)
                             
@@ -847,50 +888,26 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
                 changed_section_ids.add(".".join(parts[:i]))
 
     # Cập nhật nhãn khớp cho MatchResult: Giáng cấp từ 'high_confidence_greedy' hoặc
-    # 'llm_semantic_identical' sang 'modified_by_llm' để loại khỏi nhóm 'Giống ngữ nghĩa'
+    # sang 'modified_by_llm' khi có con thay đổi (để không bị tính là khớp 'giống nhau')
     for match in results:
         if match.vb1_chunk_id in changed_section_ids or match.vb2_chunk_id in changed_section_ids:
-            if match.method in {"high_confidence_greedy", "llm_semantic_identical"}:
+            if match.method == "high_confidence_greedy":
                 match.method = "modified_by_llm"
 
     raw_exact_count = len([r for r in results if r.method == "raw_exact"])
     high_confidence_greedy_count = len([r for r in results if r.method == "high_confidence_greedy"])
     hungarian_hybrid_count = len([r for r in results if r.method == "hungarian_hybrid"])
-    high_confidence_total = high_confidence_greedy_count + llm_identical_pairs
     modified_count = len([item for item in change_items if item.kind == "sua_doi"])
     added_count = len([item for item in change_items if item.kind == "them_moi"])
     deleted_count = len([item for item in change_items if item.kind == "xoa_bo"])
     logger.info("Phase 2 finished: llm_items=%d", len(change_items))
-    semantic_match_methods = {"llm_semantic_identical"}
-    semantic_matches = []
-    for match in results:
-        if match.method not in semantic_match_methods or not match.vb1_chunk_id:
-            continue
-        vb1_chunk = vb1_map.get(match.vb1_chunk_id)
-        vb2_chunk = vb2_map.get(match.vb2_chunk_id)
-        if not vb1_chunk or not vb2_chunk:
-            continue
-        semantic_matches.append(
-            {
-                "vb1_chunk_id": match.vb1_chunk_id,
-                "vb2_chunk_id": match.vb2_chunk_id,
-                "vb1_content": _chunk_content_for_report(vb1_chunk),
-                "vb2_content": _chunk_content_for_report(vb2_chunk),
-                "method": match.method,
-                "distance": match.distance,
-                "rerank_score": match.rerank_score,
-                "hybrid_score": match.hybrid_score,
-            }
-        )
 
-    report = render_change_report(change_items, semantic_matches=semantic_matches)
+    report = render_change_report(change_items)
 
     logger.info(
-        "Pipeline summary: raw_exact=%d high_conf_total=%d (greedy=%d llm_identical=%d) hungarian_hybrid=%d llm_items=%d",
+        "Pipeline summary: raw_exact=%d greedy=%d hungarian_hybrid=%d llm_items=%d",
         raw_exact_count,
-        high_confidence_total,
         high_confidence_greedy_count,
-        llm_identical_pairs,
         hungarian_hybrid_count,
         len(change_items),
     )
@@ -899,7 +916,6 @@ def run_pipeline(vb1_path: str = VB1_PATH, vb2_path: str = VB2_PATH, on_phase: A
         "so_luong_chunk_vb1": len(vb1_chunks),
         "so_luong_chunk_vb2": len(vb2_chunks),
         "giong_nhau_hoan_toan": raw_exact_count,
-        "giong_nhau_ngu_nghia": high_confidence_total,
         "sua_doi": modified_count,
         "them_moi": added_count,
         "xoa_bo": deleted_count,

@@ -10,15 +10,18 @@ Quy tắc so sánh:
 - Chỉ báo cáo thay đổi làm khác ý nghĩa pháp lý, ví dụ: quyền, nghĩa vụ, điều kiện áp dụng, đối tượng áp dụng, thời hạn, mức phạt, số tiền, trình tự, thẩm quyền, ngoại lệ, phạm vi hiệu lực.
 - Bỏ qua thay đổi không làm khác nội dung: số điều/khoản/mục, mã đoạn, thứ tự trình bày, xuống dòng, dấu câu, chính tả nhỏ, định dạng, cách diễn đạt tương đương.
 - Nếu chỉ khác số thứ tự hoặc vị trí trong văn bản nhưng nội dung giữ nguyên, phải xem là giống nhau.
+- Đặc biệt chú ý các thay đổi NHỎ nhưng làm đổi nghĩa: phủ định (có↔không, được↔không được), động từ tình thái (phải / có trách nhiệm ↔ có thể / được quyền), con số, ngày tháng, thời hạn, tỷ lệ phần trăm.
+- Khi trích old_content, new_content và viết summary, phải ghi số liệu, ngày tháng, tỷ lệ ĐÚNG NGUYÊN VĂN từ đoạn văn bản (ví dụ "03 năm" → "04 năm"); tuyệt đối không làm tròn, rút gọn hay suy đoán chữ số.
 - Nếu thiếu căn cứ để khẳng định thay đổi, không được phóng đại; hãy nêu ngắn gọn phần chưa rõ trong summary.
 
 Yêu cầu đầu ra:
 - Chỉ trả về một JSON object hợp lệ.
 - Không bọc JSON trong markdown.
 - Không thêm giải thích ngoài JSON.
-- Trường identical phải là boolean.
-- Nếu identical là true, không cần trả changes.
+- Trường identical phải là boolean. Coi là giống nhau (identical=true) khi không có thay đổi ý nghĩa pháp lý — kể cả khi chỉ khác cách đánh số, trình bày, hoặc diễn đạt lại bằng từ ngữ khác mà giữ nguyên nội dung.
+- Khi identical là true, không cần trả thêm trường nào khác (không cần changes).
 - Nếu identical là false, changes là danh sách các điểm thay đổi cụ thể, mỗi điểm gồm old_content và new_content.
+- Trong mỗi old_content và new_content, hãy BỌC riêng các từ/cụm từ BỊ THAY ĐỔI bằng cặp dấu ** (in đậm Markdown) để làm nổi bật; phần nội dung không đổi giữ nguyên. Ví dụ: "...mỗi ngày chậm thanh toán phải chịu **0,05%** giá trị..." và "...trong vòng **03 ngày làm việc**...".
 """
 
 
@@ -28,7 +31,7 @@ Hãy chỉ rõ vị trí thay đổi (trích xuất từ trường "Mã đoạn"
 </task>
 
 <output_schema>
-Nếu nội dung giống nhau:
+Nếu nội dung giống nhau (không đổi nghĩa pháp lý):
 {{"identical": true}}
 
 Nếu có thay đổi nội dung thực sự:
@@ -55,8 +58,8 @@ VB2: 3.1. Giá trị Hợp đồng: Đơn giá dịch vụ bảo dưỡng là 20
   "identical": false,
   "changes": [
     {{
-      "old_content": "Đơn giá dịch vụ bảo dưỡng là 18.000.000 đồng.",
-      "new_content": "Đơn giá dịch vụ bảo dưỡng là 20.500.000 đồng."
+      "old_content": "Đơn giá dịch vụ bảo dưỡng là **18.000.000** đồng.",
+      "new_content": "Đơn giá dịch vụ bảo dưỡng là **20.500.000** đồng."
     }}
   ],
   "summary": "Sửa đổi Khoản 3.1, Điều 3: Đơn giá dịch vụ bảo dưỡng điều hòa trung tâm tăng từ 18.000.000 đồng lên 20.500.000 đồng."
@@ -123,4 +126,28 @@ Nội dung: 9. Lãi suất giao dịch bình quân liên ngân hàng là lãi su
 <chunk>
 {chunk_text}
 </chunk>
+"""
+
+
+KHOAN_WITH_DIEM_SYSTEM_PROMPT = "Bạn là hệ thống tự động phân tích so sánh văn bản pháp luật. Hãy luôn trả về JSON hợp lệ."
+
+
+KHOAN_WITH_DIEM_USER_PROMPT = """Bạn là chuyên gia phân tích thay đổi văn bản pháp luật Việt Nam.
+Hãy phân tích sự thay đổi của Khoản sau đây cùng với danh sách Điểm con của nó:
+
+{diff_block}
+
+NGUYÊN TẮC:
+- Chỉ báo cáo thay đổi làm khác ý nghĩa pháp lý, ví dụ: quyền, nghĩa vụ, điều kiện áp dụng, đối tượng áp dụng, thời hạn, mức phạt, số tiền, trình tự, thẩm quyền, ngoại lệ, phạm vi hiệu lực.
+- Bỏ qua thay đổi không làm khác nội dung: số điều/khoản/mục, mã đoạn, thứ tự trình bày, xuống dòng, dấu câu, chính tả nhỏ, định dạng, cách diễn đạt tương đương.
+- Nếu chỉ khác số thứ tự hoặc vị trí trong văn bản nhưng nội dung giữ nguyên, phải xem là giống nhau.
+- Trả về JSON có cấu trúc:
+{{
+  "identical": false,
+  "summary": "Tóm tắt nhận xét ngắn gọn thay đổi tổng thể của Khoản này",
+  "changes": [
+    "Thay đổi 1...",
+    "Thay đổi 2..."
+  ]
+}}
 """

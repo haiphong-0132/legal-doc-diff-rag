@@ -36,6 +36,7 @@ class ChunkDocumentForHierarchical(BaseModel):
     tieu_de: Optional[str] = None
     noi_dung: Optional[str] = None
     ref: List[str] = Field(default_factory=list)
+    tables: List[str] = Field(default_factory=list)  # HTML các bảng thuộc đoạn này (để hiển thị trên UI)
 
 
 class EmbeddingRequest(BaseModel):

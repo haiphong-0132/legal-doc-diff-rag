@@ -11,7 +11,6 @@ const MOBILE_TABS = [
 
 const STAT_ITEMS = [
   { keys: ['giong_nhau_hoan_toan', 'raw_exact'], label: 'Giống hệt', color: 'bg-green-100 text-green-700' },
-  { keys: ['giong_nhau_ngu_nghia', 'high_confidence_greedy'], label: 'Giống nghĩa', color: 'bg-blue-100 text-blue-700' },
   { keys: ['sua_doi', 'hungarian_hybrid'], label: 'Sửa đổi', color: 'bg-amber-100 text-amber-700' },
   { keys: ['them_moi'], label: 'Thêm', color: 'bg-emerald-100 text-emerald-700' },
   { keys: ['xoa_bo'], label: 'Xóa', color: 'bg-red-100 text-red-700' },

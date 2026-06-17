@@ -45,5 +45,10 @@ web:
     - ".pdf"
 
 chunking:
-  max_tokens: 512          # Độ dài token tối đa cho mỗi chunk phân cấp (Mặc định: 512)
+  # Đặt sát giới hạn ngữ cảnh của mô hình Embedding (2048) để mỗi Điều thường giữ
+  # nguyên một chunk ở CẢ HAI văn bản. Ngưỡng thấp (512) khiến cùng một Điều bị tách
+  # khoản ở bản này nhưng giữ nguyên ở bản kia (do số token lệch nhau sau khi thêm/xóa
+  # khoản) -> matcher lệch cấp -> bắt sai "thêm mới Điều / xóa khoản". Phase 2 vẫn zoom
+  # xuống khoản/điểm qua registry nên độ chi tiết phát hiện thay đổi không bị mất.
+  max_tokens: 2000         # Độ dài token tối đa cho mỗi chunk phân cấp
   chunk_by: "dieu"         # Chọn "dieu", "khoan", "diem"

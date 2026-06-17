@@ -123,6 +123,7 @@ def _chunk_to_dict(chunk) -> dict:
         "tieu_de": chunk.tieu_de,
         "noi_dung": chunk.noi_dung,
         "ref": chunk.ref,
+        "tables": getattr(chunk, "tables", []) or [],
     }
 
 
@@ -253,7 +254,7 @@ async def get_results(job_id: str):
             pair["vb2"] = _chunk_to_dict(vb2_map[m.vb2_chunk_id])
         matched_pairs.append(pair)
 
-    semantic_methods = {"high_confidence_greedy", "llm_semantic_identical"}
+    semantic_methods = {"llm_semantic_identical"}
     semantic_matches = [
         _semantic_match_to_dict(m, vb1_map, vb2_map)
         for m in r.match_results

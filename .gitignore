@@ -51,3 +51,5 @@ data/*
 myenv/
 Host code/*
 node_modules/
+
+benchmark
