@@ -24,12 +24,13 @@ llm:
   model_name: "qwen/qwen3-next-80b-a3b-instruct"
   
   # Tham số sinh văn bản cho NVIDIA mode
-  temperature: 0.5
-  top_p: 0.9
+  # temperature=0 để benchmark TÁI LẬP được (bài toán diff không cần sáng tạo)
+  temperature: 0
+  top_p: 1.0
   max_tokens: 4100
-  
+
   # Tham số sinh văn bản cho Remote Ollama mode
-  remote_temperature: 0.5
+  remote_temperature: 0
   remote_max_length: 2000
   remote_timeout: 180
 
@@ -45,5 +46,10 @@ web:
     - ".pdf"
 
 chunking:
-  max_tokens: 512          # Độ dài token tối đa cho mỗi chunk phân cấp (Mặc định: 512)
+  # Đặt sát giới hạn ngữ cảnh của mô hình Embedding (2048) để mỗi Điều thường giữ
+  # nguyên một chunk ở CẢ HAI văn bản. Ngưỡng thấp (512) khiến cùng một Điều bị tách
+  # khoản ở bản này nhưng giữ nguyên ở bản kia (do số token lệch nhau sau khi thêm/xóa
+  # khoản) -> matcher lệch cấp -> bắt sai "thêm mới Điều / xóa khoản". Phase 2 vẫn zoom
+  # xuống khoản/điểm qua registry nên độ chi tiết phát hiện thay đổi không bị mất.
+  max_tokens: 2000         # Độ dài token tối đa cho mỗi chunk phân cấp
   chunk_by: "dieu"         # Chọn "dieu", "khoan", "diem"

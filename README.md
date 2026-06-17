@@ -36,19 +36,40 @@ Thành viên:
 - **Pipeline 4 Phase hoàn thiện & Zoom-In thông minh**:
   - **Phase 0** — So khớp text thô tuyệt đối (hash-based, instant, bỏ qua 100% các chunk giống nhau).
   - **Phase 1** — Embedding ngữ nghĩa + Greedy Rerank + Hungarian Hybrid Matching toàn cục cấp Điều (hỗ trợ cả API remote lẫn local model).
-  - **Phase 2** — Progressive Zoom-In phân cấp chi tiết (Khoản → Điểm) + On-The-Fly local embedding + Strict Text Match + Automatic Numbering Detection + Lexical Safeguard Jaccard + Parallel LLM Review (ThreadPoolExecutor 16 workers).
+  - **Phase 2** — Progressive Zoom-In phân cấp chi tiết (Khoản → Điểm) **chạy song song** + **batch embedding**; xử lý riêng **Điều phẳng** (tách sửa/thêm/xóa); bỏ qua các cặp giống hệt hoặc chỉ khác đánh số; Parallel LLM Review (ThreadPoolExecutor 16 workers).
   - **Phase 3** — Kết xuất báo cáo Markdown / JSON chi tiết.
-- **Tối ưu hóa Hiệu năng & Chi phí (Hoàn toàn cài đặt)**:
+- **Tối ưu hóa Hiệu năng & Chi phí**:
   - **Thực thi LLM song song**: Chạy đồng thời tối đa 16 luồng (ThreadPoolExecutor max_workers=16), giúp tăng tốc độ xử lý gấp 10-15 lần.
-  - **Bộ lọc từ vựng (Lexical Safeguard)**: Tính toán Jaccard trên từ khóa pháp luật cốt lõi (số, ngày, phủ định, bắt buộc) để bỏ qua LLM cho các sửa không làm thay đổi nội dung pháp lý.
-  - **Tự động phát hiện đổi đánh số (Numbering-only Diff)**: Regex bóc tách thứ tự để tự động sinh báo cáo cho thay đổi chỉ số mà không gọi LLM.
+  - **Song song hóa Zoom-In + Batch Embedding**: Ghép cặp Khoản/Điểm của mọi Điều chạy đồng thời, gộp embedding các sub-node trong một lời gọi API duy nhất, giảm khoảng 3 lần thời gian xử lý mỗi cặp văn bản.
+  - **Bỏ qua so khớp tất định (không gọi LLM)**: Cặp giống hệt sau chuẩn hóa, hoặc chỉ khác tiền tố đánh số (kể cả đánh số đa cấp như `2.3` → `2.2`), được bỏ qua hoàn toàn.
 - **Quản lý Cấu hình linh hoạt & Bảo mật**: Cấu hình YAML trung tâm + biến `.env`, hỗ trợ thay đổi `max_tokens`, `chunk_by`, cơ chế API key an toàn.
 
 ---
 
 ## Pipeline hệ thống
 
-<img src="docs/images/PipelineTTCS.png" alt="Pipeline hệ thống so sánh văn bản pháp lý" width="800"/>
+```mermaid
+flowchart TD
+    subgraph IDX["Data Indexing"]
+        A["VB1 + VB2<br/>(.docx / .pdf)"] --> B[Trích xuất văn bản<br/>Pandoc / any2md]
+        B --> C[Chuẩn hóa + Parsing<br/>cây Điều/Khoản/Điểm]
+        C --> D[Hierarchical Chunking]
+        D --> E[Embedding]
+        E --> F["Vector store<br/>(chỉ VB1)"]
+    end
+
+    subgraph RAG["Data Retrieval & Generation"]
+        G["Chunk VB2<br/>làm truy vấn"] --> H[Phase 1: Greedy + Rerank<br/>+ Hungarian Hybrid]
+        H --> I[Phase 2: Zoom-in Khoản/Điểm<br/>song song + batch embedding]
+        I --> J{Phân loại}
+        J -->|khác nội dung| K[LLM Review song song]
+        J -->|không khớp| L[Thêm mới / Xóa bỏ]
+        K --> M[Phase 3: Báo cáo<br/>Markdown / JSON]
+        L --> M
+    end
+
+    F --> G
+```
 
 ---
 
@@ -115,9 +136,9 @@ TTCS/
 │   │   │
 │   │   ├── matching/             # So khớp & phân tích LLM
 │   │   │   ├── matcher.py        # build_global_matches (Pass 1 Greedy + Pass 2 Hungarian)
-│   │   │   │                     # match_sub_nodes (On-The-Fly embedding cho Khoản/Điểm)
+│   │   │   │                     # match_sub_nodes (embedding cho Khoản/Điểm + ghép lại phần dư, hỗ trợ embed_cache)
 │   │   │   ├── scoring.py        # calculate_hybrid_score, Jaccard, title similarity
-│   │   │   ├── llm_review.py     # call_local_llm (remote), llm_review_pair/single/khoan_with_diem
+│   │   │   ├── llm_review.py     # call_local_llm, llm_review_pair/dieu_flat/single/khoan_with_diem
 │   │   │   ├── llm_prompts.py    # System/User prompt templates cho LLM
 │   │   │   ├── chunk_formatter.py  # format_chunk cho LLM và exact match
 │   │   │   └── reporting.py      # render_change_report → Markdown báo cáo
@@ -261,8 +282,11 @@ API_BASE_URL=http://localhost:8080
 # LLM_API_URL=http://localhost:8002
 
 ## CHẾ ĐỘ LLM
-# "remote" — Gọi qua LLM tự host (mặc định)
-LLM_MODE=remote
+# "nvidia" — Gọi LLM qua NVIDIA API (mặc định hiện tại)
+# "remote" — Gọi qua LLM tự host (server expose /generate)
+LLM_MODE=nvidia
+LLM_MODEL_NAME=qwen/qwen3-next-80b-a3b-instruct
+LLM_API_KEY=<nvidia_api_key>
 ```
 
 Tất cả cấu hình còn có thể đặt trong `configs/config.yaml` với các nhóm: `paths`, `pipeline_thresholds`, `llm`, `embedding`, `web`. Biến `.env` sẽ **ghi đè** giá trị trong YAML.
@@ -273,8 +297,8 @@ Tất cả cấu hình còn có thể đặt trong `configs/config.yaml` với c
 |---|---|---|
 | `TOP_K` | `8` | Số ứng viên tối đa lấy từ ChromaDB |
 | `DISTANCE_THRESHOLD` | `0.185` | Ngưỡng khoảng cách tối đa (Greedy Match) |
-| `RERANK_THRESHOLD` | `0.985` | Ngưỡng reranker khớp nhanh |
-| `HYBRID_THRESHOLD` | `0.75` | Ngưỡng Hungarian Hybrid tối thiểu |
+| `RERANK_THRESHOLD` | `0.98` | Ngưỡng reranker khớp nhanh |
+| `HYBRID_THRESHOLD` | `0.65` | Ngưỡng Hungarian Hybrid tối thiểu |
 
 ---
 
@@ -367,9 +391,9 @@ Theo dõi tiến trình pipeline.
 Lấy kết quả phân tích (chỉ khi `status=done`).
 
 **Response chứa:**
-- `stats` — Thống kê: số chunk VB1/VB2, giống hoàn toàn, giống ngữ nghĩa, sửa đổi, thêm mới, xóa bỏ.
+- `stats` — Thống kê: số chunk VB1/VB2, giống hoàn toàn, sửa đổi, thêm mới, xóa bỏ.
 - `matched_pairs` — Danh sách các cặp chunk đã ghép.
-- `changes` — Thay đổi phân nhóm (`sua_doi`, `them_moi`, `xoa_bo`, `giong_nhau_ngu_nghia`).
+- `changes` — Thay đổi phân nhóm (`sua_doi`, `them_moi`, `xoa_bo`).
 - `report_text` — Báo cáo Markdown đầy đủ.
 
 ### `GET /api/jobs/{job_id}/pdf/{doc}`
@@ -420,8 +444,8 @@ graph TD
     subgraph Pipeline["Pipeline Runner — src/pipeline/runner.py"]
         P0["Phase 0: Exact Match"]
         P1["Phase 1: Embedding → ChromaDB → Greedy Rerank → Hungarian"]
-        P2["Phase 2: Zoom-In Khoản/Điểm → Lexical Safeguard/Auto-Numbering → Parallel LLM Review"]
-        P3["Phase 3: render_change_report → Markdown"]
+        P2["Phase 2: Zoom-In Khoản/Điểm (song song + batch embedding) → bỏ qua cặp giống/đổi số → Parallel LLM Review"]
+        P3["Phase 3: Propagation → render_change_report → Markdown"]
         P0 -->|remaining chunks| P1
         P1 -->|matched pairs| P2
         P2 -->|change items| P3
@@ -449,8 +473,8 @@ graph TD
 4. **Chunking**: `HierarchicalChunker(chunk_by="dieu" hoặc "khoan")` — trích xuất chunk pháp lý theo cấu hình tùy chọn (mặc định cấp Điều, tự động fallback khi vượt `max_tokens`).
 5. **Phase 0**: So sánh chuỗi text thô → lọc bỏ hoàn toàn các Điều giống nhau 100%.
 6. **Phase 1**: Embedding mô hình nhúng → ChromaDB index → Pass 1 (Greedy top-K + Rerank) → Pass 2 (Hungarian Hybrid Matrix) toàn cục ở cấp Điều.
-7. **Phase 2**: Zoom-In phân cấp sâu (Điều → Khoản → Điểm) → So khớp On-The-Fly mức Khoản/Điểm con → Áp dụng Bộ lọc từ vựng (Lexical Safeguard Jaccard) và Tự động nhận diện đổi đánh số (Numbering-only Regex) để lọc bỏ/báo cáo tự động → Gom các tác vụ phân tích thực tế còn lại gọi LLM Review song song (Parallel Multi-threading, tối đa 16 workers) với các prompt đã tinh chỉnh báo cáo vị trí cụ thể.
-8. **Reporting**: Gom toàn bộ `ChangeItem` (gồm sửa đổi, thêm mới, xóa bỏ, sửa đổi đánh số kỹ thuật) → `render_change_report()` → Kết xuất báo cáo Markdown / JSON và đồng bộ hóa giao diện.
+7. **Phase 2**: Zoom-In phân cấp sâu (Điều → Khoản → Điểm), chạy **song song** trên nhiều luồng và **gộp embedding theo lô**; bỏ qua các cặp giống hệt hoặc chỉ khác đánh số (kể cả đa cấp); Điều phẳng được xử lý riêng để tách sửa/thêm/xóa; các cặp khác biệt còn lại gọi **LLM Review song song** (tối đa 16 workers) với prompt báo cáo vị trí cụ thể.
+8. **Propagation & Reporting**: Lan truyền trạng thái thay đổi lên nút cha, gộp các `ChangeItem` trùng → `render_change_report()` → kết xuất báo cáo Markdown / JSON và đồng bộ giao diện.
 
 > 📖 Xem chi tiết tại [system_pipeline_walkthrough.md](system_pipeline_walkthrough.md)
 

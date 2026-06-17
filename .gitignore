@@ -51,3 +51,8 @@ data/*
 myenv/
 Host code/*
 node_modules/
+
+benchmark/**/*.docx
+benchmark/**/*.xlsx
+benchmark/**/*.pdf
+benchmark/**/*.txt

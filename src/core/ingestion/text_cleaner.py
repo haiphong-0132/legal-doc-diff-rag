@@ -4,20 +4,24 @@ import subprocess
 from pathlib import Path
 from html import unescape
 
-def flatten_tables_in_html(html_str: str) -> str:
+def flatten_tables_in_html(html_str: str):
     """Finds all table elements in the HTML and flattens them into semantic text lines
     so that chunking and embedding processes can read and compare them easily.
+
+    Trả về (html_đã_thay_bảng_bằng_text, danh_sách_HTML_bảng_gốc). Mỗi bảng được chèn
+    một marker ⟦BANG:i⟧ vào text để sau này gắn lại HTML bảng gốc cho đúng đoạn (hiển thị UI).
     """
     try:
         from bs4 import BeautifulSoup
     except ImportError:
-        return html_str
+        return html_str, []
 
+    captured_tables = []
     try:
         soup = BeautifulSoup(html_str, "html.parser")
         tables = soup.find_all("table")
         if not tables:
-            return html_str
+            return html_str, []
 
         for table in tables:
             trs = table.find_all("tr")
@@ -91,28 +95,34 @@ def flatten_tables_in_html(html_str: str) -> str:
                     else:
                         flattened_lines.append(row[0])
 
+            # Lưu HTML bảng gốc + chèn marker ⟦BANG:i⟧ để gắn lại đúng đoạn khi hiển thị
+            table_idx = len(captured_tables)
+            captured_tables.append(str(table))
+
             new_tag = soup.new_tag("p")
-            new_tag.string = "\n".join(flattened_lines)
+            new_tag.string = f"⟦BANG:{table_idx}⟧\n" + "\n".join(flattened_lines)
             table.replace_with(new_tag)
 
-        return str(soup)
+        return str(soup), captured_tables
     except Exception:
-        return html_str
+        return html_str, []
 
 
-def extract_text_from_html(html: str) -> str:
+def extract_text_from_html(html: str, return_tables: bool = False):
     """Extract plain text from HTML content for chunking and embedding.
-    
+
     Removes all HTML tags and entities, normalizes whitespace.
-    
+
     Args:
         html: HTML content from Pandoc conversion
-        
+        return_tables: nếu True, trả (text, tables_html) — tables_html là HTML bảng gốc
+            theo thứ tự marker ⟦BANG:i⟧ còn trong text.
+
     Returns:
-        Clean plain text ready for chunking and embedding
+        Clean plain text (mặc định), hoặc (text, tables_html) khi return_tables=True
     """
-    # 0. Duỗi phẳng bảng biểu thành các dòng text ngữ nghĩa
-    html = flatten_tables_in_html(html)
+    # 0. Duỗi phẳng bảng biểu thành các dòng text ngữ nghĩa (giữ lại HTML bảng gốc)
+    html, captured_tables = flatten_tables_in_html(html)
 
     # 1. Xóa ký tự điều khiển ẩn
     text = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', html)
@@ -169,8 +179,11 @@ def extract_text_from_html(html: str) -> str:
     text = re.sub(r'\n[ \t]+', '\n', text)  # Remove indent
     text = re.sub(r'\n\n+', '\n\n', text)  # Multiple newlines to double
     text = re.sub(r' *\n *', '\n', text)  # Clean spaces around newlines
-    
-    return text.strip()
+
+    text = text.strip()
+    if return_tables:
+        return text, captured_tables
+    return text
 
 
 def clean_text(text: str) -> str:

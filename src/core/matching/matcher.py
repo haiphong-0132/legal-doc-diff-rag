@@ -211,6 +211,7 @@ def match_sub_nodes(
     nodes_1: List[dict],
     nodes_2: List[dict],
     use_api: bool = False,
+    embed_cache: Optional[dict] = None,
 ) -> tuple[List[tuple[str, str, float]], List[dict], List[dict]]:
     """
     So khớp cục bộ các con (Khoản hoặc Điểm) sử dụng mô hình nhúng On-The-Fly
@@ -254,28 +255,29 @@ def match_sub_nodes(
         )
         rec_list_2.append(rec)
 
-    # 2. Sinh vector On-The-Fly để giải quyết triệt để vấn đề diễn đạt lại (Paraphrase)
+    # 2. Sinh vector On-The-Fly để giải quyết triệt để vấn đề diễn đạt lại (Paraphrase).
+    #    Nếu có embed_cache (đã batch-embed sẵn ở runner) → tái dùng, chỉ embed phần thiếu
+    #    → cắt số lời gọi embedding API (từ ~46/văn bản xuống ~1).
     try:
-        if use_api:
-            from src.core.api.call_api import call_embed_api
-            texts_1 = [r.query_text for r in rec_list_1]
-            texts_2 = [r.query_text for r in rec_list_2]
-            vecs_1 = {r.chunk.metadata.section_id: vec
-                      for r, vec in zip(rec_list_1, call_embed_api(texts_1).get("embeddings", []) if texts_1 else [])}
-            vecs_2 = {r.chunk.metadata.section_id: vec
-                      for r, vec in zip(rec_list_2, call_embed_api(texts_2).get("embeddings", []) if texts_2 else [])}
-        else:
-            from src.schemas import EmbeddingRequest
-            reqs_1 = [EmbeddingRequest(chunk_id=r.chunk.metadata.section_id, text=r.query_text) for r in rec_list_1]
-            reqs_2 = [EmbeddingRequest(chunk_id=r.chunk.metadata.section_id, text=r.query_text) for r in rec_list_2]
-            embed_model = get_embed_model()
-            vecs_1 = {res.chunk_id: res.vector for res in embed_model.embed(reqs_1)}
-            vecs_2 = {res.chunk_id: res.vector for res in embed_model.embed(reqs_2)}
+        all_recs = rec_list_1 + rec_list_2
+        if embed_cache is None:
+            embed_cache = {}
+        missing = [r for r in all_recs if r.chunk.metadata.section_id not in embed_cache]
+        if missing:
+            if use_api:
+                from src.core.api.call_api import call_embed_api
+                texts = [r.query_text for r in missing]
+                vecs = call_embed_api(texts).get("embeddings", []) if texts else []
+                for r, vec in zip(missing, vecs):   # API trả embeddings theo đúng thứ tự input
+                    embed_cache[r.chunk.metadata.section_id] = vec
+            else:
+                from src.schemas import EmbeddingRequest
+                reqs = [EmbeddingRequest(chunk_id=r.chunk.metadata.section_id, text=r.query_text) for r in missing]
+                for res in get_embed_model().embed(reqs):   # key theo chunk_id (độc lập thứ tự)
+                    embed_cache[res.chunk_id] = res.vector
 
-        for r in rec_list_1:
-            r.vector = vecs_1.get(r.chunk.metadata.section_id)
-        for r in rec_list_2:
-            r.vector = vecs_2.get(r.chunk.metadata.section_id)
+        for r in all_recs:
+            r.vector = embed_cache.get(r.chunk.metadata.section_id)
     except Exception as e:
         logger.warning("Không thể chạy Embedding On-The-Fly cho sub-nodes: %s. Chuyển sang so khớp không vector.", e)
 
@@ -301,6 +303,28 @@ def match_sub_nodes(
 
     unmatched_1 = [n for n in nodes_1 if n.get("id") not in matched_1_ids]
     unmatched_2 = [n for n in nodes_2 if n.get("id") not in matched_2_ids]
+
+    # Fix B: Các con còn thừa ở CẢ HAI phía thường là cặp diễn đạt lại (paraphrase) bị
+    # ngưỡng hybrid loại. Ghép chúng với ngưỡng 0 (chỉ Hungarian) rồi trả về dưới dạng cặp
+    # đã khớp để LLM phán "sửa đổi / giống nghĩa", thay vì tự động coi là xóa + thêm.
+    if unmatched_1 and unmatched_2:
+        rem1 = [r for r in rec_list_1 if r.chunk.metadata.section_id not in matched_1_ids]
+        rem2 = [r for r in rec_list_2 if r.chunk.metadata.section_id not in matched_2_ids]
+        extra = build_global_matches(
+            vb1_records=rem1,
+            vb2_records=rem2,
+            vector_store=None,
+            retrieval_service=None,
+            hybrid_threshold=0.0,
+        )
+        for m in extra:
+            matched_pairs.append((m.vb1_chunk_id, m.vb2_chunk_id, m.hybrid_score or 0.0))
+            if m.vb1_chunk_id:
+                matched_1_ids.add(m.vb1_chunk_id)
+            if m.vb2_chunk_id:
+                matched_2_ids.add(m.vb2_chunk_id)
+        unmatched_1 = [n for n in nodes_1 if n.get("id") not in matched_1_ids]
+        unmatched_2 = [n for n in nodes_2 if n.get("id") not in matched_2_ids]
 
     return matched_pairs, unmatched_1, unmatched_2
 

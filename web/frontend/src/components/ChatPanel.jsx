@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { sendChat } from '../api';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function ChatPanel({ jobId, onClose }) {
   const [messages, setMessages] = useState([
@@ -46,8 +48,8 @@ export default function ChatPanel({ jobId, onClose }) {
                     h-[60vh] sm:h-[500px] bg-white rounded-2xl shadow-2xl
                     border border-gray-200 flex flex-col z-50 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-blue-600 text-white">
-        <span className="font-medium text-sm">Chat về báo cáo</span>
-        <button onClick={onClose} className="text-white/80 hover:text-white cursor-pointer">✕</button>
+        <h3 className="text-white font-semibold flex-1">Chat với báo cáo</h3>
+        <button onClick={onClose} className="text-white/80 hover:text-white cursor-pointer flex items-center justify-center"><CloseIcon fontSize="small" /></button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

@@ -19,7 +19,7 @@ _project_root = Path(__file__).resolve().parents[3]
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-def extract_file(path):
+def extract_file(path, return_tables: bool = False):
     file_path = Path(path)
 
     if not file_path.exists():
@@ -29,10 +29,11 @@ def extract_file(path):
 
     if ext == ".pdf":
         from src.core.ingestion.pdf_extractor import extract_pdf_text
-        return extract_pdf_text(str(file_path))
+        text = extract_pdf_text(str(file_path))
+        return (text, []) if return_tables else text
     elif ext == ".docx":
         from src.core.ingestion.docx_extractor import extract_docx_text
-        return extract_docx_text(str(file_path))
+        return extract_docx_text(str(file_path), return_tables=return_tables)
     else:
         raise ValueError(
             f"Định dạng file không được hỗ trợ (chỉ hỗ trợ .pdf, .docx)"

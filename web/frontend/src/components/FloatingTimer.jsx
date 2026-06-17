@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 export default function FloatingTimer({ step, results }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,7 +122,7 @@ export default function FloatingTimer({ step, results }) {
             className="ml-2 p-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full cursor-pointer transition-colors"
             title="Thu nhỏ bộ đếm"
           >
-            ✕
+            <CloseIcon fontSize="small" />
           </button>
         </div>
       </div>

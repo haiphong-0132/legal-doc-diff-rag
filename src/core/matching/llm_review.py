@@ -22,6 +22,10 @@ from src.core.matching.llm_prompts import (
     PAIR_REVIEW_USER_PROMPT,
     SINGLE_REVIEW_SYSTEM_PROMPT,
     SINGLE_REVIEW_USER_PROMPT,
+    KHOAN_WITH_DIEM_SYSTEM_PROMPT,
+    KHOAN_WITH_DIEM_USER_PROMPT,
+    FLAT_DIEU_SYSTEM_PROMPT,
+    FLAT_DIEU_USER_PROMPT,
 )
 from src.schemas import ChangeItem, ChunkDocumentForHierarchical
 
@@ -119,124 +123,30 @@ def parse_json_response(raw_text: str):
         raise
 
 
-def get_critical_tokens(text: str) -> set[str]:
-    """Trích xuất chữ số, ngày tháng và các từ khóa pháp lý phủ định/bắt buộc."""
-    if not text:
-        return set()
-        
-    # Trích xuất số và ngày tháng
-    numbers_and_dates = set(re.findall(r"\b\d+(?:[.,-/]\d+)*\b", text))
-    
-    # Trích xuất các từ khóa pháp lý cốt lõi
-    critical_words = {
-        "không", "không được", "chưa", "ngoại trừ", "trừ trường hợp", "nghiêm cấm",
-        "được", "phải", "có quyền", "có nghĩa vụ", "bắt buộc", "cấm"
-    }
-    found_critical = {w for w in critical_words if w in text.lower()}
-    
-    return numbers_and_dates.union(found_critical)
-
-
-def check_lexical_safeguard_jaccard(text1: str, text2: str) -> bool:
-    """
-    Sử dụng Jaccard để kiểm tra biến động tiểu tiết cốt lõi.
-    Trả về True nếu Jaccard < 1.0 (có biến động nguy hiểm -> cần LLM).
-    Trả về False nếu Jaccard == 1.0 (hoàn toàn trùng khớp tiểu tiết -> an toàn).
-    """
-    s1 = get_critical_tokens(text1)
-    s2 = get_critical_tokens(text2)
-    
-    if not s1 and not s2:
-        return False  # Cả hai đều không có số hay từ quan trọng -> An toàn
-        
-    intersection = len(s1.intersection(s2))
-    union = len(s1.union(s2))
-    jaccard_score = intersection / union if union > 0 else 0.0
-    
-    # Nếu Jaccard < 1.0 -> Có biến động tiểu tiết nguy hiểm -> Trả về True
-    return jaccard_score < 1.0
-
-
 def llm_review_pair(
     vb1_chunk: ChunkDocumentForHierarchical,
     vb2_chunk: ChunkDocumentForHierarchical,
     method: str,
-) -> tuple[ChangeItem | None, str]:
-    import difflib
+) -> tuple[ChangeItem | None, str, str | None]:
+    # Chỉ bỏ qua LLM khi text trùng khớp chính xác (chuẩn hóa khoảng trắng + hoa/thường).
+    # Mọi khác biệt còn lại — kể cả chỉ khác cách đánh số — đều giao cho LLM tự quyết định
+    # qua trường "identical" (PAIR_REVIEW_SYSTEM_PROMPT đã hướng dẫn: khác số thứ tự = giống nhau).
+    vb1_text = re.sub(r"\s+", " ", vb1_chunk.noi_dung or "").strip().lower()
+    vb2_text = re.sub(r"\s+", " ", vb2_chunk.noi_dung or "").strip().lower()
 
-    section_num_re = re.compile(
-        r"^[\s]*(?:điều|khoản|mục|chương|phần|article|section|clause)?\s*"
-        r"[\d]+(?:[.\-][\d]+)*[.\s:)]*",
-        re.IGNORECASE,
-    )
-    vb1_normalized = re.sub(
-        r"\s+",
-        " ",
-        section_num_re.sub("", vb1_chunk.noi_dung or ""),
-    ).strip().lower()
-    vb2_normalized = re.sub(
-        r"\s+",
-        " ",
-        section_num_re.sub("", vb2_chunk.noi_dung or ""),
-    ).strip().lower()
-
-    if vb1_normalized == vb2_normalized and len(vb1_normalized) > 0:
+    if vb1_text and vb1_text == vb2_text:
         logger.info(
-            "Content identical (numbering-only diff), skipping LLM: VB1=%s VB2=%s",
+            "Content identical, skipping LLM: VB1=%s VB2=%s",
             vb1_chunk.metadata.section_id,
             vb2_chunk.metadata.section_id,
         )
-        return None, "SKIPPED: content identical"
+        return None, "SKIPPED: content identical", "exact"
 
-    if method == "high_confidence_greedy":
-        t1 = vb1_chunk.noi_dung or vb1_chunk.tieu_de or ""
-        t2 = vb2_chunk.noi_dung or vb2_chunk.tieu_de or ""
-        if not check_lexical_safeguard_jaccard(t1, t2):
-            logger.info(
-                "Lexical safeguard determined safe for high_confidence_greedy match, skipping LLM: VB1=%s VB2=%s",
-                vb1_chunk.metadata.section_id,
-                vb2_chunk.metadata.section_id,
-            )
-            return None, "SKIPPED: lexical safeguard safe"
-
-    # Phân tách dòng và bullet point để so sánh đối chứng thô cực kỳ chuẩn xác
-    def split_into_sentences_or_bullets(text: str) -> list[str]:
-        lines = [l.strip() for l in text.split("\n") if l.strip()]
-        result = []
-        for line in lines:
-            parts = re.split(r"(?<=\.)\s+(?=-\s)", line)
-            for part in parts:
-                if part.strip():
-                    result.append(part.strip())
-        return result
-
-    lines1 = split_into_sentences_or_bullets(vb1_chunk.noi_dung or vb1_chunk.tieu_de or "")
-    lines2 = split_into_sentences_or_bullets(vb2_chunk.noi_dung or vb2_chunk.tieu_de or "")
-
-    diff = list(difflib.ndiff(lines1, lines2))
-    diff_summary = []
-    for line in diff:
-        if line.startswith("- ") or line.startswith("+ "):
-            diff_summary.append(line)
-
-    # Nếu không có sự khác biệt thô nào sau khi bóc tách chi tiết, bỏ qua luôn để tránh tốn token LLM
-    if not diff_summary:
-        logger.info(
-            "Determined identical after deep sentence diff, skipping LLM: VB1=%s VB2=%s",
-            vb1_chunk.metadata.section_id,
-            vb2_chunk.metadata.section_id,
-        )
-        return None, "SKIPPED: sentence diff is empty"
-
-    # Gửi kèm gợi ý khác biệt thô trực quan để LLM không bao giờ bỏ sót sự thay đổi
     user_prompt = PAIR_REVIEW_USER_PROMPT.format(
         method=method,
         vb1_text=format_chunk(vb1_chunk, True),
         vb2_text=format_chunk(vb2_chunk, True),
     )
-    user_prompt += f"\n\n<difference_hints>\nHệ thống phân tích thô phát hiện các dòng thay đổi sau đây (- là cũ/bị xóa, + là mới/thêm vào):\n"
-    user_prompt += "\n".join(diff_summary)
-    user_prompt += "\n</difference_hints>"
 
     messages = [
         {"role": "system", "content": PAIR_REVIEW_SYSTEM_PROMPT},
@@ -263,16 +173,16 @@ def llm_review_pair(
             vb2_excerpt=vb2_excerpt,
             summary="LLM khong tra ve ket qua hop le.",
             method=method,
-        ), f"ERROR: {exc}"
+        ), f"ERROR: {exc}", None
 
-    # LLM xác định nội dung giống nhau → bỏ qua
+    # LLM xác định nội dung giống nhau (kể cả chỉ khác đánh số / diễn đạt lại) → bỏ qua, không tạo thay đổi
     if data.get("identical", False):
         logger.info(
             "LLM determined identical content: VB1=%s VB2=%s",
             vb1_chunk.metadata.section_id,
             vb2_chunk.metadata.section_id,
         )
-        return None, raw_text
+        return None, raw_text, None
 
     # Xử lý lọc và chuẩn hóa danh sách thay đổi từ LLM, bỏ các phần cũ mới giống hệt nhau (hallucination)
     filtered_changes = []
@@ -292,24 +202,7 @@ def llm_review_pair(
             if str(c).strip():
                 filtered_changes.append(str(c).strip())
 
-    # Fallback bảo vệ tuyệt đối: Nếu LLM bị ảo giác trả về danh sách trống nhưng thực tế có thay đổi thô
-    if not filtered_changes and diff_summary:
-        for line in diff_summary:
-            if line.startswith("- "):
-                filtered_changes.append(f"Xóa bỏ: {line[2:].strip()}")
-            elif line.startswith("+ "):
-                filtered_changes.append(f"Thêm mới: {line[2:].strip()}")
-
     summary_text = str(data.get("summary", "")).strip()
-    # Nếu tóm tắt ghi "Không có thay đổi" nhưng thực tế có thay đổi chi tiết
-    if ("không có thay đổi" in summary_text.lower() or "không thay đổi" in summary_text.lower()) and filtered_changes:
-        section_id_decoded = vb1_chunk.metadata.section_id
-        try:
-            from src.core.embedding import decode_section_id
-            section_id_decoded = decode_section_id(section_id_decoded)
-        except:
-            pass
-        summary_text = f"Sửa đổi {section_id_decoded}: Có sự điều chỉnh, thêm bớt chi tiết trong nội dung điều khoản."
 
     return ChangeItem(
         kind="sua_doi",
@@ -320,7 +213,115 @@ def llm_review_pair(
         summary=summary_text,
         method=method,
         changes=filtered_changes,
-    ), raw_text
+    ), raw_text, None
+
+
+def llm_review_dieu_flat(
+    vb1_chunk: ChunkDocumentForHierarchical,
+    vb2_chunk: ChunkDocumentForHierarchical,
+    method: str,
+) -> tuple[list[ChangeItem], str]:
+    """Review một Điều PHẲNG (không có Khoản/Điểm). Trả về DANH SÁCH ChangeItem,
+    mỗi thay đổi (sửa/thêm/xóa) là một item riêng — đặc biệt để không bỏ sót các
+    đoạn bị XÓA bên trong một Điều bị sửa. Chỉ dùng cho nhánh Điều phẳng ở runner,
+    không ảnh hưởng luồng Khoản/Điểm.
+    """
+    dieu_id = vb1_chunk.metadata.section_id or vb2_chunk.metadata.section_id
+
+    # Bỏ qua LLM nếu text trùng khớp chính xác.
+    vb1_text = re.sub(r"\s+", " ", vb1_chunk.noi_dung or "").strip().lower()
+    vb2_text = re.sub(r"\s+", " ", vb2_chunk.noi_dung or "").strip().lower()
+    if vb1_text and vb1_text == vb2_text:
+        return [], "SKIPPED: content identical"
+
+    user_prompt = FLAT_DIEU_USER_PROMPT.format(
+        vb1_text=format_chunk(vb1_chunk, True),
+        vb2_text=format_chunk(vb2_chunk, True),
+    )
+    messages = [
+        {"role": "system", "content": FLAT_DIEU_SYSTEM_PROMPT},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    try:
+        raw_text = call_local_llm(messages)
+        data = parse_json_response(raw_text)
+    except Exception as exc:
+        logger.warning("LLM flat-dieu review failed for %s: %s", dieu_id, exc)
+        # Fallback an toàn: coi như một sửa đổi tổng thể để không nuốt thay đổi
+        return [ChangeItem(
+            kind="sua_doi",
+            vb1_chunk_id=dieu_id,
+            vb2_chunk_id=dieu_id,
+            vb1_excerpt=vb1_chunk.noi_dung or "",
+            vb2_excerpt=vb2_chunk.noi_dung or "",
+            summary="LLM khong tra ve ket qua hop le.",
+            method=method,
+        )], f"ERROR: {exc}"
+
+    if data.get("identical", False):
+        return [], raw_text
+
+    # Chiến lược: GỘP mọi thay đổi "sua_doi" trong cùng Điều thành MỘT item
+    # (tránh phân mảnh từng dòng bảng/giá), nhưng TÁCH riêng từng đoạn bị XÓA và
+    # từng đoạn THÊM MỚI thành item độc lập (đây mới là phần trước đây hay bị nuốt).
+    items: list[ChangeItem] = []
+    sua_changes: list[str] = []
+    sua_summaries: list[str] = []
+    sua_old, sua_new = "", ""
+    kind_counts = {"them_moi": 0, "xoa_bo": 0}
+
+    for c in data.get("changes", []):
+        if not isinstance(c, dict):
+            continue
+        old = str(c.get("old_content", "")).strip()
+        new = str(c.get("new_content", "")).strip()
+        if old and new and old == new:
+            continue
+
+        kind = str(c.get("kind", "")).strip().lower()
+        if kind not in ("them_moi", "xoa_bo", "sua_doi"):
+            kind = "xoa_bo" if old and not new else "them_moi" if new and not old else "sua_doi"
+        summary = str(c.get("summary", "")).strip()
+
+        if kind == "sua_doi":
+            sua_changes.append(f"Cũ: {old}\nMới: {new}" if old and new else (f"Xóa bỏ: {old}" if old else f"Thêm mới: {new}"))
+            if summary:
+                sua_summaries.append(summary)
+            if old and not sua_old:
+                sua_old = old
+            if new and not sua_new:
+                sua_new = new
+            continue
+
+        # xoa_bo / them_moi: mỗi đoạn là một item riêng (gán hậu tố id để khỏi bị merge)
+        idx = kind_counts[kind]
+        kind_counts[kind] += 1
+        suffix = "" if idx == 0 else f".{kind[:3]}_{idx}"
+        items.append(ChangeItem(
+            kind=kind,
+            vb1_chunk_id=(dieu_id + suffix) if kind == "xoa_bo" else None,
+            vb2_chunk_id=(dieu_id + suffix) if kind == "them_moi" else None,
+            vb1_excerpt=old if kind == "xoa_bo" else "",
+            vb2_excerpt=new if kind == "them_moi" else "",
+            summary=summary,
+            method=method,
+            changes=[f"Xóa bỏ: {old}" if kind == "xoa_bo" else f"Thêm mới: {new}"],
+        ))
+
+    if sua_changes:
+        items.append(ChangeItem(
+            kind="sua_doi",
+            vb1_chunk_id=dieu_id,
+            vb2_chunk_id=dieu_id,
+            vb1_excerpt=sua_old or (vb1_chunk.noi_dung or ""),
+            vb2_excerpt=sua_new or (vb2_chunk.noi_dung or ""),
+            summary=" ".join(sua_summaries),
+            method=method,
+            changes=sua_changes,
+        ))
+
+    return items, raw_text
 
 
 def llm_review_single(chunk: ChunkDocumentForHierarchical, kind: str) -> tuple[ChangeItem | None, str]:
@@ -421,27 +422,9 @@ def llm_review_khoan_with_diem(
             diff_lines.append(f"- Điểm {d2.get('id')} được THÊM MỚI: {d2.get('cached_merged_text') or d2.get('noi_dung')}")
 
     # 2. Truyền chuỗi cấu trúc này vào Prompt để LLM tập trung tóm tắt và đánh giá tác động
-    prompt = f"""Bạn là chuyên gia phân tích thay đổi văn bản pháp luật Việt Nam.
-Hãy phân tích sự thay đổi của Khoản sau đây cùng với danh sách Điểm con của nó:
-
-{chr(10).join(diff_lines)}
-
-NGUYÊN TẮC:
-- Chỉ báo cáo thay đổi làm khác ý nghĩa pháp lý, ví dụ: quyền, nghĩa vụ, điều kiện áp dụng, đối tượng áp dụng, thời hạn, mức phạt, số tiền, trình tự, thẩm quyền, ngoại lệ, phạm vi hiệu lực.
-- Bỏ qua thay đổi không làm khác nội dung: số điều/khoản/mục, mã đoạn, thứ tự trình bày, xuống dòng, dấu câu, chính tả nhỏ, định dạng, cách diễn đạt tương đương.
-- Nếu chỉ khác số thứ tự hoặc vị trí trong văn bản nhưng nội dung giữ nguyên, phải xem là giống nhau.
-- Trả về JSON có cấu trúc:
-{{
-  "identical": false,
-  "summary": "Tóm tắt nhận xét ngắn gọn thay đổi tổng thể của Khoản này",
-  "changes": [
-    "Thay đổi 1...",
-    "Thay đổi 2..."
-  ]
-}}
-"""
+    prompt = KHOAN_WITH_DIEM_USER_PROMPT.format(diff_block=chr(10).join(diff_lines))
     messages = [
-        {"role": "system", "content": "Bạn là hệ thống tự động phân tích so sánh văn bản pháp luật. Hãy luôn trả về JSON hợp lệ."},
+        {"role": "system", "content": KHOAN_WITH_DIEM_SYSTEM_PROMPT},
         {"role": "user", "content": prompt}
     ]
     
